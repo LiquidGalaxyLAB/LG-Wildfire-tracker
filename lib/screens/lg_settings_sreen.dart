@@ -4,14 +4,12 @@ import 'package:dartssh2/dartssh2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-
 import 'package:wildfiretracker/entities/lg_settings_model.dart';
 import 'package:wildfiretracker/services/local_storage_service.dart';
 import 'package:wildfiretracker/utils/storage_keys.dart';
 import 'package:wildfiretracker/utils/theme.dart';
 import 'package:wildfiretracker/widgets/button.dart';
 import 'package:wildfiretracker/widgets/input.dart';
-
 
 import '../services/lg_service.dart';
 import '../services/lg_settings_service.dart';
@@ -26,12 +24,12 @@ class LGSettings extends StatefulWidget {
 }
 
 class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
-
-
-
   LGSettingsService get _settingsService => GetIt.I<LGSettingsService>();
+
   LGService get _lgService => GetIt.I<LGService>();
-  LocalStorageService get _localStorageService => GetIt.I<LocalStorageService>();
+
+  LocalStorageService get _localStorageService =>
+      GetIt.I<LocalStorageService>();
 
   final _ipController = TextEditingController();
   final _portController = TextEditingController();
@@ -79,7 +77,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
 
   @override
   void setState(fn) {
-    if(mounted) {
+    if (mounted) {
       super.setState(fn);
     }
   }
@@ -298,7 +296,8 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
               child: Text(
                 isAuthenticated ? 'Connected' : 'Disconnected',
                 style: TextStyle(
-                  color: isAuthenticated ? ThemeColors.success : ThemeColors.alert,
+                  color:
+                      isAuthenticated ? ThemeColors.success : ThemeColors.alert,
                   fontWeight: FontWeight.w500,
                   fontSize: 20,
                 ),
@@ -379,21 +378,22 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
                   Icons.connected_tv_rounded,
                   color: ThemeColors.backgroundColor,
                 ),
-                onPressed: (){
+                onPressed: () {
                   FocusManager.instance.primaryFocus?.unfocus();
                   setState(() {
-                    _showTextInAppBar=false;
+                    _showTextInAppBar = false;
                   });
-                  _localStorageService.setItem(StorageKeys.lgScreens, _screensController.text.toString());
+                  _localStorageService.setItem(StorageKeys.lgScreens,
+                      _screensController.text.toString());
                   _onConnect();
                   Timer(const Duration(seconds: 3), () async {
                     if (isAuthenticated) {
                       await _lgService.setLogos();
-                    }else{
+                    } else {
                       showSnackbar(context, 'Connection failed');
                     }
                     setState(() {
-                      _loading=false;
+                      _loading = false;
                     });
                   });
                 },
@@ -427,7 +427,8 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
               child: Text(
                 isAuthenticated ? 'Connected' : 'Disconnected',
                 style: TextStyle(
-                  color: isAuthenticated ? ThemeColors.success : ThemeColors.alert,
+                  color:
+                      isAuthenticated ? ThemeColors.success : ThemeColors.alert,
                   fontWeight: FontWeight.w500,
                   fontSize: 20,
                 ),
@@ -436,7 +437,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
             _buildLGTaskButton(
               'SET SLAVES REFRESH',
               Icons.av_timer_rounded,
-                  () async {
+              () async {
                 if (_settingRefresh) {
                   return;
                 }
@@ -446,7 +447,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
                   builder: (context) => ConfirmDialog(
                     title: 'Are you sure?',
                     message:
-                    'The slaves solo KMLs will start to refresh each 2 seconds and all screens will be rebooted.',
+                        'The slaves solo KMLs will start to refresh each 2 seconds and all screens will be rebooted.',
                     onCancel: () {
                       Navigator.of(context).pop();
                     },
@@ -473,7 +474,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
             _buildLGTaskButton(
               'RESET SLAVES REFRESH',
               Icons.timer_off_rounded,
-                  () async {
+              () async {
                 if (_resetingRefresh) {
                   return;
                 }
@@ -483,7 +484,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
                   builder: (context) => ConfirmDialog(
                     title: 'Are you sure?',
                     message:
-                    'The slaves will stop refreshing and all screens will be rebooted.',
+                        'The slaves will stop refreshing and all screens will be rebooted.',
                     onCancel: () {
                       Navigator.of(context).pop();
                     },
@@ -510,7 +511,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
             _buildLGTaskButton(
               'Clear KML + logos',
               Icons.cleaning_services_rounded,
-                  () async {
+              () async {
                 if (_clearingKml) {
                   return;
                 }
@@ -532,7 +533,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
             _buildLGTaskButton(
               'Relaunch',
               Icons.reset_tv_rounded,
-                  () {
+              () {
                 if (_relaunching) {
                   return;
                 }
@@ -568,7 +569,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
             _buildLGTaskButton(
               'Reboot',
               Icons.restart_alt_rounded,
-                  () {
+              () {
                 if (_rebooting) {
                   return;
                 }
@@ -604,7 +605,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
             _buildLGTaskButton(
               'Power off',
               Icons.power_settings_new_rounded,
-                  () {
+              () {
                 if (_shuttingDown) {
                   return;
                 }
@@ -648,11 +649,11 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
 
   /// Builds the tasks button.
   Widget _buildLGTaskButton(
-      String label,
-      IconData icon,
-      Function() onPressed, {
-        bool loading = false,
-      }) {
+    String label,
+    IconData icon,
+    Function() onPressed, {
+    bool loading = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: Button(
@@ -676,17 +677,21 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
     );
   }
 
-  Widget _getConnection(){
-    if(isAuthenticated){
+  Widget _getConnection() {
+    if (isAuthenticated) {
       setState(() {
-        _loading=false;
+        _loading = false;
       });
     }
-    return Text(isAuthenticated ? 'Connected' : 'Disconnected', style: TextStyle(color: isAuthenticated ? ThemeColors.success : ThemeColors.alert,fontSize: 30));
+    return Text(isAuthenticated ? 'Connected' : 'Disconnected',
+        style: TextStyle(
+            color: isAuthenticated ? ThemeColors.success : ThemeColors.alert,
+            fontSize: 30));
   }
 
-  Widget _getTitle(String title){
-    return Text(title,style: TextStyle(color: ThemeColors.textSecondary,fontSize: 20));
+  Widget _getTitle(String title) {
+    return Text(title,
+        style: TextStyle(color: ThemeColors.textSecondary, fontSize: 20));
   }
 
   /// Initializes and sets the network connection form.
@@ -698,8 +703,9 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
       _portController.text = settings.port.toString();
       _pwController.text = settings.password;
       _ipController.text = settings.ip;
-      if(_localStorageService.hasItem(StorageKeys.lgScreens)){
-        _screensController.text = _localStorageService.getItem(StorageKeys.lgScreens);
+      if (_localStorageService.hasItem(StorageKeys.lgScreens)) {
+        _screensController.text =
+            _localStorageService.getItem(StorageKeys.lgScreens);
       }
     });
 
@@ -707,49 +713,45 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
     Timer(const Duration(seconds: 3), () async {
       if (isAuthenticated) {
         await _lgService.setLogos();
-      }else{
+      } else {
         showSnackbar(context, 'Connection failed');
         _localStorageService.setItem(StorageKeys.lgConnection, "not");
       }
       setState(() {
-        _loading=false;
+        _loading = false;
       });
     });
   }
 
   /// Checks and sets the connection status according to the form info.
   Future<void> _checkConnection() async {
-
     SSHClient? _client;
 
     try {
-
       if (_ipController.text.isEmpty ||
           _usernameController.text.isEmpty ||
           _pwController.text.isEmpty ||
           _screensController.text.isEmpty ||
-          _portController.text.isEmpty)
-      {
+          _portController.text.isEmpty) {
         showSnackbar(context, 'Please enter all details');
       }
 
-
       final settings = _settingsService.getSettings();
-      try{
-        final socket = await SSHSocket.connect(settings.ip,settings.port);
+      try {
+        final socket = await SSHSocket.connect(settings.ip, settings.port);
         String? password;
-        _client = SSHClient(
-            socket,
+        _client = SSHClient(socket,
             username: settings.username,
-            onPasswordRequest: (){
+            onPasswordRequest: () {
               password = settings.password;
               return password;
             },
             keepAliveInterval: const Duration(seconds: 3600),
-            onAuthenticated: (){
+            onAuthenticated: () {
               setState(() {
-                isAuthenticated=true;
-                _localStorageService.setItem(StorageKeys.lgConnection, "connected");
+                isAuthenticated = true;
+                _localStorageService.setItem(
+                    StorageKeys.lgConnection, "connected");
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(
                     'Connected successfully.',
@@ -758,14 +760,12 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
                   backgroundColor: ThemeColors.success,
                 ));
               });
-            }
-        );
-      }catch(e){
+            });
+      } catch (e) {
         if (kDebugMode) {
           print(e);
         }
       }
-
     } on Exception catch (e) {
       if (kDebugMode) {
         print('error: $e');
@@ -779,10 +779,9 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
 
   /// Connects to the a machine according to the form info.
   void _onConnect() async {
-
     setState(() {
-      isAuthenticated=false;
-      _loading=true;
+      isAuthenticated = false;
+      _loading = true;
     });
 
     await _settingsService.setSettings(
@@ -795,5 +794,4 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
 
     await _checkConnection();
   }
-
 }
