@@ -74,7 +74,7 @@ class _InputState extends State<Input> {
         textInputAction: widget.action,
         controller: widget.controller,
         inputFormatters: widget.formatters,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: ThemeColors.textPrimary),
         cursorColor: ThemeColors.primaryColor,
         keyboardType: widget.type,
         obscureText: _obscure,

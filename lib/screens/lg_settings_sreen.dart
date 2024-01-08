@@ -119,7 +119,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
           controller: _tabController,
           indicatorColor: ThemeColors.primaryColor,
           labelColor: ThemeColors.primaryColor,
-          unselectedLabelColor: Colors.white70,
+          unselectedLabelColor: Colors.black,
           tabs: const [
             Tab(
               icon: Icon(Icons.connected_tv_rounded),
@@ -286,7 +286,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
             const Text(
               'Establish connection to the system',
               style: TextStyle(
-                color: Colors.white70,
+                color: Colors.black,
                 fontWeight: FontWeight.w500,
                 fontSize: 16,
               ),
@@ -417,7 +417,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
             const Text(
               'Control your system',
               style: TextStyle(
-                color: Colors.white70,
+                color: Colors.black,
                 fontWeight: FontWeight.w500,
                 fontSize: 16,
               ),

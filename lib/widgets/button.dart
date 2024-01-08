@@ -24,9 +24,11 @@ class Button extends StatefulWidget {
   final BorderSide border;
   final Color? color;
   final Color? labelColor;
+  final Color? overlayColor;
   final double? elevation;
   final double? height;
   final Icon? icon;
+
 
   @override
   State<Button> createState() => _ButtonState();
@@ -44,27 +46,6 @@ class _ButtonState extends State<Button> {
             widget.onPressed();
           }
         },
-        child: Row(
-          mainAxisAlignment: widget.icon != null
-              ? MainAxisAlignment.spaceBetween
-              : MainAxisAlignment.center,
-          children: [
-            Text(
-              widget.label.toUpperCase(),
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            !widget.loading
-                ? widget.icon ?? Container()
-                : const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 3),
-                  )
-          ],
-        ),
         style: ButtonStyle(
           elevation: widget.elevation == null
               ? null
@@ -81,6 +62,30 @@ class _ButtonState extends State<Button> {
           backgroundColor: MaterialStateProperty.all(
             widget.color ?? ThemeColors.primaryColor,
           ),
+          overlayColor: MaterialStateProperty.all(
+            widget.overlayColor ?? ThemeColors.primaryColor,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: widget.icon != null
+              ? MainAxisAlignment.spaceBetween
+              : MainAxisAlignment.center,
+          children: [
+            Text(
+              widget.label.toUpperCase(),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            !widget.loading
+                ? widget.icon ?? Container()
+                : SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 3, color: ThemeColors.backgroundColor),
+                  )
+          ],
         ),
       ),
     );

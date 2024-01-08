@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class ThemeColors {
-  static int backgroundColorHex = 0xFF2D2D2D;
-  static Color backgroundColor = const Color(0xFF2D2D2D);
+  static int backgroundColorHex = 0xFFFFFFFF; //0xFF2D2D2D
+  static Color backgroundColor = const Color(0xFFFFFFFF); //const Color(0xFF2D2D2D);
 
-  static Color primaryColor = const Color(0xFF75DEFF);
+  static Color primaryColor = const Color(0xFF2D2D2D);
   static Color success = const Color(0xFF2FDF75);
   static Color warning = const Color(0xFFFFC061);
   static Color alert = const Color(0xFFED576B);
