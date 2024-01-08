@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:wildfiretracker/screens/home_screen.dart';
 import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
 
 class SplashScreenPage extends StatefulWidget {
@@ -15,6 +16,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     [
       'assets/images/lg-logo.png',
       'assets/images/gsoc.png',
+      'assets/images/flutter-lleida.png',
     ],
     [
       'assets/images/lglab-logo.png',
@@ -35,7 +37,8 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
 
     Timer(const Duration(seconds: 4), () {
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LGSettings()));
+           // MaterialPageRoute(builder: (context) => const LGSettings()));
+           MaterialPageRoute(builder: (context) => const HomePage()));
     });
 
     return SafeArea(
