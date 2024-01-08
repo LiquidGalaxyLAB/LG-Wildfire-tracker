@@ -14,6 +14,7 @@ class Button extends StatefulWidget {
     this.width = double.maxFinite,
     this.loading = false,
     required this.onPressed,
+    this.overlayColor,
   }) : super(key: key);
 
   final String label;
