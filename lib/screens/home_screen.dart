@@ -1,16 +1,9 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title = 'title';
 
@@ -19,71 +12,103 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePage> {
-  int _counter = 0;
+  List<Map<String, String>> services = [
+    {'name': 'NASA','route': 'nasa',  'imageUrl': 'https://img.icons8.com/external-vitaliy-gorbachev-flat-vitaly-gorbachev/2x/external-cleaning-labour-day-vitaliy-gorbachev-flat-vitaly-gorbachev.png'},
+    {'name': 'Plumber','route': 'nasa', 'imageUrl': 'https://img.icons8.com/external-vitaliy-gorbachev-flat-vitaly-gorbachev/2x/external-plumber-labour-day-vitaliy-gorbachev-flat-vitaly-gorbachev.png'},
+    {'name': 'Electrician','route': 'nasa', 'imageUrl': 'https://img.icons8.com/external-wanicon-flat-wanicon/2x/external-multimeter-car-service-wanicon-flat-wanicon.png'},
+    {'name': 'Painter','route': 'nasa', 'imageUrl': 'https://img.icons8.com/external-itim2101-flat-itim2101/2x/external-painter-male-occupation-avatar-itim2101-flat-itim2101.png'}
+  ];
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+
+
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: Text('Home', style: TextStyle(color: Colors.black),),
+          elevation: 0,
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => LGSettings()));
+              },
+              icon: Icon(Icons.settings, color: Colors.grey.shade700, size: 30,),
+            )
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        body: SingleChildScrollView(
+            child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 20.0, right: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Categories', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    height: 400,
+                    child: GridView.builder(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1.0,
+                          crossAxisSpacing: 10.0,
+                          mainAxisSpacing: 10.0,
+                        ),
+                        // physics: NeverScrollableScrollPhysics(),
+                        itemCount: services.length,
+
+                        itemBuilder: (BuildContext context, int index) {
+                          return FadeIn(
+                              duration: Duration(milliseconds: 1000),
+                              delay: Duration(seconds: (1.0 + index).round()),
+                              child: serviceContainer(
+                                  services[index]['imageUrl']!,
+                                  services[index]['name']!,
+                                  services[index]['route']!,
+                                  index)
+                          );
+                        }
+                    ),
+                  ),
+                  SizedBox(height: 20,),
+                ]
+            )
+        )
     );
   }
+
+  serviceContainer(String image, String name, String route, int index) {
+    return GestureDetector(
+      child: Container(
+        margin: EdgeInsets.only(right: 20),
+        padding: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          border: Border.all(
+            color: Colors.blue.withOpacity(0),
+            width: 2.0,
+          ),
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Image.network(image, height: 45),
+              SizedBox(height: 20,),
+              Text(name, style: TextStyle(fontSize: 15),)
+            ]
+        ),
+      ),
+      onTap: () {
+        Navigator.pushNamed(context, route);
+      },
+    );
+  }
+
 }
