@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
-import 'home.dart';
+import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
 
 class SplashScreenPage extends StatefulWidget {
   const SplashScreenPage({Key? key}) : super(key: key);
@@ -36,7 +35,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
 
     Timer(const Duration(seconds: 4), () {
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomePage()));
+          MaterialPageRoute(builder: (context) => const LGSettings()));
     });
 
     return SafeArea(
@@ -62,24 +61,26 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
               ..._imageRows
                   .map(
                     (images) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: images
-                        .map(
-                          (img) => Container(
-                        alignment: Alignment.center,
-                        width: screenWidth / images.length * 0.9,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Image.asset(img),
-                        ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: images
+                            .map(
+                              (img) => Container(
+                                alignment: Alignment.center,
+                                width: screenWidth / images.length * 0.9,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  child: Image.asset(img),
+                                ),
+                              ),
+                            )
+                            .toList(),
                       ),
-                    )
-                        .toList(),
-                  ),
-                ),
-              ).toList(),
+                    ),
+                  )
+                  .toList(),
             ],
           ),
         ),
