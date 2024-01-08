@@ -83,6 +83,7 @@ class MyApp extends StatelessWidget {
       routes: {
         // '/': (context) => const HomePage(),
         '/splash': (context) => const SplashScreenPage(),
+        '/nasa': (context) => const NasaApiPage(),
       },
     );
   }
