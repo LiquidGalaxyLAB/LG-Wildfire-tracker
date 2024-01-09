@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wildfiretracker/entities/kml/look_at_entity.dart';
+import 'package:wildfiretracker/widgets/button.dart';
+
+import '../services/lg_service.dart';
+import '../utils/theme.dart';
 
 class NasaApiPage extends StatefulWidget {
   const NasaApiPage({super.key});
@@ -8,6 +14,8 @@ class NasaApiPage extends StatefulWidget {
 }
 
 class _NasaApiState extends State<NasaApiPage> {
+  LGService get _lgService => GetIt.I<LGService>();
+
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +42,7 @@ class _NasaApiState extends State<NasaApiPage> {
         ),
         body: SingleChildScrollView(
             child: Column(children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(left: 20.0, right: 10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -46,6 +54,32 @@ class _NasaApiState extends State<NasaApiPage> {
               ],
             ),
           ),
+              Row(
+                children: [
+                  Button(
+                    label: 'Test',
+                    width: 150,
+                    height: 48,
+                    //icon: Icon(
+                    //  Icons.connected_tv_rounded,
+                    //  color: ThemeColors.backgroundColor,
+                    //),
+                    onPressed: () {
+
+                      LookAtEntity lookAt = LookAtEntity(
+                        lng: 0.760833,
+                        lat: 42.001022,
+                        range: '4000000',
+                        tilt: '60',
+                        heading: '0',
+                      );
+
+                      _lgService.flyTo(lookAt);
+
+                    },
+                  )
+                ],
+              )
         ])));
   }
 
