@@ -120,7 +120,12 @@ class _HomeState extends State<HomePage> {
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.network(image, height: 45),
+              Icon(
+                Icons.insert_emoticon,
+                color: Colors.grey.shade700,
+                size: 50,
+              ),
+              // Image.network(image, height: 45),
               SizedBox(
                 height: 20,
               ),
