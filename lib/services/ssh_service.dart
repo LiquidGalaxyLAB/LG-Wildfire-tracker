@@ -39,7 +39,7 @@ class SSHService {
           keepAliveInterval: const Duration(seconds: 3600),
           onAuthenticated: () async {
             isAuthenticated = true;
-            _localStorageService.setItem(StorageKeys.lgConnection, "connected");
+            // _localStorageService.setItem(StorageKeys.lgConnection, "connected");
           });
       // await Future.delayed(const Duration(seconds: 10));
     } catch (e) {
@@ -50,7 +50,7 @@ class SSHService {
   }
 
   void init() {
-    _localStorageService.setItem(StorageKeys.lgConnection, "not");
+    // _localStorageService.setItem(StorageKeys.lgConnection, "not");
     final settings = _settingsService.getSettings();
     setClient(SSHEntity(
       username: settings.username,
@@ -62,17 +62,17 @@ class SSHService {
 
   /// Connects to the current client, executes a command into it and then disconnects.
   Future<SSHSession?> execute(String command) async {
+    connect();
     SSHSession? execResult;
-
-    execResult = await _client?.execute(command);
-
-    print(command);
-
+    if (isAuthenticated) {
+      execResult = await _client?.execute(command);
+    }
+    disconnect();
     return execResult;
   }
 
   /// Connects to a machine using the current client.
-  Future<String?> connect() async {
+  Future<void> connect() async {
     final settings = _settingsService.getSettings();
     setClient(SSHEntity(
       username: settings.username,
@@ -80,7 +80,6 @@ class SSHService {
       passwordOrKey: settings.password,
       port: settings.port,
     ));
-    return '';
   }
 
   /// Disconnects from the a machine using the current client.
@@ -91,14 +90,12 @@ class SSHService {
 
   /// Connects to the current client through SFTP, uploads a file into it and then disconnects.
   upload(File inputFile, String filename) async {
-    final settings = _settingsService.getSettings();
-    setClient(SSHEntity(
-      username: settings.username,
-      host: settings.ip,
-      passwordOrKey: settings.password,
-      port: settings.port,
-    ));
-    Future.delayed(const Duration(seconds: 3));
+    connect();
+    if (!isAuthenticated) {
+      disconnect();
+      return;
+    }
+    // Future.delayed(const Duration(seconds: 3));
     try {
       bool uploading = true;
       final sftp = await _client?.sftp();
@@ -113,16 +110,17 @@ class SSHService {
         // }
       });
       // print(file);
-      // if(file==null){
-      //   print('null');
-      //   return;
-      // }
-      // await waitWhile(() => uploading);
+      if(file==null){
+         print('null');
+         return;
+      }
+      await waitWhile(() => uploading);
     } catch (error) {
       if (kDebugMode) {
         print(error);
       }
     }
+    disconnect();
   }
 
   Future waitWhile(bool Function() test,
@@ -135,7 +133,6 @@ class SSHService {
         Timer(pollInterval, check);
       }
     }
-
     check();
     return completer.future;
   }

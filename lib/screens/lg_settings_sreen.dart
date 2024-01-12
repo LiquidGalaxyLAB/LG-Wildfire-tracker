@@ -40,7 +40,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
   late TabController _tabController;
 
   bool show = false;
-  bool isAuthenticated = false;
+  bool isAuthenticated = true;
   bool _loading = false;
   bool _canceled = false;
 
@@ -60,7 +60,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _localStorageService.setItem(StorageKeys.lgConnection, "not");
+    // _localStorageService.setItem(StorageKeys.lgConnection, "not");
     _initNetworkState();
     // _scrollController.addListener(_scrollListener);
   }
@@ -72,7 +72,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
     _tabController.dispose();
     _timer?.cancel();
     super.dispose();
-    super.dispose();
+    //super.dispose();
   }
 
   @override
@@ -82,7 +82,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
     }
   }
 
-  void _scrollListener() {
+  /*void _scrollListener() {
     if (_scrollController.position.pixels >= 45) {
       setState(() {
         _showTextInAppBar = true;
@@ -92,7 +92,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
         _showTextInAppBar = false;
       });
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -709,7 +709,8 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
       }
     });
 
-    _onConnect();
+    // _onConnect();
+    _checkConnection();
     Timer(const Duration(seconds: 3), () async {
       if (isAuthenticated) {
         await _lgService.setLogos();
