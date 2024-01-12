@@ -371,7 +371,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Button(
                 label: 'Connect',
-                width: 150,
+                width: 170,
                 height: 48,
                 loading: _loading,
                 icon: Icon(
@@ -658,7 +658,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
       padding: const EdgeInsets.only(top: 16),
       child: Button(
         label: label,
-        width: 300,
+        width: 330,
         height: 48,
         color: isAuthenticated ? ThemeColors.primaryColor : Colors.grey,
         loading: loading,
