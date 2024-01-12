@@ -66,6 +66,8 @@ class SSHService {
 
     execResult = await _client?.execute(command);
 
+    print(command);
+
     return execResult;
   }
 
