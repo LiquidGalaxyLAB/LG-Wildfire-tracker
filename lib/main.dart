@@ -7,6 +7,7 @@ import 'package:wildfiretracker/services/file_service.dart';
 import 'package:wildfiretracker/services/lg_service.dart';
 import 'package:wildfiretracker/services/lg_settings_service.dart';
 import 'package:wildfiretracker/services/local_storage_service.dart';
+import 'package:wildfiretracker/services/nasa_service.dart';
 import 'package:wildfiretracker/services/ssh_service.dart';
 import 'package:wildfiretracker/utils/theme.dart';
 
@@ -17,6 +18,7 @@ void setupServices() {
   GetIt.I.registerLazySingleton(() => LGService());
   GetIt.I.registerLazySingleton(() => FileService());
   GetIt.I.registerLazySingleton(() => LGSettingsService());
+  GetIt.I.registerLazySingleton(() => NASAService());
 }
 
 Future<void> main() async {

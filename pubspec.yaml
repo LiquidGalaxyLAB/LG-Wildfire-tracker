@@ -42,6 +42,8 @@ dependencies:
   path_provider: ^2.1.1
   dartssh2: ^2.8.2
   animate_do: ^3.1.2
+  http: ^1.2.0
+  csv: ^5.1.1
 
 
 dev_dependencies:

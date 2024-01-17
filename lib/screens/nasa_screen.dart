@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wildfiretracker/entities/kml/look_at_entity.dart';
+import 'package:wildfiretracker/services/nasa_service.dart';
 import 'package:wildfiretracker/widgets/button.dart';
 
 import '../services/lg_service.dart';
@@ -15,6 +16,7 @@ class NasaApiPage extends StatefulWidget {
 
 class _NasaApiState extends State<NasaApiPage> {
   LGService get _lgService => GetIt.I<LGService>();
+  NASAService get _nasaService => GetIt.I<NASAService>();
 
 
   @override
@@ -64,7 +66,7 @@ class _NasaApiState extends State<NasaApiPage> {
                     //  Icons.connected_tv_rounded,
                     //  color: ThemeColors.backgroundColor,
                     //),
-                    onPressed: () {
+                    onPressed: () async {
 
                       LookAtEntity lookAt = LookAtEntity(
                         lng: 0.760833,
@@ -74,7 +76,11 @@ class _NasaApiState extends State<NasaApiPage> {
                         heading: '0',
                       );
 
-                      _lgService.flyTo(lookAt);
+                      // _lgService.flyTo(lookAt);
+
+                      // la llista de paisos per mostrar al drop down
+                      List<Country> countries = await _nasaService.getCountryList();
+                      print(countries);
 
                     },
                   )
