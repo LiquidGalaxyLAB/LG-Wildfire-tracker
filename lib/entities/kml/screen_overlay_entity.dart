@@ -82,8 +82,8 @@ class ScreenOverlayEntity {
   /// Generates a [ScreenOverlayEntity] with the logos data in it.
   factory ScreenOverlayEntity.logos() {
     return ScreenOverlayEntity(
-      name: 'LogoSO',
-      icon: 'https://i.imgur.com/p3uiWAy.png',
+      name: 'WildfireTracker for LG',
+      icon: 'https://i.imgur.com/QUBReFh.jpeg', // https://i.imgur.com/p3uiWAy.png
       overlayX: 0,
       overlayY: 1,
       screenX: 0.02,

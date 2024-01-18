@@ -1,21 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:wildfiretracker/screens/example1_screen.dart';
 import 'package:wildfiretracker/screens/nasa_screen.dart';
 import 'package:wildfiretracker/screens/splash_screen.dart';
 import 'package:wildfiretracker/services/file_service.dart';
 import 'package:wildfiretracker/services/lg_service.dart';
 import 'package:wildfiretracker/services/lg_settings_service.dart';
 import 'package:wildfiretracker/services/local_storage_service.dart';
-import 'package:wildfiretracker/services/settings_service.dart';
 import 'package:wildfiretracker/services/ssh_service.dart';
 import 'package:wildfiretracker/utils/theme.dart';
 
 /// Registers all services into the application.
 void setupServices() {
   GetIt.I.registerLazySingleton(() => LocalStorageService());
-  GetIt.I.registerLazySingleton(() => SettingsService());
   GetIt.I.registerLazySingleton(() => SSHService());
   GetIt.I.registerLazySingleton(() => LGService());
   GetIt.I.registerLazySingleton(() => FileService());
@@ -83,6 +80,7 @@ class MyApp extends StatelessWidget {
       routes: {
         // '/': (context) => const HomePage(),
         '/splash': (context) => const SplashScreenPage(),
+        '/nasa': (context) => const NasaApiPage(),
       },
     );
   }
