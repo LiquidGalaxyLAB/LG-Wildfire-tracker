@@ -79,8 +79,10 @@ class _NasaApiState extends State<NasaApiPage> {
                       // _lgService.flyTo(lookAt);
 
                       // la llista de paisos per mostrar al drop down
-                      List<Country> countries = await _nasaService.getCountryList();
+                      List<Country> countries = await _nasaService.getCountries();
                       print(countries);
+
+                      print(await _nasaService.getLiveFire());
 
                     },
                   )
