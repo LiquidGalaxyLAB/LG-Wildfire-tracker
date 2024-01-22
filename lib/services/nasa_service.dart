@@ -2,6 +2,9 @@ import 'package:csv/csv_settings_autodetection.dart';
 import 'package:http/http.dart' as http;
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
+import 'package:wildfiretracker/entities/kml/line_entity.dart';
+import 'package:wildfiretracker/entities/kml/placemark_entity.dart';
+import 'package:wildfiretracker/entities/kml/point_entity.dart';
 
 
 
@@ -25,45 +28,81 @@ class Country {
 
   @override
   String toString() {
-    return 'Country{id: $id, abbreviation: $abbreviation, name: $name, extent: $extent}';
+    return '$name';
   }
 
 }
 
 class SatelliteData {
-  final String countryId;
-  final double latitude;
-  final double longitude;
-  final double brightTi4;
-  final double scan;
-  final double track;
-  final DateTime acqDate;
-  final int acqTime;
-  final String satellite;
-  final String instrument;
-  final String confidence;
-  final String version;
-  final double brightTi5;
-  final double frp;
-  final String dayNight;
+  String id = '';
+  String countryId;
+  double latitude;
+  double longitude;
+  double brightTi4;
+  double scan;
+  double track;
+  DateTime? acqDate;
+  int acqTime;
+  String satellite;
+  String instrument;
+  String confidence;
+  String version;
+  double brightTi5;
+  double frp;
+  String dayNight;
+
+  /*SatelliteData({
+    this.countryId = '',
+    this.latitude = 0,
+    this.longitude = 0,
+    this.brightTi4 = 0,
+    this.scan = 0,
+    this.track = 0,
+    this.acqDate,
+    this.acqTime = 0,
+    this.satellite = '',
+    this.instrument = '',
+    this.confidence = '',
+    this.version = '',
+    this.brightTi5 = 0,
+    this.frp = 0,
+    this.dayNight = ''
+  }){
+    id = '$latitude-$longitude';
+  }*/
 
   SatelliteData({
-    required this.countryId,
-    required this.latitude,
-    required this.longitude,
-    required this.brightTi4,
-    required this.scan,
-    required this.track,
-    required this.acqDate,
-    required this.acqTime,
-    required this.satellite,
-    required this.instrument,
-    required this.confidence,
-    required this.version,
-    required this.brightTi5,
-    required this.frp,
-    required this.dayNight,
-  });
+    String? countryId,
+    double? latitude,
+    double? longitude,
+    double? brightTi4,
+    double? scan,
+    double? track,
+    DateTime? acqDate,
+    int? acqTime,
+    String? satellite,
+    String? instrument,
+    String? confidence,
+    String? version,
+    double? brightTi5,
+    double? frp,
+    String? dayNight,
+  })   : countryId = countryId ?? '',
+        latitude = latitude ?? 0,
+        longitude = longitude ?? 0,
+        brightTi4 = brightTi4 ?? 0,
+        scan = scan ?? 0,
+        track = track ?? 0,
+        acqDate = acqDate,
+        acqTime = acqTime ?? 0,
+        satellite = satellite ?? '',
+        instrument = instrument ?? '',
+        confidence = confidence ?? '',
+        version = version ?? '',
+        brightTi5 = brightTi5 ?? 0,
+        frp = frp ?? 0,
+        dayNight = dayNight ?? '',
+        id = '$latitude-$longitude';
 
   factory SatelliteData.fromCsv(List<dynamic> csvRow) {
     return SatelliteData(
@@ -84,6 +123,56 @@ class SatelliteData {
       dayNight: csvRow[14],
     );
   }
+
+  PlacemarkEntity toPlacemarkEntity(){
+    return PlacemarkEntity(
+        id: '$latitude-$longitude',
+        name: '',
+        point: PointEntity(altitude: 600, lat: latitude, lng: longitude),
+        line: LineEntity(id: '', coordinates: [])
+    );
+  }
+
+  /*
+
+    /// Builds and returns a satellite `Placemark` entity according to the given
+  /// [station] and other params.
+  PlacemarkEntity buildPlacemark(
+    GroundStationEntity station,
+    bool balloon, {
+    Map<String, dynamic>? extraData,
+    bool updatePosition = true,
+  }) {
+    final lookAt = LookAtEntity(
+      lng: station.lng,
+      lat: station.lat,
+      range: '1500',
+      tilt: '60',
+      heading: '0',
+    );
+
+    final point = PointEntity(
+      lat: lookAt.lat,
+      lng: lookAt.lng,
+      altitude: lookAt.altitude,
+    );
+
+    return PlacemarkEntity(
+      id: station.id.toString(),
+      name: '${station.name} (${station.getStatusLabel().toUpperCase()})',
+      lookAt: updatePosition ? lookAt : null,
+      point: point,
+      description: '',
+      viewOrbit: false,
+      scale: 2.0,
+      balloonContent:
+          extraData != null && balloon ? station.balloonContent(extraData) : '',
+      icon: 'station.png',
+      line: LineEntity(id: station.id.toString(), coordinates: []),
+    );
+  }
+
+  */
 
   @override
   String toString() {
@@ -126,7 +215,10 @@ class NASAService {
   final NASAServiceSettings _nasaApiCountryLiveFire = NASAServiceSettings(
       apiKey: 'fae96ccddec310c0a7538eaebc30a426',
       source: 'VIIRS_SNPP_NRT',
-      country: 'ESP');
+      country: 'ESP',
+      date: DateTime(2024,1,21)
+      //country: 'ESP'
+  );
 
   Future<List<Country>> getCountries() async {
 
@@ -161,22 +253,14 @@ class NASAService {
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
-      // print(await response.stream.bytesToString());
       List<List<dynamic>> convertedRows = const CsvToListConverter(fieldDelimiter: ',', eol: '\n').convert(await response.stream.bytesToString());
-
-      /*List<dynamic> rows = convertedRows.first;
-      rows = rows.sublist(1, rows.length);
-      List<Country> countries;
-      var map = rows.map((e) => Country.fromCsv(e));
-      countries = map.toList();*/
-
       List<SatelliteData> satelliteData = convertedRows.skip(1).map((row) => SatelliteData.fromCsv(row)).toList();
 
       return satelliteData;
     }
     else {
       print(response.reasonPhrase);
-      throw Exception('Failed to load satellitedata: ${response.reasonPhrase}');
+      throw Exception('Failed to load satellite data: ${response.reasonPhrase}');
     }
   }
 
