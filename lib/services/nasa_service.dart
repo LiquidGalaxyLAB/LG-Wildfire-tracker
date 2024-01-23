@@ -10,12 +10,20 @@ import 'package:wildfiretracker/entities/kml/point_entity.dart';
 
 
 class Country {
-  final int id;
-  final String abbreviation;
-  final String name;
-  final String extent;
+  int id;
+  String abbreviation;
+  String name;
+  String extent;
 
-  Country({required this.id, required this.abbreviation, required this.name, required this.extent});
+  Country({
+    int? id,
+    String? abbreviation,
+    String? name,
+    String? extent}) :
+        id = id ?? 0,
+        abbreviation = abbreviation ?? '',
+        name = name ?? '',
+        extent = extent ?? '';
 
   factory Country.fromCsv(List<dynamic> csvRow) {
     return Country(
@@ -26,9 +34,13 @@ class Country {
     );
   }
 
-  @override
+  /*@override
   String toString() {
     return '$name';
+  }*/
+  @override
+  String toString() {
+    return 'Country{id: $id, abbreviation: $abbreviation, name: $name, extent: $extent}';
   }
 
 }
@@ -180,6 +192,10 @@ class SatelliteData {
         'scan: $scan, track: $track, acqDate: $acqDate, acqTime: $acqTime, satellite: $satellite, '
         'instrument: $instrument, confidence: $confidence, version: $version, brightTi5: $brightTi5, frp: $frp, dayNight: $dayNight}';
   }
+
+  getDateTime() {
+    return DateFormat('dd/MM/yy').format(acqDate!);
+  }
 }
 
 class NASAServiceSettings {
@@ -246,7 +262,11 @@ class NASAService {
     }
   }
 
-  Future<List<SatelliteData>> getLiveFire() async {
+  Future<List<SatelliteData>> getLiveFire({String? countryAbbreviation}) async {
+
+    if (countryAbbreviation != null && countryAbbreviation.isNotEmpty) {
+      _nasaApiCountryLiveFire.country = countryAbbreviation;
+    }
 
     var request = http.Request('GET', Uri.parse(_nasaApiCountryLiveFire.generateUrl()));
 

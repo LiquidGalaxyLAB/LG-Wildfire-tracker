@@ -56,7 +56,7 @@ class _NasaLiveFireCardState extends State<NasaLiveFireCard> {
       child: Container(
         width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
         decoration: BoxDecoration(
-            color: ThemeColors.card.withOpacity(0.5),
+            color: ThemeColors.card.withOpacity(0.7),
             border: Border.all(color: ThemeColors.cardBorder),
             borderRadius: BorderRadius.circular(10)),
         child: Padding(
@@ -68,16 +68,30 @@ class _NasaLiveFireCardState extends State<NasaLiveFireCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(
-                        child: Text(
-                      widget.satelliteData.confidence,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                      ),
-                    )),
-                    Text('TEST')
+                    Row(
+                      children:[
+                        Icon(
+                          Icons.local_fire_department,
+                          color: ThemeColors.primaryColor,
+                          size: 24,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          widget.satelliteData.countryId,
+                          style: TextStyle(
+                            color: ThemeColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ]
+                    ),
+                    Text('${widget.satelliteData.version} - ${widget.satelliteData.satellite} - ${widget.satelliteData.instrument}',
+                        style: TextStyle(
+                          color: ThemeColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+
+                        )),
                   ]),
               Padding(
                 padding: const EdgeInsets.only(top: 16, bottom: 4),
@@ -86,13 +100,13 @@ class _NasaLiveFireCardState extends State<NasaLiveFireCard> {
                     Row(
                       children: [
                         Text('Latitude: ${widget.satelliteData.latitude}',
-                            style: const TextStyle(color: Colors.grey)),
+                            style: TextStyle(color: ThemeColors.primaryColor)),
                       ],
                     ),
                     Row(
                       children: [
                         Text('Longitude: ${widget.satelliteData.longitude}',
-                            style: const TextStyle(color: Colors.grey)),
+                            style: TextStyle(color: ThemeColors.primaryColor)),
                       ],
                     )
                   ],
@@ -102,7 +116,7 @@ class _NasaLiveFireCardState extends State<NasaLiveFireCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${widget.satelliteData.latitude}-${widget.satelliteData.longitude}',
+                    '${widget.satelliteData.getDateTime()}',
                     style: TextStyle(
                       color: ThemeColors.primaryColor,
                       fontWeight: FontWeight.bold,

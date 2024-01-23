@@ -28,15 +28,10 @@ class _NasaApiState extends State<NasaApiPage> {
   late List<SatelliteData> _satelliteData = [];
 
   late SatelliteData _selectedSatelliteData = SatelliteData();
+  late Country _selectedCountry = Country();
 
   bool _loadingCountries = true;
-  bool _loadingSatelliteData = true;
-
-  List<DropdownMenuEntry> _contriesDropdownItemss = [];
-
-  LGService get _lgService => GetIt.I<LGService>();
-
-  NASAService get _nasaService => GetIt.I<NASAService>();
+  bool _loadingSatelliteData = false;
 
   get _contriesDropdownItems {
     List<DropdownMenuEntry> contriesDropdownItems = [];
@@ -48,28 +43,222 @@ class _NasaApiState extends State<NasaApiPage> {
     return contriesDropdownItems;
   }
 
+  LGService get _lgService => GetIt.I<LGService>();
+
+  NASAService get _nasaService => GetIt.I<NASAService>();
+
   @override
-  void initState() {
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text(
+            'NASA - Current Live Fire',
+            style: TextStyle(color: Colors.black),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_rounded),
+            splashRadius: 24,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: const [
+            Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Icon(Icons.local_fire_department_outlined),
+            )
+          ],
+        ),
+        body: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 20.0, right: 10.0, bottom: 10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Select the country of live fires:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+              padding: EdgeInsets.only(left: 20.0, right: 20.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child:
+                    DropdownSearch<Country>(
+                        /*clearButtonProps: ClearButtonProps(
+                              isVisible: true,
+                            ),*/
+                        onChanged: (Country? country) {
+                          _selectedCountry = country!;
+                        },
+                        enabled: !_loadingCountries,
+                        dropdownDecoratorProps: DropDownDecoratorProps(
+                          dropdownSearchDecoration: InputDecoration(
+                            label: Text('Select country'),
+                            prefixIcon: Icon(Icons.flag),
+                            contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            hintText: 'Select country',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
+                        dropdownButtonProps: DropdownButtonProps(
+                          icon: _loadingCountries
+                              ? const SizedBox(
+                            width: 10,
+                            height: 10,
+                            child: CircularProgressIndicator(),
+                          )
+                              : Icon(Icons.arrow_drop_down),
+                          selectedIcon: Icon(Icons.arrow_drop_up),
+                        ),
+                        /*dropdownBuilder: (context, selectedItem) =>
+                            Padding(
+                              padding: EdgeInsets.only(left: 0),
+                              child: Row(children: [
+                                Icon(Icons.flag),
+                                SizedBox(width: 8),
+                                Text(
+                                  selectedItem?.name ?? 'Select country',
+                                )
+                              ]),
+                            ),*/
+                        popupProps: const PopupProps.menu(
+                          showSearchBox: true,
+                          searchFieldProps: TextFieldProps(
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.search),
+                              hintText: 'Search country',
+                            ),
+                          ),
+                        ),
+                        filterFn: (item, filter) => item.name.contains(filter),
+                        itemAsString: (item) => item.name,
+                        items: _contries,
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(10),
+                        bottomRight: Radius.circular(10),
+                      ),
+                      color: ThemeColors.primaryColor,
+                      ),
+                    child: IconButton(
+                      icon: Icon(Icons.search),
+                      color: Colors.white,
+                      onPressed: () {
+                        getLiveFireByCountry();
+                      },
+                    ),
+                  )
+                ],
+              )),
+          _loadingSatelliteData
+              ? _buildSpinner()
+              : Expanded(
+                  child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 20.0, horizontal: 10.0),
+                  child: SizedBox(
+                          width:
+                              screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+                          child: _satelliteData.isEmpty
+                              ? _buildEmptyMessage('No live fire data.')
+                              : ListView.builder(
+                                  physics: AlwaysScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: _satelliteData.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 16),
+                                      child: NasaLiveFireCard(
+                                        satelliteData: _satelliteData[index],
+                                        selected: _satelliteData[index].id ==
+                                            _selectedSatelliteData!.id,
+                                        disabled: _uploading ?? false,
+                                        onBalloonToggle: (value) {
+                                          //onStationBalloonToggle!(_satelliteData[index], value);
+                                        },
+                                        onOrbit: (value) {
+                                          //onStationOrbit!(value);
+                                        },
+                                        onView: (station) {
+                                          //onStationView!(station);
+                                        },
+                                      ),
+                                    );
+                                  },
+                                )),
+                )),
+        ]));
+  }
+
+  void getCountries() {
     setState(() {
       _loadingCountries = true;
     });
-    super.initState();
     _nasaService.getCountries().then((countries) {
       _contries = countries;
-
       setState(() {
         _loadingCountries = false;
       });
+    });
+  }
 
-      for (Country c in _contries) {
-        _contriesDropdownItemss
-            .add(DropdownMenuEntry(label: c.name, value: c.abbreviation));
-      }
-
+  void getLiveFireByCountry() {
+    setState(() {
+      _loadingSatelliteData = true;
+    });
+    _nasaService
+        .getLiveFire(countryAbbreviation: _selectedCountry.abbreviation)
+        .then((satelliteData) {
+      _satelliteData = satelliteData;
       setState(() {
-        //_contriesDropdownItemss = _contriesDropdownItemss;
+        _loadingSatelliteData = false;
       });
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getCountries();
+  }
+
+  /// Builds the list empty warn message.
+  Widget _buildEmptyMessage(String message) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            message,
+            style: const TextStyle(
+                color: Colors.red, fontSize: 18, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Builds the spinner container that is used into the satellites and ground
@@ -88,22 +277,67 @@ class _NasaApiState extends State<NasaApiPage> {
     );
   }
 
-  /// Builds the list empty warn message.
-  Widget _buildEmptyMessage(String message) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            message,
-            style: const TextStyle(
-                color: Colors.grey, fontSize: 18, fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
-    );
+  void _testScreen() async {
+    if (_uploading) {
+      return;
+    }
+
+    try {
+      setState(() {
+        _uploading = true;
+      });
+
+      final timer = Timer(const Duration(seconds: 5), () {
+        setState(() {
+          //_satelliteBalloonVisible = true;
+          //_selectedSatellite = null;
+          //_satellitePlacemark = null;
+          //_selectedStation = null;
+          _uploading = false;
+        });
+
+        throw Exception('connection-timed-out');
+      });
+
+      // final result = await _sshService.connect();
+      final result = 'session_connected';
+      timer.cancel();
+
+      if (result != 'session_connected') {
+        setState(() {
+          _uploading = false;
+        });
+
+        return showSnackbar(context, 'Connection failed');
+      }
+
+      /*final matchTLEs =
+      _tles.where((element) => element.satelliteId == satellite.id);
+      TLEEntity? tle = matchTLEs.isNotEmpty ? matchTLEs.toList()[0] : null;*/
+      List<SatelliteData> satelliteData = await _nasaService.getLiveFire();
+
+      if (satelliteData.isEmpty) {
+        setState(() {
+          _uploading = false;
+        });
+
+        return showSnackbar(context,
+            'Connection failed'); // _showErrorDialog('No TLE available for this satellite!');
+      }
+
+      setState(() {
+        _satelliteData = satelliteData;
+        _loadingSatelliteData = false;
+      });
+    } on Exception catch (_) {
+      showSnackbar(context, 'Connection failed');
+    } catch (_) {
+      showSnackbar(context, 'Connection failed');
+    } finally {
+      setState(() {
+        _uploading = false;
+      });
+    }
   }
 
   void _viewExample() async {
@@ -240,223 +474,5 @@ class _NasaApiState extends State<NasaApiPage> {
         _uploading = false;
       });
     }
-  }
-
-  void _testScreen() async {
-    if (_uploading) {
-      return;
-    }
-
-    try {
-      setState(() {
-        _uploading = true;
-      });
-
-      final timer = Timer(const Duration(seconds: 5), () {
-        setState(() {
-          //_satelliteBalloonVisible = true;
-          //_selectedSatellite = null;
-          //_satellitePlacemark = null;
-          //_selectedStation = null;
-          _uploading = false;
-        });
-
-        throw Exception('connection-timed-out');
-      });
-
-      // final result = await _sshService.connect();
-      final result = 'session_connected';
-      timer.cancel();
-
-      if (result != 'session_connected') {
-        setState(() {
-          _uploading = false;
-        });
-
-        return showSnackbar(context, 'Connection failed');
-      }
-
-      /*final matchTLEs =
-      _tles.where((element) => element.satelliteId == satellite.id);
-      TLEEntity? tle = matchTLEs.isNotEmpty ? matchTLEs.toList()[0] : null;*/
-      List<SatelliteData> satelliteData = await _nasaService.getLiveFire();
-
-      if (satelliteData.isEmpty) {
-        setState(() {
-          _uploading = false;
-        });
-
-        return showSnackbar(context,
-            'Connection failed'); // _showErrorDialog('No TLE available for this satellite!');
-      }
-
-      setState(() {
-        _satelliteData = satelliteData;
-        _loadingSatelliteData = false;
-      });
-    } on Exception catch (_) {
-      showSnackbar(context, 'Connection failed');
-    } catch (_) {
-      showSnackbar(context, 'Connection failed');
-    } finally {
-      setState(() {
-        _uploading = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const Text(
-            'NASA - Current Live Fire',
-            style: TextStyle(color: Colors.black),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
-            splashRadius: 24,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Icon(Icons.local_fire_department_outlined),
-            )
-          ],
-        ),
-        body: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 20.0, right: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Select the country of live fires:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-              padding: EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Row(
-                //crossAxisAlignment: CrossAxisAlignment.stretch,
-                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  /*Button(
-                    label: 'Test',
-                    width: 150,
-                    height: 48,
-                    //icon: Icon(
-                    //  Icons.connected_tv_rounded,
-                    //  color: ThemeColors.backgroundColor,
-                    //),
-                    onPressed: () async {
-                      //_viewExample();
-                      _testScreen();
-                    },
-                  )*/
-                ],
-              )),
-          Padding(
-              padding: EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Row(
-                //crossAxisAlignment: CrossAxisAlignment.stretch,
-                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                          child: DropdownSearch<Country>(
-                            /*clearButtonProps: ClearButtonProps(
-                              isVisible: true,
-                            ),*/
-                            enabled: !_loadingCountries,
-                            dropdownButtonProps: DropdownButtonProps(
-                              icon: _loadingCountries ? SizedBox(width: 10, height: 10, child: CircularProgressIndicator(),) : Icon(Icons.arrow_drop_down),
-                              selectedIcon: Icon(Icons.arrow_drop_up),
-                            ),
-                            dropdownBuilder: (context, selectedItem) => Padding(
-                              padding: EdgeInsets.only(left: 0),
-                              child: Row(children: [
-                                Icon(Icons.flag),
-                                SizedBox(width: 8),
-                                Text(
-                                  selectedItem?.name ?? 'Select country',
-                                )
-                              ]),
-                            ),
-                            popupProps: const PopupProps.menu(
-                              showSearchBox: true,
-                              searchFieldProps: TextFieldProps(
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.search),
-                                  //contentPadding: EdgeInsets.fromLTRB(0, 25.0, 0, 0),
-                                  hintText: 'Search country',
-                                  //border: OutlineInputBorder(
-                                  //  borderRadius: BorderRadius.circular(10),
-                                  //),
-                                ),
-                              ),
-                            ),
-                            filterFn: (item, filter) =>
-                                item.name.contains(filter),
-                            itemAsString: (item) => item.name,
-                            items: _contries,
-                          ),
-                        ),
-                  Container(
-                    color: Colors.black,
-                    child: IconButton(
-                      icon: Icon(Icons.search),
-                      color: Colors.white,
-                      onPressed: () {
-                        // Handle button press here
-                      },
-                    ),
-                  )
-                ],
-              )),
-          _loadingSatelliteData
-              ? _buildSpinner()
-              : Expanded(
-                  child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 20.0, horizontal: 10.0),
-                  child: SizedBox(
-                      width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
-                      child: _satelliteData.isEmpty
-                          ? _buildEmptyMessage('No satellite data.')
-                          : ListView.builder(
-                              physics: AlwaysScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: _satelliteData.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: NasaLiveFireCard(
-                                    satelliteData: _satelliteData[index],
-                                    selected: _satelliteData[index].id ==
-                                        _selectedSatelliteData!.id,
-                                    disabled: _uploading ?? false,
-                                    onBalloonToggle: (value) {
-                                      //onStationBalloonToggle!(_satelliteData[index], value);
-                                    },
-                                    onOrbit: (value) {
-                                      //onStationOrbit!(value);
-                                    },
-                                    onView: (station) {
-                                      //onStationView!(station);
-                                    },
-                                  ),
-                                );
-                              },
-                            )),
-                )),
-        ]));
   }
 }
