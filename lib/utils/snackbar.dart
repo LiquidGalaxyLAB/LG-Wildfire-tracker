@@ -7,7 +7,7 @@ void showSnackbar(BuildContext context, String message) {
     content: Text(
       message,
       style: TextStyle(
-        color: ThemeColors.backgroundColor,
+        color: ThemeColors.textPrimary,
         fontSize: 16,
         fontWeight: FontWeight.w500,
       ),
@@ -17,6 +17,6 @@ void showSnackbar(BuildContext context, String message) {
     behavior: SnackBarBehavior.floating,
     dismissDirection: DismissDirection.horizontal,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-    backgroundColor: Colors.grey.shade100.withOpacity(0.95),
+    backgroundColor: Colors.grey.shade700.withOpacity(0.95),
   ));
 }

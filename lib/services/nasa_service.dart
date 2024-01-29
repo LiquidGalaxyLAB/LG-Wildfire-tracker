@@ -2,9 +2,13 @@ import 'package:csv/csv_settings_autodetection.dart';
 import 'package:http/http.dart' as http;
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
+import 'package:wildfiretracker/entities/kml/kml_entity.dart';
 import 'package:wildfiretracker/entities/kml/line_entity.dart';
+import 'package:wildfiretracker/entities/kml/look_at_entity.dart';
 import 'package:wildfiretracker/entities/kml/placemark_entity.dart';
 import 'package:wildfiretracker/entities/kml/point_entity.dart';
+
+import '../entities/kml/orbit_entity.dart';
 
 
 
@@ -136,12 +140,17 @@ class SatelliteData {
     );
   }
 
-  PlacemarkEntity toPlacemarkEntity(){
-    return PlacemarkEntity(
-        id: '$latitude-$longitude',
-        name: '',
-        point: PointEntity(altitude: 600, lat: latitude, lng: longitude),
-        line: LineEntity(id: '', coordinates: [])
+  KMLEntity toPlacemarkEntity(){
+    return KMLEntity(
+      name: id.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
+      content: PlacemarkEntity(
+          id: '$latitude-$longitude',
+          name: '',
+          point: PointEntity(altitude: 5, lat: latitude, lng: longitude),
+          line: LineEntity(id: '', coordinates: []),
+          balloonContent: 'Live Fire',
+          icon: 'fire.png',
+      ).tag
     );
   }
 
@@ -196,6 +205,32 @@ class SatelliteData {
   getDateTime() {
     return DateFormat('dd/MM/yy').format(acqDate!);
   }
+
+  LookAtEntity toLookAtEntity() {
+    return LookAtEntity(
+      lat: latitude,
+      lng: longitude,
+      //altitude: 0,
+      range: '1500',
+      tilt: '60',
+      heading: '0',
+    );
+  }
+
+  String buildOrbit() {
+    return OrbitEntity.buildOrbit(OrbitEntity.tag(toLookAtEntity()));
+  }
+
+  static getFireImg() {
+    return [
+      {
+        'name': 'fire.png',
+        'path': 'assets/images/fire.png',
+      }
+    ];
+  }
+
+
 }
 
 class NASAServiceSettings {

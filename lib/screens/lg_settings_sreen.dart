@@ -51,8 +51,8 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
   bool _relaunching = false;
   bool _shuttingDown = false;
 
-  final ScrollController _scrollController = ScrollController();
-  bool _showTextInAppBar = false;
+  //final ScrollController _scrollController = ScrollController();
+  //bool _showTextInAppBar = false;
 
   Timer? _timer;
 
@@ -60,9 +60,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _localStorageService.setItem(StorageKeys.lgConnection, "not");
     _initNetworkState();
-    // _scrollController.addListener(_scrollListener);
   }
 
   @override
@@ -72,7 +70,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
     _tabController.dispose();
     _timer?.cancel();
     super.dispose();
-    super.dispose();
+    //super.dispose();
   }
 
   @override
@@ -82,7 +80,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
     }
   }
 
-  void _scrollListener() {
+  /*void _scrollListener() {
     if (_scrollController.position.pixels >= 45) {
       setState(() {
         _showTextInAppBar = true;
@@ -92,7 +90,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
         _showTextInAppBar = false;
       });
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -381,7 +379,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
                 onPressed: () {
                   FocusManager.instance.primaryFocus?.unfocus();
                   setState(() {
-                    _showTextInAppBar = false;
+                    //_showTextInAppBar = false;
                   });
                   _localStorageService.setItem(StorageKeys.lgScreens,
                       _screensController.text.toString());
@@ -698,6 +696,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
   void _initNetworkState() async {
     final settings = _settingsService.getSettings();
 
+    _localStorageService.setItem(StorageKeys.lgConnection, "not");
     setState(() {
       _usernameController.text = settings.username;
       _portController.text = settings.port.toString();
@@ -707,9 +706,14 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
         _screensController.text =
             _localStorageService.getItem(StorageKeys.lgScreens);
       }
+      if (_localStorageService.hasItem(StorageKeys.lgCurrentConnection)) {
+        isAuthenticated =
+            _localStorageService.getItem(StorageKeys.lgCurrentConnection);
+      }
+
     });
 
-    _onConnect();
+    /*_onConnect();
     Timer(const Duration(seconds: 3), () async {
       if (isAuthenticated) {
         await _lgService.setLogos();
@@ -720,7 +724,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
       setState(() {
         _loading = false;
       });
-    });
+    });*/
   }
 
   /// Checks and sets the connection status according to the form info.
@@ -752,6 +756,8 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
                 isAuthenticated = true;
                 _localStorageService.setItem(
                     StorageKeys.lgConnection, "connected");
+                _localStorageService.setItem(
+                    StorageKeys.lgCurrentConnection, true);
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(
                     'Connected successfully.',
@@ -779,6 +785,9 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
 
   /// Connects to the a machine according to the form info.
   void _onConnect() async {
+
+    _localStorageService.setItem(
+        StorageKeys.lgConnection, "not");
     setState(() {
       isAuthenticated = false;
       _loading = true;

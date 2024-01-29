@@ -174,8 +174,8 @@ class _NasaApiState extends State<NasaApiPage> {
               ? _buildSpinner()
               : Expanded(
                   child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 20.0, horizontal: 10.0),
+                  padding: const EdgeInsets.only(
+                      top: 20.0, left: 10.0, right: 10.0),
                   child: SizedBox(
                           width:
                               screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
@@ -200,7 +200,13 @@ class _NasaApiState extends State<NasaApiPage> {
                                         onOrbit: (value) {
                                           //onStationOrbit!(value);
                                         },
-                                        onView: (station) {
+                                        onView: (satelliteData) {
+                                          _lgService.sendKml(satelliteData.toPlacemarkEntity(), images:SatelliteData.getFireImg());
+
+                                          _lgService.flyTo(satelliteData.toLookAtEntity());
+
+                                          _lgService.sendTour(satelliteData.buildOrbit(), 'Orbit');
+
                                           //onStationView!(station);
                                         },
                                       ),
@@ -417,10 +423,7 @@ class _NasaApiState extends State<NasaApiPage> {
         //_satellitePlacemark = placemark;
       });
 
-      final kml = KMLEntity(
-        name: 'test', //satellite.name.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
-        content: sd.toPlacemarkEntity().tag,
-      );
+      final kml = sd.toPlacemarkEntity();
 
       await _lgService.sendKml(
         kml,

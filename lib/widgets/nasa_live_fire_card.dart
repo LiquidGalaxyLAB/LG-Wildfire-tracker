@@ -145,7 +145,7 @@ class _NasaLiveFireCardState extends State<NasaLiveFireCard> {
                           ? (_orbiting ? 'STOP ORBIT' : 'ORBIT')
                           : 'VIEW IN GALAXY',
                       style: TextStyle(
-                        color: widget.disabled ? Colors.grey : Colors.white,
+                        color: widget.disabled ? Colors.grey : ThemeColors.textPrimary,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
