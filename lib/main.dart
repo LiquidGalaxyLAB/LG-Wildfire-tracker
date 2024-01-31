@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
 import 'package:wildfiretracker/screens/nasa_screen.dart';
 import 'package:wildfiretracker/screens/splash_screen.dart';
 import 'package:wildfiretracker/services/file_service.dart';
 import 'package:wildfiretracker/services/lg_service.dart';
 import 'package:wildfiretracker/services/lg_settings_service.dart';
 import 'package:wildfiretracker/services/local_storage_service.dart';
+import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 import 'package:wildfiretracker/services/ssh_service.dart';
 import 'package:wildfiretracker/utils/theme.dart';
 
@@ -17,6 +19,7 @@ void setupServices() {
   GetIt.I.registerLazySingleton(() => LGService());
   GetIt.I.registerLazySingleton(() => FileService());
   GetIt.I.registerLazySingleton(() => LGSettingsService());
+  GetIt.I.registerLazySingleton(() => NASAService());
 }
 
 Future<void> main() async {
@@ -81,6 +84,7 @@ class MyApp extends StatelessWidget {
         // '/': (context) => const HomePage(),
         '/splash': (context) => const SplashScreenPage(),
         '/nasa': (context) => const NasaApiPage(),
+        '/settings': (context) => const SettingsPage(),
       },
     );
   }

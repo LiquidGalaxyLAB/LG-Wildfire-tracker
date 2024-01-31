@@ -11,8 +11,8 @@ class ThemeColors {
   static Color info = const Color(0xFF79B7FF);
   static Color logo = const Color(0xFF8CE3FF);
 
-  static Color card = const Color(0XFF343434);
-  static Color cardBorder = const Color(0XFF5D5D5D);
+  static Color card = const Color(0xFFE8503C);
+  static Color cardBorder = const Color(0xFF000000);
 
   static Color? backgroundCardColor = Colors.grey[100];
 

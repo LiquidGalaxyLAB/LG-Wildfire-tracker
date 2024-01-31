@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utils/storage_keys.dart';
+
 /// Service responsible for storing and reading data from the local storage.
 class LocalStorageService {
   /// Property that defines the local storage instance.
@@ -13,6 +15,7 @@ class LocalStorageService {
   /// Loads the local storage instance.
   Future<void> loadStorage() async {
     _storage = await SharedPreferences.getInstance();
+    setItem(StorageKeys.lgCurrentConnection, false);
     // _storage!.clear();
   }
 

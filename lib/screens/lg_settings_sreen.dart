@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wildfiretracker/entities/lg_settings_model.dart';
 import 'package:wildfiretracker/services/local_storage_service.dart';
+import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 import 'package:wildfiretracker/utils/storage_keys.dart';
 import 'package:wildfiretracker/utils/theme.dart';
 import 'package:wildfiretracker/widgets/button.dart';
@@ -13,20 +14,23 @@ import 'package:wildfiretracker/widgets/input.dart';
 
 import '../services/lg_service.dart';
 import '../services/lg_settings_service.dart';
+import '../services/nasa/nasa_service_settings.dart';
 import '../utils/snackbar.dart';
 import '../widgets/confirm_dialog.dart';
 
-class LGSettings extends StatefulWidget {
-  const LGSettings({Key? key}) : super(key: key);
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({Key? key}) : super(key: key);
 
   @override
-  State<LGSettings> createState() => _LGSettingsState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
+class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMixin {
   LGSettingsService get _settingsService => GetIt.I<LGSettingsService>();
 
   LGService get _lgService => GetIt.I<LGService>();
+
+  NASAService get _nasaService => GetIt.I<NASAService>();
 
   LocalStorageService get _localStorageService =>
       GetIt.I<LocalStorageService>();
@@ -36,6 +40,8 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
   final _usernameController = TextEditingController();
   final _pwController = TextEditingController();
   final _screensController = TextEditingController();
+
+  late final _nasaApiController = TextEditingController();
 
   late TabController _tabController;
 
@@ -51,18 +57,16 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
   bool _relaunching = false;
   bool _shuttingDown = false;
 
-  final ScrollController _scrollController = ScrollController();
-  bool _showTextInAppBar = false;
+  //final ScrollController _scrollController = ScrollController();
+  //bool _showTextInAppBar = false;
 
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    // _localStorageService.setItem(StorageKeys.lgConnection, "not");
+    _tabController = TabController(length: 3, vsync: this);
     _initNetworkState();
-    // _scrollController.addListener(_scrollListener);
   }
 
   @override
@@ -126,149 +130,22 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
               text: 'Connection',
             ),
             Tab(
-              icon: Icon(Icons.south_america),
+              icon: Icon(Icons.public),
               text: 'Liquid Galaxy',
+            ),
+            Tab(
+              icon: Icon(Icons.settings),
+              text: 'Settings',
             ),
           ],
         ),
       ),
-      /*body: SingleChildScrollView(
-        // controller: _scrollController,
-        child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('LG Settings',overflow: TextOverflow.visible,style: TextStyle(fontWeight: FontWeight.bold,color: ThemeColors.textPrimary,fontSize: 40),),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Status: ',style: TextStyle(fontSize: 30,color: ThemeColors.textPrimary),),
-                          _getConnection()
-                        ],
-                      ),
-                      const SizedBox(height: 50,),
-                      _getTitle('Username'),
-                      TextFormField(
-                        controller: _usernameController,
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.next,
-                        maxLines: 1,
-                        decoration: const InputDecoration(
-                          hintText: 'username',
-                        ),
-                      ),
-                      const SizedBox(height: 30,),
-                      _getTitle('Password'),
-                      TextFormField(
-                        controller: _pwController,
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.next,
-                        obscureText: !show,
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                            hintText: 'password',
-                            suffix: InkWell(
-                                onTap: (){
-                                  setState(() {
-                                    show=!show;
-                                  });
-                                },
-                                child: Text(show ? 'HIDE' : 'SHOW',style: const TextStyle(fontSize: 18),)
-                            )
-                        ),
-                      ),
-                      const SizedBox(height: 30,),
-                      _getTitle('IP Address'),
-                      TextFormField(
-                        controller: _ipController,
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.next,
-                        maxLines: 1,
-                        decoration: const InputDecoration(
-                          hintText: '192.168.10.21',
-                        ),
-                      ),
-                      const SizedBox(height: 30,),
-                      _getTitle('Port'),
-                      TextFormField(
-                        controller: _portController,
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.next,
-                        maxLines: 1,
-                        decoration: const InputDecoration(
-                          hintText: '22',
-                        ),
-                      ),
-                      const SizedBox(height: 30,),
-                      _getTitle('Number of Screens'),
-                      TextFormField(
-                        controller: _screensController,
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.done,
-                        maxLines: 1,
-                      ),
-                      const SizedBox(height: 50,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 60,
-                            width: 170,
-                            child: ElevatedButton(
-                              onPressed: (){
-                                FocusManager.instance.primaryFocus?.unfocus();
-                                setState(() {
-                                  _showTextInAppBar=false;
-                                });
-                                _localStorageService.setItem(StorageKeys.lgScreens, _screensController.text.toString());
-                                _onConnect();
-                                Timer(const Duration(seconds: 3), () async {
-                                  if (isAuthenticated) {
-                                    await _lgService.setLogos();
-                                  }else{
-                                    showSnackbar(context, 'Connection failed');
-                                  }
-                                  setState(() {
-                                    _loading=false;
-                                  });
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(backgroundColor: ThemeColors.primaryColor,shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(50)))),
-                              child: Row(
-                                children: [
-                                  const SizedBox(width: 5,),
-                                  const Text('CONNECT',style: TextStyle(fontSize: 20),),
-                                  const SizedBox(width: 10,),
-                                  _loading ?
-                                  SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(strokeWidth: 3,color: ThemeColors.backgroundColor,),
-                                  ) :
-                                  const Icon(Icons.cast_connected_outlined,size: 25,)
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ]
-        ),
-      ),*/
       body: TabBarView(
         controller: _tabController,
         children: [
           _buildConnectionSettings(),
           _buildLGSettings(),
+          _buildSettings(),
         ],
       ),
     );
@@ -381,7 +258,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
                 onPressed: () {
                   FocusManager.instance.primaryFocus?.unfocus();
                   setState(() {
-                    _showTextInAppBar = false;
+                    //_showTextInAppBar = false;
                   });
                   _localStorageService.setItem(StorageKeys.lgScreens,
                       _screensController.text.toString());
@@ -396,6 +273,62 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
                       _loading = false;
                     });
                   });
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Builds the settings.
+  Widget _buildSettings() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              'Setup NASA custom API key',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Input(
+                controller: _nasaApiController,
+                label: 'NASA API Key',
+                hint: NASAServiceSettings.nasaApiKey,
+                type: TextInputType.text,
+                prefixIcon: const Padding(
+                  padding: EdgeInsets.only(left: 4),
+                  child: Icon(Icons.key, color: Colors.grey),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Button(
+                label: 'Save',
+                width: 130,
+                height: 48,
+                icon: Icon(
+                  Icons.save,
+                  color: ThemeColors.backgroundColor,
+                ),
+                onPressed: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  _localStorageService.setItem(StorageKeys.nasaApiKey,
+                      _nasaApiController.text.toString());
+                  _nasaService.nasaApiCountryLiveFire.apiKey =
+                      _nasaApiController.text.toString();
+                  showSnackbar(context, 'Saved');
                 },
               ),
             ),
@@ -698,6 +631,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
   void _initNetworkState() async {
     final settings = _settingsService.getSettings();
 
+    _localStorageService.setItem(StorageKeys.lgConnection, "not");
     setState(() {
       _usernameController.text = settings.username;
       _portController.text = settings.port.toString();
@@ -707,10 +641,14 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
         _screensController.text =
             _localStorageService.getItem(StorageKeys.lgScreens);
       }
+      if (_localStorageService.hasItem(StorageKeys.lgCurrentConnection)) {
+        isAuthenticated =
+            _localStorageService.getItem(StorageKeys.lgCurrentConnection);
+      }
+      _nasaApiController.text = _nasaService.nasaApiCountryLiveFire.apiKey;
     });
 
-    // _onConnect();
-    _checkConnection();
+    /*_onConnect();
     Timer(const Duration(seconds: 3), () async {
       if (isAuthenticated) {
         await _lgService.setLogos();
@@ -721,7 +659,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
       setState(() {
         _loading = false;
       });
-    });
+    });*/
   }
 
   /// Checks and sets the connection status according to the form info.
@@ -753,6 +691,8 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
                 isAuthenticated = true;
                 _localStorageService.setItem(
                     StorageKeys.lgConnection, "connected");
+                _localStorageService.setItem(
+                    StorageKeys.lgCurrentConnection, true);
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(
                     'Connected successfully.',
@@ -780,6 +720,7 @@ class _LGSettingsState extends State<LGSettings> with TickerProviderStateMixin {
 
   /// Connects to the a machine according to the form info.
   void _onConnect() async {
+    _localStorageService.setItem(StorageKeys.lgConnection, "not");
     setState(() {
       isAuthenticated = false;
       _loading = true;
