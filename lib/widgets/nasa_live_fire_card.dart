@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:wildfiretracker/services/nasa_service.dart';
+import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 
+import '../services/nasa/satellite_data.dart';
 import '../utils/theme.dart';
 
 

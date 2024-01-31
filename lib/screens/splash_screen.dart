@@ -27,6 +27,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     [
       'assets/images/logo-eps.png',
       'assets/images/logo-udl.png',
+      'assets/images/nasa-firms.png',
     ],
   ];
 

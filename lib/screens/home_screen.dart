@@ -1,6 +1,9 @@
+import 'dart:ffi';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
+import 'package:wildfiretracker/utils/theme.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,30 +13,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePage> {
-  List<Map<String, String>> services = [
+  List<Map<String, dynamic>> services = [
     {
-      'name': 'NASA',
+      'name': 'NASA - Live Fire',
       'route': '/nasa',
-      'imageUrl':
-          'https://img.icons8.com/external-vitaliy-gorbachev-flat-vitaly-gorbachev/2x/external-cleaning-labour-day-vitaliy-gorbachev-flat-vitaly-gorbachev.png'
+      'asset': 'assets/images/fire.png',
+      'icon': false
     },
     {
-      'name': 'Test1',
-      'route': '/nasa',
-      'imageUrl':
-          'https://img.icons8.com/external-vitaliy-gorbachev-flat-vitaly-gorbachev/2x/external-plumber-labour-day-vitaliy-gorbachev-flat-vitaly-gorbachev.png'
-    },
-    {
-      'name': 'Test2',
-      'route': '/nasa',
-      'imageUrl':
-          'https://img.icons8.com/external-wanicon-flat-wanicon/2x/external-multimeter-car-service-wanicon-flat-wanicon.png'
-    },
-    {
-      'name': 'Test3',
-      'route': '/nasa',
-      'imageUrl':
-          'https://img.icons8.com/external-itim2101-flat-itim2101/2x/external-painter-male-occupation-avatar-itim2101-flat-itim2101.png'
+      'name': 'Settings',
+      'route': '/settings',
+      'asset': '',
+      'icon': Icons.settings
     }
   ];
 
@@ -51,7 +42,7 @@ class _HomeState extends State<HomePage> {
             IconButton(
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LGSettings()));
+                    MaterialPageRoute(builder: (context) => SettingsPage()));
               },
               icon: Icon(
                 Icons.settings,
@@ -92,9 +83,10 @@ class _HomeState extends State<HomePage> {
                       duration: Duration(milliseconds: 1000),
                       delay: Duration(seconds: (1.0 + index).round()),
                       child: serviceContainer(
-                          services[index]['imageUrl']!,
+                          services[index]['asset']!,
                           services[index]['name']!,
                           services[index]['route']!,
+                          services[index]['icon']!,
                           index));
                 }),
           ),
@@ -104,15 +96,15 @@ class _HomeState extends State<HomePage> {
         ])));
   }
 
-  serviceContainer(String image, String name, String route, int index) {
+  serviceContainer(String asset, String name, String route, dynamic icon, int index) {
     return GestureDetector(
       child: Container(
-        margin: EdgeInsets.only(right: 20),
+        margin: EdgeInsets.only(right: 0),
         padding: EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
           border: Border.all(
-            color: Colors.blue.withOpacity(0),
+            color: ThemeColors.primaryColor,
             width: 2.0,
           ),
           borderRadius: BorderRadius.circular(20.0),
@@ -120,18 +112,17 @@ class _HomeState extends State<HomePage> {
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(
-                Icons.insert_emoticon,
-                color: Colors.grey.shade700,
-                size: 50,
-              ),
-              // Image.network(image, height: 45),
-              SizedBox(
+              if (icon is IconData)
+                Icon(icon,
+                size: 65,),
+              if (asset != '')
+                Image.asset(asset, height: 65),
+              const SizedBox(
                 height: 20,
               ),
               Text(
                 name,
-                style: TextStyle(fontSize: 15),
+                style: const TextStyle(fontSize: 20),
               )
             ]),
       ),

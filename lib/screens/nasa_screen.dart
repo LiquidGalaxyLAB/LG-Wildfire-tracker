@@ -2,15 +2,13 @@ import 'dart:async';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:wildfiretracker/entities/kml/kml_entity.dart';
-import 'package:wildfiretracker/entities/kml/look_at_entity.dart';
-import 'package:wildfiretracker/services/nasa_service.dart';
-import 'package:wildfiretracker/widgets/button.dart';
+import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 import 'package:wildfiretracker/widgets/nasa_live_fire_card.dart';
 
 import '../services/lg_service.dart';
+import '../services/nasa/country.dart';
+import '../services/nasa/satellite_data.dart';
 import '../utils/snackbar.dart';
 import '../utils/theme.dart';
 
@@ -22,7 +20,7 @@ class NasaApiPage extends StatefulWidget {
 }
 
 class _NasaApiState extends State<NasaApiPage> {
-  bool _uploading = false;
+  //bool _uploading = false;
 
   late List<Country> _contries = [];
   late List<SatelliteData> _satelliteData = [];
@@ -33,15 +31,6 @@ class _NasaApiState extends State<NasaApiPage> {
   bool _loadingCountries = true;
   bool _loadingSatelliteData = false;
 
-  get _contriesDropdownItems {
-    List<DropdownMenuEntry> contriesDropdownItems = [];
-    for (Country c in _contries) {
-      contriesDropdownItems
-          .add(DropdownMenuEntry(label: c.name, value: c.abbreviation));
-    }
-
-    return contriesDropdownItems;
-  }
 
   LGService get _lgService => GetIt.I<LGService>();
 
@@ -90,44 +79,43 @@ class _NasaApiState extends State<NasaApiPage> {
               child: Row(
                 children: [
                   Expanded(
-                    child:
-                    DropdownSearch<Country>(
-                        /*clearButtonProps: ClearButtonProps(
+                    child: DropdownSearch<Country>(
+                      /*clearButtonProps: ClearButtonProps(
                               isVisible: true,
                             ),*/
-                        onChanged: (Country? country) {
-                          _selectedCountry = country!;
-                        },
-                        enabled: !_loadingCountries,
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                          dropdownSearchDecoration: InputDecoration(
-                            label: Text('Select country'),
-                            prefixIcon: Icon(Icons.flag),
-                            contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            hintText: 'Select country',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                bottomLeft: Radius.circular(10),
-                              ),
+                      onChanged: (Country? country) {
+                        _selectedCountry = country!;
+                      },
+                      enabled: !_loadingCountries,
+                      dropdownDecoratorProps: DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                          label: Text('Select country'),
+                          prefixIcon: Icon(Icons.flag),
+                          contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          hintText: 'Select country',
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
                             ),
                           ),
                         ),
-                        dropdownButtonProps: DropdownButtonProps(
-                          icon: _loadingCountries
-                              ? const SizedBox(
-                            width: 10,
-                            height: 10,
-                            child: CircularProgressIndicator(),
-                          )
-                              : Icon(Icons.arrow_drop_down),
-                          selectedIcon: Icon(Icons.arrow_drop_up),
-                        ),
-                        /*dropdownBuilder: (context, selectedItem) =>
+                      ),
+                      dropdownButtonProps: DropdownButtonProps(
+                        icon: _loadingCountries
+                            ? const SizedBox(
+                                width: 10,
+                                height: 10,
+                                child: CircularProgressIndicator(),
+                              )
+                            : Icon(Icons.arrow_drop_down),
+                        selectedIcon: Icon(Icons.arrow_drop_up),
+                      ),
+                      /*dropdownBuilder: (context, selectedItem) =>
                             Padding(
                               padding: EdgeInsets.only(left: 0),
                               child: Row(children: [
@@ -138,18 +126,18 @@ class _NasaApiState extends State<NasaApiPage> {
                                 )
                               ]),
                             ),*/
-                        popupProps: const PopupProps.menu(
-                          showSearchBox: true,
-                          searchFieldProps: TextFieldProps(
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.search),
-                              hintText: 'Search country',
-                            ),
+                      popupProps: const PopupProps.menu(
+                        showSearchBox: true,
+                        searchFieldProps: TextFieldProps(
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.search),
+                            hintText: 'Search country',
                           ),
                         ),
-                        filterFn: (item, filter) => item.name.contains(filter),
-                        itemAsString: (item) => item.name,
-                        items: _contries,
+                      ),
+                      filterFn: (item, filter) => item.name.contains(filter),
+                      itemAsString: (item) => item.name,
+                      items: _contries,
                     ),
                   ),
                   Container(
@@ -159,7 +147,7 @@ class _NasaApiState extends State<NasaApiPage> {
                         bottomRight: Radius.circular(10),
                       ),
                       color: ThemeColors.primaryColor,
-                      ),
+                    ),
                     child: IconButton(
                       icon: Icon(Icons.search),
                       color: Colors.white,
@@ -174,45 +162,47 @@ class _NasaApiState extends State<NasaApiPage> {
               ? _buildSpinner()
               : Expanded(
                   child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 20.0, left: 10.0, right: 10.0),
+                  padding:
+                      const EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0),
                   child: SizedBox(
-                          width:
-                              screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
-                          child: _satelliteData.isEmpty
-                              ? _buildEmptyMessage('No live fire data.')
-                              : ListView.builder(
-                                  physics: AlwaysScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: _satelliteData.length,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 16),
-                                      child: NasaLiveFireCard(
-                                        satelliteData: _satelliteData[index],
-                                        selected: _satelliteData[index].id ==
-                                            _selectedSatelliteData!.id,
-                                        disabled: _uploading ?? false,
-                                        onBalloonToggle: (value) {
-                                          //onStationBalloonToggle!(_satelliteData[index], value);
-                                        },
-                                        onOrbit: (value) {
-                                          //onStationOrbit!(value);
-                                        },
-                                        onView: (satelliteData) {
-                                          _lgService.sendKml(satelliteData.toPlacemarkEntity(), images:SatelliteData.getFireImg());
+                      width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+                      child: _satelliteData.isEmpty
+                          ? _buildEmptyMessage('No live fire data.')
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: _satelliteData.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: NasaLiveFireCard(
+                                    satelliteData: _satelliteData[index],
+                                    selected: _satelliteData[index].id ==
+                                        _selectedSatelliteData.id,
+                                    disabled: false,
+                                    onBalloonToggle: (value) {
+                                      //onStationBalloonToggle!(_satelliteData[index], value);
+                                    },
+                                    onOrbit: (value) {
+                                      //onStationOrbit!(value);
+                                    },
+                                    onView: (satelliteData) {
+                                      _lgService.sendKml(
+                                          satelliteData.toPlacemarkEntity(),
+                                          images: SatelliteData.getFireImg());
 
-                                          _lgService.flyTo(satelliteData.toLookAtEntity());
+                                      _lgService.flyTo(
+                                          satelliteData.toLookAtEntity());
 
-                                          _lgService.sendTour(satelliteData.buildOrbit(), 'Orbit');
+                                      _lgService.sendTour(
+                                          satelliteData.buildOrbit(), 'Orbit');
 
-                                          //onStationView!(station);
-                                        },
-                                      ),
-                                    );
-                                  },
-                                )),
+                                      //onStationView!(station);
+                                    },
+                                  ),
+                                );
+                              },
+                            )),
                 )),
         ]));
   }
@@ -240,6 +230,12 @@ class _NasaApiState extends State<NasaApiPage> {
       setState(() {
         _loadingSatelliteData = false;
       });
+    }).onError((error, stackTrace) {
+      _satelliteData = [];
+      setState(() {
+        _loadingSatelliteData = false;
+      });
+      showSnackbar(context, 'NASA Api Timeout');
     });
   }
 
@@ -283,199 +279,4 @@ class _NasaApiState extends State<NasaApiPage> {
     );
   }
 
-  void _testScreen() async {
-    if (_uploading) {
-      return;
-    }
-
-    try {
-      setState(() {
-        _uploading = true;
-      });
-
-      final timer = Timer(const Duration(seconds: 5), () {
-        setState(() {
-          //_satelliteBalloonVisible = true;
-          //_selectedSatellite = null;
-          //_satellitePlacemark = null;
-          //_selectedStation = null;
-          _uploading = false;
-        });
-
-        throw Exception('connection-timed-out');
-      });
-
-      // final result = await _sshService.connect();
-      final result = 'session_connected';
-      timer.cancel();
-
-      if (result != 'session_connected') {
-        setState(() {
-          _uploading = false;
-        });
-
-        return showSnackbar(context, 'Connection failed');
-      }
-
-      /*final matchTLEs =
-      _tles.where((element) => element.satelliteId == satellite.id);
-      TLEEntity? tle = matchTLEs.isNotEmpty ? matchTLEs.toList()[0] : null;*/
-      List<SatelliteData> satelliteData = await _nasaService.getLiveFire();
-
-      if (satelliteData.isEmpty) {
-        setState(() {
-          _uploading = false;
-        });
-
-        return showSnackbar(context,
-            'Connection failed'); // _showErrorDialog('No TLE available for this satellite!');
-      }
-
-      setState(() {
-        _satelliteData = satelliteData;
-        _loadingSatelliteData = false;
-      });
-    } on Exception catch (_) {
-      showSnackbar(context, 'Connection failed');
-    } catch (_) {
-      showSnackbar(context, 'Connection failed');
-    } finally {
-      setState(() {
-        _uploading = false;
-      });
-    }
-  }
-
-  void _viewExample() async {
-    if (_uploading) {
-      return;
-    }
-
-    try {
-      setState(() {
-        _uploading = true;
-      });
-
-      final timer = Timer(const Duration(seconds: 5), () {
-        setState(() {
-          //_satelliteBalloonVisible = true;
-          //_selectedSatellite = null;
-          //_satellitePlacemark = null;
-          //_selectedStation = null;
-          _uploading = false;
-        });
-
-        throw Exception('connection-timed-out');
-      });
-
-      // final result = await _sshService.connect();
-      final result = 'session_connected';
-      timer.cancel();
-
-      if (result != 'session_connected') {
-        setState(() {
-          _uploading = false;
-        });
-
-        return showSnackbar(context, 'Connection failed');
-      }
-
-      /*final matchTLEs =
-      _tles.where((element) => element.satelliteId == satellite.id);
-      TLEEntity? tle = matchTLEs.isNotEmpty ? matchTLEs.toList()[0] : null;*/
-      List<SatelliteData> satelliteData = await _nasaService.getLiveFire();
-
-      if (satelliteData.isEmpty) {
-        setState(() {
-          _uploading = false;
-        });
-
-        return showSnackbar(context,
-            'Connection failed'); // _showErrorDialog('No TLE available for this satellite!');
-      }
-
-      setState(() {
-        //_selectedSatellite = satellite.id;
-        //_selectedStation = null;
-      });
-
-      /*final tleCoord = tle.read();
-
-      final transmitters = _transmitters
-          .where((element) => element.satelliteId == satellite.id)
-          .toList();
-
-      final placemark = _satelliteService.buildPlacemark(
-        satellite,
-        tle,
-        transmitters,
-        showBalloon,
-        orbitPeriod,
-        lookAt: _satellitePlacemark != null && !updatePosition
-            ? _satellitePlacemark!.lookAt
-            : null,
-        updatePosition: updatePosition,
-      );*/
-
-      SatelliteData sd = satelliteData.first;
-
-      setState(() {
-        //_satellitePlacemark = placemark;
-      });
-
-      final kml = sd.toPlacemarkEntity();
-
-      await _lgService.sendKml(
-        kml,
-        images: [
-          {
-            'name': 'logo.jpeg',
-            'path': 'assets/images/logo.jpeg',
-          }
-        ],
-      );
-
-      /*if (_lgService.balloonScreen == _lgService.logoScreen) {
-        await _lgService.setLogos(
-          name: 'SVT-logos-balloon',
-          content: '''
-            <name>Logos-Balloon</name>
-            ${placemark.balloonOnlyTag}
-          ''',
-        );
-      } else {
-        final kmlBalloon = KMLEntity(
-          name: 'SVT-balloon',
-          content: placemark.balloonOnlyTag,
-        );
-
-        await _lgService.sendKMLToSlave(
-          _lgService.balloonScreen,
-          kmlBalloon.body,
-        );
-      }
-
-      if (updatePosition) {
-        await _lgService.flyTo(LookAtEntity(
-          lat: tleCoord['lat']!,
-          lng: tleCoord['lng']!,
-          altitude: tleCoord['alt']!,
-          range: '4000000',
-          tilt: '60',
-          heading: '0',
-        ));
-      }
-
-      final orbit = _satelliteService.buildOrbit(satellite, tle);
-      await _lgService.sendTour(orbit, 'Orbit');*/
-    } on Exception catch (_) {
-      showSnackbar(context, 'Connection failed');
-    } catch (_) {
-      showSnackbar(context, 'Connection failed');
-    } finally {
-      setState(() {
-        _uploading = false;
-      });
-    }
-  }
 }
