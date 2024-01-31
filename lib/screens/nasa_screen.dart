@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 import 'package:wildfiretracker/widgets/nasa_live_fire_card.dart';
 
@@ -198,6 +200,12 @@ class _NasaApiState extends State<NasaApiPage> {
                                           satelliteData.buildOrbit(), 'Orbit');
 
                                       //onStationView!(station);
+                                    },
+                                    onMaps: (satelliteData) async {
+                                      String googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=${satelliteData.latitude},${satelliteData.longitude}";
+                                      if (!await launchUrlString(googleMapsUrl)) {
+                                        showSnackbar(context, "Could not open the map.");
+                                      }
                                     },
                                   ),
                                 );

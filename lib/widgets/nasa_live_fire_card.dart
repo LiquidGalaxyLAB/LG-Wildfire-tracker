@@ -14,6 +14,7 @@ class NasaLiveFireCard extends StatefulWidget {
     required this.onOrbit,
     required this.onBalloonToggle,
     required this.onView,
+    required this.onMaps,
     required this.disabled,
   }) : super(key: key);
 
@@ -24,6 +25,7 @@ class NasaLiveFireCard extends StatefulWidget {
   final Function(bool) onOrbit;
   final Function(bool) onBalloonToggle;
   final Function(SatelliteData) onView;
+  final Function(SatelliteData) onMaps;
 
   @override
   State<NasaLiveFireCard> createState() => _NasaLiveFireCardState();
@@ -96,22 +98,56 @@ class _NasaLiveFireCardState extends State<NasaLiveFireCard> {
                   ]),
               Padding(
                 padding: const EdgeInsets.only(top: 16, bottom: 4),
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Text('Latitude: ${widget.satelliteData.latitude}',
-                            style: TextStyle(color: ThemeColors.primaryColor)),
-                      ],
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text('Latitude: ${widget.satelliteData.latitude}',
+                              style: TextStyle(color: ThemeColors.primaryColor)),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text('Longitude: ${widget.satelliteData.longitude}',
+                              style: TextStyle(color: ThemeColors.primaryColor)),
+                        ],
+                      )
+                    ],
+                  ),
+                  TextButton.icon(
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.all(0),
+                      tapTargetSize: MaterialTapTargetSize.padded,
+                      alignment: Alignment.centerRight,
+                      minimumSize: const Size(120, 24),
                     ),
-                    Row(
-                      children: [
-                        Text('Longitude: ${widget.satelliteData.longitude}',
-                            style: TextStyle(color: ThemeColors.primaryColor)),
-                      ],
-                    )
-                  ],
-                ),
+                    icon: Icon(
+                      widget.selected
+                          ? Icons.map_sharp
+                          : Icons.map,
+                      color: widget.disabled
+                          ? Colors.grey
+                          : ThemeColors.primaryColor,
+                    ),
+                    label: Text('VIEW IN MAPS',
+                      style: TextStyle(
+                        color: widget.disabled ? Colors.grey : ThemeColors.textPrimary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    onPressed: () {
+                      if (widget.disabled) {
+                        return;
+                      }
+                      widget.onMaps(widget.satelliteData);
+                    },
+                  ),
+                ],),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
