@@ -25,6 +25,12 @@ class _HomeState extends State<HomePage> {
       'route': '/settings',
       'asset': '',
       'icon': Icons.settings
+    },
+    {
+      'name': 'GenCat - Historic Wildfire',
+      'route': '/gencat',
+      'asset': '',
+      'icon': Icons.forest
     }
   ];
 

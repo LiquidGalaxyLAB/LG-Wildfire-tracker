@@ -6,6 +6,8 @@ import 'package:get_it/get_it.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wildfiretracker/entities/kml/kml_entity.dart';
+import 'package:wildfiretracker/services/gencat/fire_perimeter.dart';
+import 'package:wildfiretracker/services/gencat/gencat_service.dart';
 import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 import 'package:wildfiretracker/widgets/button.dart';
 import 'package:wildfiretracker/widgets/nasa_live_fire_card.dart';
@@ -16,16 +18,16 @@ import '../services/nasa/satellite_data.dart';
 import '../utils/snackbar.dart';
 import '../utils/theme.dart';
 
-class BombersApiPage extends StatefulWidget {
-  const BombersApiPage({super.key});
+class GencatPage extends StatefulWidget {
+  const GencatPage({super.key});
 
   @override
-  State<BombersApiPage> createState() => _BombersApiState();
+  State<GencatPage> createState() => _GencatState();
 }
 
-class _BombersApiState extends State<BombersApiPage> {
+class _GencatState extends State<GencatPage> {
   LGService get _lgService => GetIt.I<LGService>();
-  // BombersService get _bombersService => GetIt.I<BombersService>();
+  GencatService  get _gencatService => GetIt.I<GencatService>();
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,7 @@ class _BombersApiState extends State<BombersApiPage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           title: const Text(
-            'NASA - Current Live Fire',
+            'Generalitat Catalunya - Historic Wildfire',
             style: TextStyle(color: Colors.black),
           ),
           leading: IconButton(
@@ -68,8 +70,15 @@ class _BombersApiState extends State<BombersApiPage> {
           Padding(
               padding: EdgeInsets.only(left: 20.0, right: 20.0),
               child: Button(
-                onPressed: () {
-                  
+                onPressed: () async {
+                  List<FirePerimeter> fp = await _gencatService.getFirePerimeters('incendis22');
+                  print(fp[38]);
+                  _lgService.sendKml(fp[38].toKMLEntity());
+                  _lgService.flyTo(
+                      fp[38].toLookAtEntity());
+
+                  /*_lgService.sendTour(
+                      satelliteData.buildOrbit(), 'Orbit');*/
                 },
                 label: 'Test',
               )),
