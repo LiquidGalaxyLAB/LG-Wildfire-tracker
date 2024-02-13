@@ -40,7 +40,8 @@ class SSHService {
           onAuthenticated: () async {
             isAuthenticated = true;
             // _localStorageService.setItem(StorageKeys.lgConnection, "connected");
-          });
+          },
+          printDebug: (p0) => true,);
       // await Future.delayed(const Duration(seconds: 10));
     } catch (e) {
       if (kDebugMode) {
@@ -62,12 +63,12 @@ class SSHService {
 
   /// Connects to the current client, executes a command into it and then disconnects.
   Future<SSHSession?> execute(String command) async {
-    connect();
+    //connect();
     SSHSession? execResult;
     if (isAuthenticated) {
       execResult = await _client?.execute(command);
     }
-    disconnect();
+    //disconnect();
     return execResult;
   }
 
@@ -90,7 +91,7 @@ class SSHService {
 
   /// Connects to the current client through SFTP, uploads a file into it and then disconnects.
   upload(File inputFile, String filename) async {
-    connect();
+    //connect();
     if (!isAuthenticated) {
       disconnect();
       return;
@@ -120,7 +121,7 @@ class SSHService {
         print(error);
       }
     }
-    disconnect();
+    //disconnect();
   }
 
   Future waitWhile(bool Function() test,
