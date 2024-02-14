@@ -23,27 +23,19 @@ class FirePerimeter {
 
   KMLEntity toKMLEntity() {
     return KMLEntity(
-        name: 'FirePerimeterTest',
+        name: properties.codiFinal,
         content: PlacemarkEntity(
-          id: 'sadfdsf',
-          name: 'sdafsdfsdf',
-          point: PointEntity(lat: geometry.coordinates[0][0][0][1], lng: geometry.coordinates[0][0][0][0], altitude: 380),
-          line: LineEntity(id: 'sadfdsf', coordinates: geometry.getFormatedCoordinates()),
-          lookAt: toLookAtEntity(),
-          viewOrbit: true,
-          visibility: true,
-          /*tour: TourEntity(
-            name: 'SimulationTour',
-            placemarkId: 'p-sadfdsf',
-            initialCoordinate: {
-              'lat': geometry.coordinates[0][0][0][1],
-              'lng': geometry.coordinates[0][0][0][0],
-              'altitude': 380,
-            },
-            coordinates: geometry.getFormatedCoordinates(),
-          ),*/
-          balloonContent: 'Wildfire',
+          id:  properties.codiFinal.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
+          name:  properties.codiFinal,
+          point: PointEntity(lat: geometry.coordinates[0][0][0][1], lng: geometry.coordinates[0][0][0][0], altitude: 2000),
+          line: LineEntity(id: properties.codiFinal, coordinates: geometry.getFormatedCoordinates()),
+          // lookAt: toLookAtEntity(),
+          //viewOrbit: true,
+          //visibility: true,
+          //balloonContent: 'Wildfire',
           icon: 'fire.png',
+          description: ' test',
+
         ).tag);
   }
 
@@ -51,7 +43,7 @@ class FirePerimeter {
     return LookAtEntity(
       lat: geometry.coordinates[0][0][0][1],
       lng: geometry.coordinates[0][0][0][0],
-      altitude: 380,
+      altitude: 2000,
       range: '2000',
       tilt: '60',
       heading: '0',
@@ -116,9 +108,10 @@ class Geometry {
       formatedCoordinates.add({
         'lat': coordinates[0][0][i][1],
         'lng': coordinates[0][0][i][0],
-        'altitude': 70000.12316546456456,
+        'altitude': 2000.0,
       });
     }
+    //formatedCoordinates.add(formatedCoordinates.first);
     print(formatedCoordinates);
     return formatedCoordinates;
   }

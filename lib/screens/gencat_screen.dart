@@ -73,6 +73,7 @@ class _GencatState extends State<GencatPage> {
                 onPressed: () async {
                   List<FirePerimeter> fp = await _gencatService.getFirePerimeters('incendis22');
                   print(fp[38]);
+                  _lgService.clearKml();
                   _lgService.sendKml(fp[38].toKMLEntity());
                   _lgService.flyTo(
                       fp[38].toLookAtEntity());
