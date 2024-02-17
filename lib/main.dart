@@ -1,16 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/screens/flutter_req_screen.dart';
 import 'package:get_it/get_it.dart';
-import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
-import 'package:wildfiretracker/screens/nasa_screen.dart';
-import 'package:wildfiretracker/screens/splash_screen.dart';
-import 'package:wildfiretracker/services/file_service.dart';
-import 'package:wildfiretracker/services/lg_service.dart';
-import 'package:wildfiretracker/services/lg_settings_service.dart';
-import 'package:wildfiretracker/services/local_storage_service.dart';
-import 'package:wildfiretracker/services/nasa/nasa_service.dart';
-import 'package:wildfiretracker/services/ssh_service.dart';
-import 'package:wildfiretracker/utils/theme.dart';
+import 'package:flutterapp/screens/lg_settings_sreen.dart';
+import 'package:flutterapp/screens/nasa_screen.dart';
+import 'package:flutterapp/screens/splash_screen.dart';
+import 'package:flutterapp/services/file_service.dart';
+import 'package:flutterapp/services/lg_service.dart';
+import 'package:flutterapp/services/lg_settings_service.dart';
+import 'package:flutterapp/services/local_storage_service.dart';
+import 'package:flutterapp/services/nasa/nasa_service.dart';
+import 'package:flutterapp/services/ssh_service.dart';
+import 'package:flutterapp/utils/theme.dart';
 
 /// Registers all services into the application.
 void setupServices() {
@@ -25,9 +26,7 @@ void setupServices() {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupServices();
-
   await GetIt.I<LocalStorageService>().loadStorage();
-
   GetIt.I<SSHService>().init();
   runApp(const MyApp());
 }
@@ -78,7 +77,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const SplashScreenPage(),
+      home: const FlutterReqPage(),
       initialRoute: '/',
       routes: {
         // '/': (context) => const HomePage(),

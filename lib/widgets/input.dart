@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wildfiretracker/utils/theme.dart';
+import 'package:flutterapp/utils/theme.dart';
 
 class Input extends StatefulWidget {
   const Input({

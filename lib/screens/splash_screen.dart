@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:wildfiretracker/screens/home_screen.dart';
-import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
+import 'package:flutterapp/screens/home_screen.dart';
+import 'package:flutterapp/screens/lg_settings_sreen.dart';
 
 class SplashScreenPage extends StatefulWidget {
   const SplashScreenPage({Key? key}) : super(key: key);

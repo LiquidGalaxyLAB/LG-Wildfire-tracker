@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wildfiretracker/utils/theme.dart';
+import 'package:flutterapp/utils/theme.dart';
 
 class Button extends StatefulWidget {
   const Button({

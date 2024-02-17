@@ -1,8 +1,8 @@
 import 'package:csv/csv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
-import 'package:wildfiretracker/services/local_storage_service.dart';
-import 'package:wildfiretracker/utils/storage_keys.dart';
+import 'package:flutterapp/services/local_storage_service.dart';
+import 'package:flutterapp/utils/storage_keys.dart';
 
 import 'country.dart';
 import 'nasa_service_settings.dart';

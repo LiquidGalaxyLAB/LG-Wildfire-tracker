@@ -2,8 +2,8 @@ import 'dart:ffi';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
-import 'package:wildfiretracker/utils/theme.dart';
+import 'package:flutterapp/screens/lg_settings_sreen.dart';
+import 'package:flutterapp/utils/theme.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
