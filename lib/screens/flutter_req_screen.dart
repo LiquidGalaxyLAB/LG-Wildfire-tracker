@@ -2,13 +2,17 @@ import 'dart:ffi';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/entities/kml/line_entity.dart';
 import 'package:flutterapp/entities/kml/look_at_entity.dart';
 import 'package:flutterapp/entities/kml/orbit_entity.dart';
+import 'package:flutterapp/entities/kml/placemark_entity.dart';
+import 'package:flutterapp/entities/kml/point_entity.dart';
 import 'package:flutterapp/entities/kml/tour_entity.dart';
 import 'package:flutterapp/screens/lg_settings_sreen.dart';
 import 'package:flutterapp/utils/theme.dart';
 import 'package:get_it/get_it.dart';
 
+import '../entities/kml/kml_entity.dart';
 import '../services/lg_service.dart';
 
 class FlutterReqPage extends StatefulWidget {
@@ -28,8 +32,29 @@ class _FlutterState extends State<FlutterReqPage> {
       altitude: 100,
       range: '1500',
       tilt: '60',
-      heading: '0',
+      heading: '50',
       altitudeMode: 'relativeToGround'
+  );
+
+  PlacemarkEntity pe = PlacemarkEntity(
+    name: 'myHomeCity',
+    description: 'My Home City',
+    lookAt: LookAtEntity(
+        lat: 42.002399,
+        lng: 0.759925,
+        altitude: 100,
+        range: '1500',
+        tilt: '60',
+        heading: '50',
+        altitudeMode: 'relativeToGround'
+    ),
+    id: 'myHomeCity',
+    point: PointEntity(
+        lat: 42.002399,
+        lng: 0.759925,
+        altitude: 100
+    ) ,
+    line: LineEntity(coordinates: [], id: 'myHomeCityLine'),
   );
 
   @override
@@ -109,7 +134,9 @@ class _FlutterState extends State<FlutterReqPage> {
                         ]),
                   ),
                   onTap: () {
-                    _lgService.clearKml(keepLogos: true);
+                    //_lgService.clearKml(keepLogos: true);
+                    KMLEntity kml = KMLEntity(name: 'test', content: pe.tag);
+                    _lgService.sendKml(kml);
                     _lgService.flyTo(lae);
                   },
                 ),
@@ -140,7 +167,7 @@ class _FlutterState extends State<FlutterReqPage> {
                         ]),
                   ),
                   onTap: () {
-                      _lgService.clearKml(keepLogos: true);
+                      //_lgService.clearKml(keepLogos: true);
                       _lgService.sendTour(OrbitEntity.buildOrbit(OrbitEntity.tag(lae)), 'Orbitt');
                       _lgService.startTour('Orbitt');
                     //_lgService.startTour('OrbitAger');
@@ -172,9 +199,20 @@ class _FlutterState extends State<FlutterReqPage> {
                           )
                         ]),
                   ),
-                  onTap: () {
+                  onTap: ()  async {
                     //_lgService.stopTour();
-                    _lgService.clearKml(keepLogos: true);
+                    //_lgService.clearKml(keepLogos: true);
+
+                    final kmlBalloon = KMLEntity(
+                      name: 'SVT-balloon',
+                      content: pe.balloonOnlyTag,
+                    );
+
+                    await _lgService.sendKMLToSlave(
+                      _lgService.balloonScreen,
+                      kmlBalloon.body,
+                    );
+
 
                   },
                 ),

@@ -66,7 +66,7 @@ class SSHService {
     await connect();
     SSHSession? execResult;
     execResult = await _client?.execute(command);
-    await disconnect();
+    disconnect();
     return execResult;
   }
 
@@ -90,7 +90,7 @@ class SSHService {
   /// Connects to the current client through SFTP, uploads a file into it and then disconnects.
   upload(File inputFile, String filename) async {
     await connect();
-    // Future.delayed(const Duration(seconds: 3));
+    Future.delayed(const Duration(seconds: 3));
     try {
       bool uploading = true;
       final sftp = await _client?.sftp();
@@ -100,9 +100,9 @@ class SSHService {
               SftpFileOpenMode.write);
       var fileSize = await inputFile.length();
       file?.write(inputFile.openRead().cast(), onProgress: (progress) {
-        // if(fileSize == progress){
-        uploading = true;
-        // }
+        if(fileSize == progress){
+          uploading = false;
+        }
       });
       // print(file);
       if(file==null){
@@ -115,7 +115,7 @@ class SSHService {
         print(error);
       }
     }
-    await disconnect();
+    disconnect();
   }
 
   Future waitWhile(bool Function() test,
