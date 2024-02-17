@@ -31,17 +31,17 @@ class SSHService {
       final socket = await SSHSocket.connect(ssh.host, ssh.port);
       String? password;
       _client = SSHClient(socket,
-          username: ssh.username,
-          onPasswordRequest: () {
-            password = ssh.passwordOrKey;
-            return password;
-          },
-          keepAliveInterval: const Duration(seconds: 3600),
-          onAuthenticated: () async {
-            isAuthenticated = true;
-            // _localStorageService.setItem(StorageKeys.lgConnection, "connected");
-          },
-          printDebug: (p0) => true,);
+        username: ssh.username,
+        onPasswordRequest: () {
+          password = ssh.passwordOrKey;
+          return password;
+        },
+        keepAliveInterval: const Duration(seconds: 3600),
+        onAuthenticated: () async {
+          isAuthenticated = true;
+          // _localStorageService.setItem(StorageKeys.lgConnection, "connected");
+        },
+        printDebug: (p0) => true,);
       // await Future.delayed(const Duration(seconds: 10));
     } catch (e) {
       if (kDebugMode) {
@@ -102,8 +102,8 @@ class SSHService {
       final sftp = await _client?.sftp();
       final file = await sftp?.open('/var/www/html/$filename',
           mode: SftpFileOpenMode.truncate |
-              SftpFileOpenMode.create |
-              SftpFileOpenMode.write);
+          SftpFileOpenMode.create |
+          SftpFileOpenMode.write);
       var fileSize = await inputFile.length();
       file?.write(inputFile.openRead().cast(), onProgress: (progress) {
         // if(fileSize == progress){
@@ -112,8 +112,8 @@ class SSHService {
       });
       // print(file);
       if(file==null){
-         print('null');
-         return;
+        print('null');
+        return;
       }
       await waitWhile(() => uploading);
     } catch (error) {
