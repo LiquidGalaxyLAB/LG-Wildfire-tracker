@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wildfiretracker/entities/kml/kml_entity.dart';
 import 'package:wildfiretracker/services/gencat/fire_perimeter.dart';
 import 'package:wildfiretracker/services/gencat/gencat_service.dart';
+import 'package:wildfiretracker/services/gencat/historic_year.dart';
 import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 import 'package:wildfiretracker/widgets/button.dart';
 import 'package:wildfiretracker/widgets/nasa_live_fire_card.dart';
@@ -26,6 +27,8 @@ class GencatPage extends StatefulWidget {
 }
 
 class _GencatState extends State<GencatPage> {
+  late HistoricYear _selectedHisotricYear;
+
   LGService get _lgService => GetIt.I<LGService>();
   GencatService  get _gencatService => GetIt.I<GencatService>();
 
@@ -69,6 +72,84 @@ class _GencatState extends State<GencatPage> {
           ),
           Padding(
               padding: EdgeInsets.only(left: 20.0, right: 20.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: DropdownSearch<HistoricYear>(
+                      /*clearButtonProps: ClearButtonProps(
+                              isVisible: true,
+                            ),*/
+                      onChanged: (HistoricYear? hy) {
+                        _selectedHisotricYear = hy!;
+                      },
+                      enabled: true,
+                      dropdownDecoratorProps: const DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                          label: Text('Select historic year'),
+                          prefixIcon: Icon(Icons.flag),
+                          contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          hintText: 'Select year',
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      dropdownButtonProps: const DropdownButtonProps(
+                        icon: Icon(Icons.arrow_drop_down),
+                        selectedIcon: Icon(Icons.arrow_drop_up),
+                      ),
+                      /*dropdownBuilder: (context, selectedItem) =>
+                            Padding(
+                              padding: EdgeInsets.only(left: 0),
+                              child: Row(children: [
+                                Icon(Icons.flag),
+                                SizedBox(width: 8),
+                                Text(
+                                  selectedItem?.name ?? 'Select country',
+                                )
+                              ]),
+                            ),*/
+                      popupProps: const PopupProps.menu(
+                        showSearchBox: true,
+                        searchFieldProps: TextFieldProps(
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.search),
+                            hintText: 'Search year',
+                          ),
+                        ),
+                      ),
+                      filterFn: (item, filter) => item.year.toString().contains(filter.toLowerCase()),
+                      itemAsString: (item) => item.year.toString(),
+                      items: HistoricYear.getLocalHistoricYears(),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(10),
+                        bottomRight: Radius.circular(10),
+                      ),
+                      color: ThemeColors.primaryColor,
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.search),
+                      color: Colors.white,
+                      onPressed: () {
+                        getHistoricFirePerimeter();
+                      },
+                    ),
+                  )
+                ],
+              )),
+          Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: Button(
                 onPressed: () async {
                   List<FirePerimeter> fp = await _gencatService.getFirePerimeters('incendis22');
@@ -123,6 +204,10 @@ class _GencatState extends State<GencatPage> {
         ]),
       ),
     );
+  }
+
+  void getHistoricFirePerimeter() {
+
   }
 
 }
