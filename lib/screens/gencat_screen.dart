@@ -29,6 +29,8 @@ class GencatPage extends StatefulWidget {
 class _GencatState extends State<GencatPage> {
   late HistoricYear _selectedHisotricYear;
 
+  bool _loadingFirePerimeterData = false;
+
   LGService get _lgService => GetIt.I<LGService>();
   GencatService  get _gencatService => GetIt.I<GencatService>();
 
@@ -163,6 +165,58 @@ class _GencatState extends State<GencatPage> {
                       satelliteData.buildOrbit(), 'Orbit');*/
                 },
                 label: 'Test',
+              )),
+          _loadingFirePerimeterData
+              ? _buildSpinner()
+              : Expanded(
+              child: Padding(
+                padding:
+                const EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0),
+                child: SizedBox(
+                    width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+                    child: _satelliteData.isEmpty
+                        ? _buildEmptyMessage('No live fire data.')
+                        : ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: _satelliteData.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: NasaLiveFireCard(
+                            satelliteData: _satelliteData[index],
+                            selected: _satelliteData[index].id ==
+                                _selectedSatelliteData.id,
+                            disabled: false,
+                            onBalloonToggle: (value) {
+                              //onStationBalloonToggle!(_satelliteData[index], value);
+                            },
+                            onOrbit: (value) {
+                              //onStationOrbit!(value);
+                            },
+                            onView: (satelliteData) {
+                              _lgService.sendKml(
+                                  satelliteData.toPlacemarkEntity(),
+                                  images: SatelliteData.getFireImg());
+
+                              _lgService.flyTo(
+                                  satelliteData.toLookAtEntity());
+
+                              _lgService.sendTour(
+                                  satelliteData.buildOrbit(), 'Orbit');
+
+                              //onStationView!(station);
+                            },
+                            onMaps: (satelliteData) async {
+                              String googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=${satelliteData.latitude},${satelliteData.longitude}";
+                              if (!await launchUrlString(googleMapsUrl)) {
+                                showSnackbar(context, "Could not open the map.");
+                              }
+                            },
+                          ),
+                        );
+                      },
+                    )),
               )),
         ]));
   }
