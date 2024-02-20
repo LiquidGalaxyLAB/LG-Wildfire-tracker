@@ -608,7 +608,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
   void _initNetworkState() async {
     final settings = _settingsService.getSettings();
 
-    _localStorageService.setItem(StorageKeys.lgConnection, "not");
+    //_localStorageService.setItem(StorageKeys.lgConnection, "not");
     setState(() {
       _usernameController.text = settings.username;
       _portController.text = settings.port.toString();
@@ -668,7 +668,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
         setState(() {
           isAuthenticated = true;
         });
-        await _lgService.setLogos();
+        //await _lgService.setLogos();
+        _localStorageService.setItem(StorageKeys.lgCurrentConnection, true);
       } else {
         showSnackbar(context, 'Connection failed');
         setState(() {
@@ -698,7 +699,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
       _loading = true;
     });
 
-    _localStorageService.setItem(StorageKeys.lgConnection, "not");
+    //_localStorageService.setItem(StorageKeys.lgConnection, "not");
     _localStorageService.setItem(StorageKeys.lgScreens,
         _screensController.text.toString());
     await _settingsService.setSettings(

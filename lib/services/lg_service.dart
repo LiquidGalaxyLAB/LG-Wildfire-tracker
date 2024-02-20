@@ -70,7 +70,10 @@ class LGService {
 
   /// Gets the Liquid Galaxy rig screen amount. Returns a [String] that represents the screen amount.
   String? getScreenAmount() {
-    String numberOfScreen = _localStorageService.getItem(StorageKeys.lgScreens);
+    String numberOfScreen = '3';
+    if (_localStorageService.getItem(StorageKeys.lgScreens) != null) {
+      numberOfScreen = _localStorageService.getItem(StorageKeys.lgScreens);
+    }
     screenAmount = int.parse(numberOfScreen);
 
     return numberOfScreen;

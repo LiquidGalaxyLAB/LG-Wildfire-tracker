@@ -28,7 +28,7 @@ class SSHService {
   /// Sets a client with the given [ssh] info.
   Future<bool?> setClient(SSHEntity ssh) async {
     try {
-      final socket = await SSHSocket.connect(ssh.host, ssh.port);
+      final socket = await SSHSocket.connect(ssh.host, ssh.port, timeout: const Duration(seconds: 4));
       String? password;
       _client = SSHClient(socket,
           username: ssh.username,

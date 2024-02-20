@@ -55,6 +55,13 @@ class _FlutterState extends State<FlutterReqPage> {
         altitude: 100
     ) ,
     line: LineEntity(coordinates: [], id: 'myHomeCityLine'),
+    balloonContent: '''
+      <div style="text-align:center;">
+      <b>ÀGER</b>
+      <b>Gerard Monsó Salmons</b>
+      </div>
+      <br/>
+    ''',
   );
 
   @override
@@ -100,7 +107,7 @@ class _FlutterState extends State<FlutterReqPage> {
             height: 400,
             child: GridView(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+                crossAxisCount: 4,
                 childAspectRatio: 1.0,
                 crossAxisSpacing: 10.0,
                 mainAxisSpacing: 10.0,
@@ -133,11 +140,12 @@ class _FlutterState extends State<FlutterReqPage> {
                           )
                         ]),
                   ),
-                  onTap: () {
-                    //_lgService.clearKml(keepLogos: true);
-                    KMLEntity kml = KMLEntity(name: 'test', content: pe.tag);
-                    _lgService.sendKml(kml);
-                    _lgService.flyTo(lae);
+                  onTap: () async {
+                    await _lgService.clearKml(keepLogos: false);
+                    await _lgService.stopTour();
+
+                    // wait 3 seconds
+                    await _lgService.flyTo(lae);
                   },
                 ),
                 GestureDetector(
@@ -166,10 +174,15 @@ class _FlutterState extends State<FlutterReqPage> {
                           )
                         ]),
                   ),
-                  onTap: () {
-                      //_lgService.clearKml(keepLogos: true);
-                      _lgService.sendTour(OrbitEntity.buildOrbit(OrbitEntity.tag(lae)), 'Orbitt');
-                      _lgService.startTour('Orbitt');
+                  onTap: () async {
+                      await _lgService.clearKml(keepLogos: false);
+                      //KMLEntity kml = KMLEntity(name: 'test', content: pe.tag);
+                      //_lgService.sendKml(kml);
+                      print('enviem tour');
+                      await _lgService.sendTour(OrbitEntity.buildOrbit(OrbitEntity.tag(lae)), 'Orbit');
+                      print('enviem orbit');
+                      await _lgService.startTour('Orbit');
+                      print('final');
                     //_lgService.startTour('OrbitAger');
                   },
                 ),
@@ -199,14 +212,15 @@ class _FlutterState extends State<FlutterReqPage> {
                           )
                         ]),
                   ),
-                  onTap: ()  async {
-                    //_lgService.stopTour();
-                    //_lgService.clearKml(keepLogos: true);
+                  onTap: () async{
+                    await _lgService.stopTour();
+                    await _lgService.clearKml(keepLogos: false);
 
                     final kmlBalloon = KMLEntity(
-                      name: 'SVT-balloon',
+                      name: 'My Home City - Balloo',
                       content: pe.balloonOnlyTag,
                     );
+
 
                     await _lgService.sendKMLToSlave(
                       _lgService.balloonScreen,
@@ -224,5 +238,18 @@ class _FlutterState extends State<FlutterReqPage> {
             height: 20,
           ),
         ])));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _lgService.clearKml(keepLogos: false);
+    //KMLEntity kml = KMLEntity(name: 'test', content: pe.tag);
+    //_lgService.sendKml(kml);
+
+    //_lgService.sendTour(OrbitEntity.buildOrbit(OrbitEntity.tag(lae)), 'Orbit');
+
+
   }
 }
