@@ -27,15 +27,14 @@ class FirePerimeter {
         content: PlacemarkEntity(
           id:  properties.codiFinal.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
           name:  properties.codiFinal,
-          point: PointEntity(lat: geometry.coordinates[0][0][0][1], lng: geometry.coordinates[0][0][0][0], altitude: 2000),
+          point: PointEntity(lat: geometry.coordinates[0][0][0][1], lng: geometry.coordinates[0][0][0][0], altitude: 25),
           line: LineEntity(id: properties.codiFinal, coordinates: geometry.getFormatedCoordinates()),
-          // lookAt: toLookAtEntity(),
-          //viewOrbit: true,
+          lookAt: toLookAtEntity(),
+          viewOrbit: true,
           //visibility: true,
-          //balloonContent: 'Wildfire',
+          balloonContent: 'Wildfire',
           icon: 'fire.png',
           description: ' test',
-
         ).tag);
   }
 
@@ -43,10 +42,10 @@ class FirePerimeter {
     return LookAtEntity(
       lat: geometry.coordinates[0][0][0][1],
       lng: geometry.coordinates[0][0][0][0],
-      altitude: 2000,
-      range: '2000',
+      altitude: 200,
+      range: '4000',
       tilt: '60',
-      heading: '0',
+      heading: '5',
     );
   }
 
@@ -108,7 +107,7 @@ class Geometry {
       formatedCoordinates.add({
         'lat': coordinates[0][0][i][1],
         'lng': coordinates[0][0][i][0],
-        'altitude': 2000.0,
+        'altitude': 20.0,
       });
     }
     //formatedCoordinates.add(formatedCoordinates.first);

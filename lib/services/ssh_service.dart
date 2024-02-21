@@ -14,8 +14,8 @@ import 'local_storage_service.dart';
 class SSHService {
   LGSettingsService get _settingsService => GetIt.I<LGSettingsService>();
 
-  LocalStorageService get _localStorageService =>
-      GetIt.I<LocalStorageService>();
+  /*LocalStorageService get _localStorageService =>
+      GetIt.I<LocalStorageService>();*/
 
   /// Property that defines the SSH client instance.
   SSHClient? _client;
@@ -23,37 +23,37 @@ class SSHService {
   /// Property that defines the SSH client instance.
   SSHClient? get client => _client;
 
-  bool isAuthenticated = false;
+  //bool isAuthenticated = false;
 
   /// Sets a client with the given [ssh] info.
-  void setClient(SSHEntity ssh) async {
+  Future<bool?> setClient(SSHEntity ssh) async {
     try {
-      final socket = await SSHSocket.connect(ssh.host, ssh.port);
+      final socket = await SSHSocket.connect(ssh.host, ssh.port, timeout: const Duration(seconds: 4));
       String? password;
       _client = SSHClient(socket,
         username: ssh.username,
-        onPasswordRequest: () {
-          password = ssh.passwordOrKey;
-          return password;
-        },
-        keepAliveInterval: const Duration(seconds: 3600),
-        onAuthenticated: () async {
-          isAuthenticated = true;
-          // _localStorageService.setItem(StorageKeys.lgConnection, "connected");
-        },
-        printDebug: (p0) => true,);
-      // await Future.delayed(const Duration(seconds: 10));
-    } catch (e) {
+        onPasswordRequest: () => password = ssh.passwordOrKey,
+        //keepAliveInterval: const Duration(seconds: 5),
+        //onAuthenticated: () async {}
+      );
       if (kDebugMode) {
-        print(e);
+        print(
+            'IP: ${ssh.host}, port: ${ssh.port}, username: ${ssh.username}, password: ${ssh.passwordOrKey}');
       }
+      return true;
+      // await Future.delayed(const Duration(seconds: 10));
+    } on SocketException catch (e) {
+      if (kDebugMode) {
+        print('Failed to connect: $e');
+      }
+      return false;
     }
   }
 
-  void init() {
+  Future<bool?> init() {
     // _localStorageService.setItem(StorageKeys.lgConnection, "not");
     final settings = _settingsService.getSettings();
-    setClient(SSHEntity(
+    return setClient(SSHEntity(
       username: settings.username,
       host: settings.ip,
       passwordOrKey: settings.password,
@@ -63,19 +63,17 @@ class SSHService {
 
   /// Connects to the current client, executes a command into it and then disconnects.
   Future<SSHSession?> execute(String command) async {
-    //connect();
+    await connect();
     SSHSession? execResult;
-    if (isAuthenticated) {
-      execResult = await _client?.execute(command);
-    }
-    //disconnect();
+    execResult = await _client?.execute(command);
+    disconnect();
     return execResult;
   }
 
   /// Connects to a machine using the current client.
   Future<void> connect() async {
     final settings = _settingsService.getSettings();
-    setClient(SSHEntity(
+    await setClient(SSHEntity(
       username: settings.username,
       host: settings.ip,
       passwordOrKey: settings.password,
@@ -91,12 +89,8 @@ class SSHService {
 
   /// Connects to the current client through SFTP, uploads a file into it and then disconnects.
   upload(File inputFile, String filename) async {
-    //connect();
-    if (!isAuthenticated) {
-      disconnect();
-      return;
-    }
-    // Future.delayed(const Duration(seconds: 3));
+    await connect();
+    Future.delayed(const Duration(seconds: 3));
     try {
       bool uploading = true;
       final sftp = await _client?.sftp();
@@ -106,9 +100,9 @@ class SSHService {
           SftpFileOpenMode.write);
       var fileSize = await inputFile.length();
       file?.write(inputFile.openRead().cast(), onProgress: (progress) {
-        // if(fileSize == progress){
-        uploading = true;
-        // }
+        if(fileSize == progress){
+          uploading = false;
+        }
       });
       // print(file);
       if(file==null){
@@ -121,7 +115,7 @@ class SSHService {
         print(error);
       }
     }
-    //disconnect();
+    disconnect();
   }
 
   Future waitWhile(bool Function() test,
