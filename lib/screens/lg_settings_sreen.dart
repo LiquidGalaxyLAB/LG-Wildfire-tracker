@@ -12,9 +12,11 @@ import 'package:wildfiretracker/utils/theme.dart';
 import 'package:wildfiretracker/widgets/button.dart';
 import 'package:wildfiretracker/widgets/input.dart';
 
+import '../entities/ssh_entity.dart';
 import '../services/lg_service.dart';
 import '../services/lg_settings_service.dart';
 import '../services/nasa/nasa_service_settings.dart';
+import '../services/ssh_service.dart';
 import '../utils/snackbar.dart';
 import '../widgets/confirm_dialog.dart';
 
@@ -26,12 +28,11 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMixin {
+
   LGSettingsService get _settingsService => GetIt.I<LGSettingsService>();
-
+  SSHService get _sshService => GetIt.I<SSHService>();
   LGService get _lgService => GetIt.I<LGService>();
-
   NASAService get _nasaService => GetIt.I<NASAService>();
-
   LocalStorageService get _localStorageService =>
       GetIt.I<LocalStorageService>();
 
@@ -48,7 +49,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
   bool show = false;
   bool isAuthenticated = true;
   bool _loading = false;
-  bool _canceled = false;
 
   bool _settingRefresh = false;
   bool _resetingRefresh = false;
@@ -56,9 +56,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
   bool _rebooting = false;
   bool _relaunching = false;
   bool _shuttingDown = false;
-
-  //final ScrollController _scrollController = ScrollController();
-  //bool _showTextInAppBar = false;
 
   Timer? _timer;
 
@@ -71,12 +68,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
 
   @override
   void dispose() {
-    //_scrollController.removeListener(_scrollListener);
-    //_scrollController.dispose();
     _tabController.dispose();
     _timer?.cancel();
     super.dispose();
-    //super.dispose();
   }
 
   @override
@@ -85,18 +79,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
       super.setState(fn);
     }
   }
-
-  /*void _scrollListener() {
-    if (_scrollController.position.pixels >= 45) {
-      setState(() {
-        _showTextInAppBar = true;
-      });
-    } else {
-      setState(() {
-        _showTextInAppBar = false;
-      });
-    }
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -257,13 +239,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                 ),
                 onPressed: () {
                   FocusManager.instance.primaryFocus?.unfocus();
-                  setState(() {
-                    //_showTextInAppBar = false;
-                  });
-                  _localStorageService.setItem(StorageKeys.lgScreens,
-                      _screensController.text.toString());
                   _onConnect();
-                  Timer(const Duration(seconds: 3), () async {
+                  /*Timer(const Duration(seconds: 3), () async {
                     if (isAuthenticated) {
                       await _lgService.setLogos();
                     } else {
@@ -272,7 +249,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     setState(() {
                       _loading = false;
                     });
-                  });
+                  });*/
                 },
               ),
             ),
@@ -610,7 +587,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
     );
   }
 
-  Widget _getConnection() {
+  /*Widget _getConnection() {
     if (isAuthenticated) {
       setState(() {
         _loading = false;
@@ -620,18 +597,18 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
         style: TextStyle(
             color: isAuthenticated ? ThemeColors.success : ThemeColors.alert,
             fontSize: 30));
-  }
+  }*/
 
-  Widget _getTitle(String title) {
+  /*Widget _getTitle(String title) {
     return Text(title,
         style: TextStyle(color: ThemeColors.textSecondary, fontSize: 20));
-  }
+  }*/
 
   /// Initializes and sets the network connection form.
   void _initNetworkState() async {
     final settings = _settingsService.getSettings();
 
-    _localStorageService.setItem(StorageKeys.lgConnection, "not");
+    //_localStorageService.setItem(StorageKeys.lgConnection, "not");
     setState(() {
       _usernameController.text = settings.username;
       _portController.text = settings.port.toString();
@@ -664,68 +641,67 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
 
   /// Checks and sets the connection status according to the form info.
   Future<void> _checkConnection() async {
-    SSHClient? _client;
+
+    /*await _settingsService.setSettings(
+      LGSettingsEntity(
+          ip: _ipController.text,
+          password: _pwController.text,
+          port: int.parse(_portController.text),
+          username: _usernameController.text),
+    );*/
+
+    // _sshService.init();
 
     try {
+
       if (_ipController.text.isEmpty ||
           _usernameController.text.isEmpty ||
           _pwController.text.isEmpty ||
           _screensController.text.isEmpty ||
           _portController.text.isEmpty) {
-        showSnackbar(context, 'Please enter all details');
+        return setState(() {
+          _loading = false;
+        });
       }
 
-      final settings = _settingsService.getSettings();
-      try {
-        final socket = await SSHSocket.connect(settings.ip, settings.port);
-        String? password;
-        _client = SSHClient(socket,
-            username: settings.username,
-            onPasswordRequest: () {
-              password = settings.password;
-              return password;
-            },
-            keepAliveInterval: const Duration(seconds: 3600),
-            onAuthenticated: () {
-              setState(() {
-                isAuthenticated = true;
-                _localStorageService.setItem(
-                    StorageKeys.lgConnection, "connected");
-                _localStorageService.setItem(
-                    StorageKeys.lgCurrentConnection, true);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                    'Connected successfully.',
-                    style: TextStyle(color: ThemeColors.snackBarTextColor),
-                  ),
-                  backgroundColor: ThemeColors.success,
-                ));
-              });
-            });
-      } catch (e) {
-        if (kDebugMode) {
-          print(e);
-        }
+      if ( await _sshService.init() == true){
+        setState(() {
+          isAuthenticated = true;
+        });
+        //await _lgService.setLogos();
+        _localStorageService.setItem(StorageKeys.lgCurrentConnection, true);
+      } else {
+        showSnackbar(context, 'Connection failed');
+        setState(() {
+          isAuthenticated = false;
+        });
       }
+
     } on Exception catch (e) {
-      if (kDebugMode) {
-        print('error: $e');
-      }
+      // ignore: avoid_print
+      print('$e');
+      setState(() {
+        isAuthenticated = false;
+      });
     } catch (e) {
-      if (kDebugMode) {
-        print('$e');
-      }
+      print('$e');
+    } finally {
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
   /// Connects to the a machine according to the form info.
   void _onConnect() async {
-    _localStorageService.setItem(StorageKeys.lgConnection, "not");
     setState(() {
       isAuthenticated = false;
       _loading = true;
     });
 
+    //_localStorageService.setItem(StorageKeys.lgConnection, "not");
+    _localStorageService.setItem(StorageKeys.lgScreens,
+        _screensController.text.toString());
     await _settingsService.setSettings(
       LGSettingsEntity(
           ip: _ipController.text,
@@ -735,5 +711,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
     );
 
     await _checkConnection();
+
+    setState(() {
+      _loading = false;
+    });
   }
 }

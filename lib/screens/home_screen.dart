@@ -23,6 +23,12 @@ class _HomeState extends State<HomePage> {
       'route': '/settings',
       'asset': '',
       'icon': Icons.settings
+    },
+    {
+      'name': 'GenCat - Historic Wildfire',
+      'route': '/gencat',
+      'asset': '',
+      'icon': Icons.forest
     }
   ];
 
@@ -69,7 +75,7 @@ class _HomeState extends State<HomePage> {
             height: 400,
             child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                  crossAxisCount: 4,
                   childAspectRatio: 1.0,
                   crossAxisSpacing: 10.0,
                   mainAxisSpacing: 10.0,
