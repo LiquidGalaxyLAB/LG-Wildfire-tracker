@@ -1,22 +1,15 @@
-import 'dart:async';
-
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wildfiretracker/entities/kml/kml_entity.dart';
 import 'package:wildfiretracker/services/gencat/fire_perimeter.dart';
 import 'package:wildfiretracker/services/gencat/gencat_service.dart';
 import 'package:wildfiretracker/services/gencat/historic_year.dart';
-import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 import 'package:wildfiretracker/widgets/button.dart';
 import 'package:wildfiretracker/widgets/gencat_fire_perimeter_card.dart';
-import 'package:wildfiretracker/widgets/nasa_live_fire_card.dart';
 
 import '../services/lg_service.dart';
-import '../services/nasa/country.dart';
-import '../services/nasa/satellite_data.dart';
 import '../utils/snackbar.dart';
 import '../utils/theme.dart';
 
@@ -33,7 +26,8 @@ class _GencatState extends State<GencatPage> {
   bool _loadingFirePerimeterData = false;
 
   LGService get _lgService => GetIt.I<LGService>();
-  GencatService  get _gencatService => GetIt.I<GencatService>();
+
+  GencatService get _gencatService => GetIt.I<GencatService>();
 
   late List<FirePerimeter> _firePerimeterData = [];
   late dynamic _selectedFirePerimeterData = false;
@@ -131,7 +125,8 @@ class _GencatState extends State<GencatPage> {
                           ),
                         ),
                       ),
-                      filterFn: (item, filter) => item.year.toString().contains(filter.toLowerCase()),
+                      filterFn: (item, filter) =>
+                          item.year.toString().contains(filter.toLowerCase()),
                       itemAsString: (item) => item.year.toString(),
                       items: HistoricYear.getLocalHistoricYears(),
                     ),
@@ -158,15 +153,14 @@ class _GencatState extends State<GencatPage> {
               padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: Button(
                 onPressed: () async {
-                  List<FirePerimeter> fp = await _gencatService.getFirePerimeters('incendis22');
+                  List<FirePerimeter> fp =
+                      await _gencatService.getFirePerimeters('incendis22');
                   print(fp[38]);
                   await _lgService.clearKml();
                   await _lgService.sendKml(fp[38].toKMLEntity());
-                  await _lgService.flyTo(
-                      fp[38].toLookAtEntity());
+                  await _lgService.flyTo(fp[38].toLookAtEntity());
 
-                  await _lgService.sendTour(
-                      fp[38].buildOrbit(), 'Orbit');
+                  await _lgService.sendTour(fp[38].buildOrbit(), 'Orbit');
                   await _lgService.startTour('Orbit');
 
                   /*_lgService.sendTour(
@@ -177,59 +171,74 @@ class _GencatState extends State<GencatPage> {
           _loadingFirePerimeterData
               ? _buildSpinner()
               : Expanded(
-              child: Padding(
-                padding:
-                const EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0),
-                child: SizedBox(
-                    width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
-                    child: _firePerimeterData.isEmpty
-                        ? _buildEmptyMessage('No live fire data.')
-                        : ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: _firePerimeterData.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: GencatFirePerimeterCard(
-                            firePerimeter: _firePerimeterData[index],
-                            selected: _selectedFirePerimeterData is FirePerimeter &&
-                                _firePerimeterData[index].properties.codiFinal ==
-                                _selectedFirePerimeterData.properties.codiFinal,
-                            disabled: false,
-                            onBalloonToggle: (value) {
-                              //onStationBalloonToggle!(_satelliteData[index], value);
-                            },
-                            onOrbit: (value) {
-                              //onStationOrbit!(value);
-                            },
-                            onView: (firePerimeter) async {
+                  child: Padding(
+                  padding:
+                      const EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0),
+                  child: SizedBox(
+                      width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+                      child: _firePerimeterData.isEmpty
+                          ? _buildEmptyMessage('No live fire data.')
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: _firePerimeterData.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: GencatFirePerimeterCard(
+                                    firePerimeter: _firePerimeterData[index],
+                                    selected: _selectedFirePerimeterData
+                                            is FirePerimeter &&
+                                        _firePerimeterData[index]
+                                                .properties
+                                                .codiFinal ==
+                                            _selectedFirePerimeterData
+                                                .properties.codiFinal,
+                                    disabled: false,
+                                    onBalloonToggle: (firePerimeter) async {
+                                      //viewFirePerimeter(firePerimeter: _firePerimeterData[index], showBallon: true);
 
-                              await _lgService.flyTo(
-                                  firePerimeter.toLookAtEntity());
-                              /*_lgService.sendKml(
-                                  satelliteData.toPlacemarkEntity(),
-                                  images: SatelliteData.getFireImg());
-
-                              _lgService.flyTo(
-                                  satelliteData.toLookAtEntity());
-
-                              _lgService.sendTour(
-                                  satelliteData.buildOrbit(), 'Orbit');*/
-
-                              //onStationView!(station);
-                            },
-                            onMaps: (firePerimeter) async {
-                              /*String googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=${satelliteData.latitude},${satelliteData.longitude}";
-                              if (!await launchUrlString(googleMapsUrl)) {
-                                showSnackbar(context, "Could not open the map.");
-                              }*/
-                            },
-                          ),
-                        );
-                      },
-                    )),
-              )),
+                                      final kmlBalloon = KMLEntity(
+                                        name: 'My Home City - Balloo',
+                                        content: firePerimeter
+                                            .toPlacemarkEntity()
+                                            .balloonOnlyTag,
+                                      );
+                                      await _lgService.sendKMLToSlave(
+                                        _lgService.balloonScreen,
+                                        kmlBalloon.body,
+                                      );
+                                    },
+                                    onOrbit: (value) async {
+                                      if (value) {
+                                        await _lgService.startTour('Orbit');
+                                      } else {
+                                        await _lgService.stopTour();
+                                      }
+                                    },
+                                    onView: (firePerimeter) async {
+                                      setState(() {
+                                        _selectedFirePerimeterData =
+                                            firePerimeter;
+                                      });
+                                      viewFirePerimeter(
+                                          firePerimeter: firePerimeter,
+                                          showBallon: false);
+                                    },
+                                    onMaps: (firePerimeter) async {
+                                      String googleMapsUrl =
+                                          "https://www.google.com/maps/search/?api=1&query=${firePerimeter.geometry.centeredLatitude},${firePerimeter.geometry.centeredLongitude}";
+                                      if (!await launchUrlString(
+                                          googleMapsUrl)) {
+                                        showSnackbar(
+                                            context, "Could not open the map.");
+                                      }
+                                    },
+                                  ),
+                                );
+                              },
+                            )),
+                )),
         ]));
   }
 
@@ -284,4 +293,11 @@ class _GencatState extends State<GencatPage> {
     });
   }
 
+  void viewFirePerimeter(
+      {required FirePerimeter firePerimeter, required bool showBallon}) async {
+    await _lgService.sendKml(firePerimeter.toKMLEntity(showBallon: showBallon),
+        images: FirePerimeter.getFireImg());
+    await _lgService.flyTo(firePerimeter.toLookAtEntity());
+    await _lgService.sendTour(firePerimeter.buildOrbit(), 'Orbit');
+  }
 }

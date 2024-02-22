@@ -21,27 +21,31 @@ class FirePerimeter {
     );
   }
 
-  KMLEntity toKMLEntity() {
+  KMLEntity toKMLEntity({bool showBallon = false}) {
     return KMLEntity(
         name: properties.codiFinal,
-        content: PlacemarkEntity(
-          id:  properties.codiFinal.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
-          name:  properties.codiFinal,
-          point: PointEntity(lat: geometry.coordinates[0][0][0][1], lng: geometry.coordinates[0][0][0][0], altitude: 25),
-          line: LineEntity(id: properties.codiFinal, coordinates: geometry.getFormatedCoordinates()),
-          lookAt: toLookAtEntity(),
-          viewOrbit: true,
-          //visibility: true,
-          balloonContent: 'Wildfire',
-          icon: 'fire.png',
-          description: ' test',
-        ).tag);
+        content: toPlacemarkEntity().tag);
+  }
+
+  PlacemarkEntity toPlacemarkEntity() {
+    return PlacemarkEntity(
+        id:  properties.codiFinal.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
+        name:  properties.codiFinal,
+        point: PointEntity(lat: geometry.centeredLatitude, lng: geometry.centeredLongitude, altitude: 25),
+        line: LineEntity(id: properties.codiFinal, coordinates: geometry.getFormatedCoordinates()),
+        lookAt: toLookAtEntity(),
+        // viewOrbit: true,
+        //visibility: true,
+        balloonContent: getBallonContent(), //'Wildfire',
+        icon: 'fire.png',
+        description: ' test',
+      );
   }
 
   LookAtEntity toLookAtEntity() {
     return LookAtEntity(
-      lat: geometry.coordinates[0][0][0][1],
-      lng: geometry.coordinates[0][0][0][0],
+      lat: geometry.centeredLatitude,
+      lng: geometry.centeredLongitude,
       altitude: 200,
       range: '4000',
       tilt: '60',
@@ -53,9 +57,32 @@ class FirePerimeter {
     return OrbitEntity.buildOrbit(OrbitEntity.tag(toLookAtEntity()));
   }
 
+  static getFireImg() {
+    return [
+      {
+        'name': 'fire.png',
+        'path': 'assets/images/fire.png',
+      }
+    ];
+  }
+
   @override
   String toString() {
     return 'FirePerimeter{type: $type, properties: $properties, geometry: $geometry}';
+  }
+
+  String getBallonContent() {
+    return '''
+      <div style="text-align:center;">
+      <b>ÀGER</b>
+      <b>Gerard Monsó Salmons</b>
+      Fire: properties.codiFinal
+      Date: properties.dataIncen
+      Municipality: properties.municipi
+      Grid Code: properties.gridCode
+      </div>
+      <br/>
+    ''';
   }
 
 }
@@ -84,10 +111,25 @@ class Properties {
 }
 
 class Geometry {
-  String type;
-  List<List<List<List<double>>>> coordinates;
+  late String type;
+  late double centeredLatitude;
+  late double centeredLongitude ;
+  late List<List<List<List<double>>>> coordinates;
 
-  Geometry({required this.type, required this.coordinates});
+  Geometry({required this.type, required this.coordinates}) {
+    centeredLatitude = coordinates[0][0][0][1];
+    centeredLongitude = coordinates[0][0][0][0];
+
+    double totalLatitude = 0;
+    double totalLongitude = 0;
+    for (var i = 0; i < coordinates[0][0].length; i++) {
+      totalLatitude += coordinates[0][0][i][1];
+      totalLongitude += coordinates[0][0][i][0];
+    }
+    centeredLatitude = totalLatitude / coordinates[0][0].length;
+    centeredLongitude = totalLongitude / coordinates[0][0].length;
+
+    }
 
   factory Geometry.fromJson(Map<String, dynamic> json) {
     return Geometry(

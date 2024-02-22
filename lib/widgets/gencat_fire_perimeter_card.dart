@@ -4,9 +4,7 @@ import 'package:wildfiretracker/services/gencat/fire_perimeter.dart';
 
 import '../utils/theme.dart';
 
-
 class GencatFirePerimeterCard extends StatefulWidget {
-
   const GencatFirePerimeterCard({
     Key? key,
     required this.firePerimeter,
@@ -23,12 +21,13 @@ class GencatFirePerimeterCard extends StatefulWidget {
   final FirePerimeter firePerimeter;
 
   final Function(bool) onOrbit;
-  final Function(bool) onBalloonToggle;
+  final Function(FirePerimeter) onBalloonToggle;
   final Function(FirePerimeter) onView;
   final Function(FirePerimeter) onMaps;
 
   @override
-  State<GencatFirePerimeterCard> createState() => _GencatFirePerimeterCardState();
+  State<GencatFirePerimeterCard> createState() =>
+      _GencatFirePerimeterCardState();
 }
 
 class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
@@ -71,24 +70,22 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children:[
-                        Icon(
-                          Icons.local_fire_department,
-                          color: ThemeColors.primaryColor,
-                          size: 24,
+                    Row(children: [
+                      Icon(
+                        Icons.local_fire_department,
+                        color: ThemeColors.primaryColor,
+                        size: 24,
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        widget.firePerimeter.properties.municipi,
+                        style: TextStyle(
+                          color: ThemeColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
                         ),
-                        SizedBox(width: 10),
-                        Text(
-                          widget.firePerimeter.properties.municipi,
-                          style: TextStyle(
-                            color: ThemeColors.textPrimary,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ]
-                    ),
+                      ),
+                    ]),
                     /*Text('${widget.satelliteData.version} - ${widget.satelliteData.satellite} - ${widget.satelliteData.instrument}',
                         style: TextStyle(
                           color: ThemeColors.textPrimary,
@@ -101,53 +98,59 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text('Latitude: ${widget.firePerimeter.properties.dataIncen}',
-                              style: TextStyle(color: ThemeColors.primaryColor)),
-                        ],
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                                'Latitude: ${widget.firePerimeter.properties.dataIncen}',
+                                style:
+                                    TextStyle(color: ThemeColors.primaryColor)),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                                'Longitude: ${widget.firePerimeter.properties.dataIncen}',
+                                style:
+                                    TextStyle(color: ThemeColors.primaryColor)),
+                          ],
+                        )
+                      ],
+                    ),
+                    TextButton.icon(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.all(0),
+                        tapTargetSize: MaterialTapTargetSize.padded,
+                        alignment: Alignment.centerRight,
+                        minimumSize: const Size(120, 24),
                       ),
-                      Row(
-                        children: [
-                          Text('Longitude: ${widget.firePerimeter.properties.dataIncen}',
-                              style: TextStyle(color: ThemeColors.primaryColor)),
-                        ],
-                      )
-                    ],
-                  ),
-                  TextButton.icon(
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(0),
-                      tapTargetSize: MaterialTapTargetSize.padded,
-                      alignment: Alignment.centerRight,
-                      minimumSize: const Size(120, 24),
-                    ),
-                    icon: Icon(
-                      widget.selected
-                          ? Icons.map_sharp
-                          : Icons.map,
-                      color: widget.disabled
-                          ? Colors.grey
-                          : ThemeColors.primaryColor,
-                    ),
-                    label: Text('VIEW IN MAPS',
-                      style: TextStyle(
-                        color: widget.disabled ? Colors.grey : ThemeColors.textPrimary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                      icon: Icon(
+                        widget.selected ? Icons.map_sharp : Icons.map,
+                        color: widget.disabled
+                            ? Colors.grey
+                            : ThemeColors.primaryColor,
                       ),
+                      label: Text(
+                        'VIEW IN MAPS',
+                        style: TextStyle(
+                          color: widget.disabled
+                              ? Colors.grey
+                              : ThemeColors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      onPressed: () {
+                        if (widget.disabled) {
+                          return;
+                        }
+                        widget.onMaps(widget.firePerimeter);
+                      },
                     ),
-                    onPressed: () {
-                      if (widget.disabled) {
-                        return;
-                      }
-                      widget.onMaps(widget.firePerimeter);
-                    },
-                  ),
-                ],),
+                  ],
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -182,7 +185,9 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                           ? (_orbiting ? 'STOP ORBIT' : 'ORBIT')
                           : 'VIEW IN GALAXY',
                       style: TextStyle(
-                        color: widget.disabled ? Colors.grey : ThemeColors.textPrimary,
+                        color: widget.disabled
+                            ? Colors.grey
+                            : ThemeColors.textPrimary,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -239,7 +244,7 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                                     _orbiting = false;
                                   });
 
-                                  widget.onBalloonToggle(value);
+                                  widget.onBalloonToggle(widget.firePerimeter);
                                 },
                         )
                       ],
