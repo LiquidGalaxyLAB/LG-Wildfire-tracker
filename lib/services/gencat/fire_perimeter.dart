@@ -4,14 +4,14 @@ import '../../entities/kml/look_at_entity.dart';
 import '../../entities/kml/orbit_entity.dart';
 import '../../entities/kml/placemark_entity.dart';
 import '../../entities/kml/point_entity.dart';
-import '../../entities/kml/tour_entity.dart';
 
 class FirePerimeter {
   String type;
   Properties properties;
   Geometry geometry;
 
-  FirePerimeter({required this.type, required this.properties, required this.geometry});
+  FirePerimeter(
+      {required this.type, required this.properties, required this.geometry});
 
   factory FirePerimeter.fromJson(Map<String, dynamic> json) {
     return FirePerimeter(
@@ -23,23 +23,28 @@ class FirePerimeter {
 
   KMLEntity toKMLEntity({bool showBallon = false}) {
     return KMLEntity(
-        name: properties.codiFinal,
-        content: toPlacemarkEntity().tag);
+        name: properties.codiFinal, content: toPlacemarkEntity().tag);
   }
 
   PlacemarkEntity toPlacemarkEntity() {
     return PlacemarkEntity(
-        id:  properties.codiFinal.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
-        name:  properties.codiFinal,
-        point: PointEntity(lat: geometry.centeredLatitude, lng: geometry.centeredLongitude, altitude: 25),
-        line: LineEntity(id: properties.codiFinal, coordinates: geometry.getFormatedCoordinates()),
-        lookAt: toLookAtEntity(),
-        // viewOrbit: true,
-        //visibility: true,
-        balloonContent: getBallonContent(), //'Wildfire',
-        icon: 'fire.png',
-        description: ' test',
-      );
+      id: properties.codiFinal.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
+      name: properties.codiFinal,
+      point: PointEntity(
+          lat: geometry.centeredLatitude,
+          lng: geometry.centeredLongitude,
+          altitude: 25),
+      line: LineEntity(
+          id: properties.codiFinal,
+          coordinates: geometry.getFormatedCoordinates()),
+      lookAt: toLookAtEntity(),
+      // viewOrbit: true,
+      //visibility: true,
+      balloonContent: getBallonContent(),
+      //'Wildfire',
+      icon: 'fire.png',
+      description: ' test',
+    );
   }
 
   LookAtEntity toLookAtEntity() {
@@ -84,23 +89,38 @@ class FirePerimeter {
       <br/>
     ''';
   }
-
 }
 
 class Properties {
+  String name;
+  String description;
   String codiFinal;
   String dataIncen;
   String municipi;
-  int gridCode;
+  String gridCode;
 
-  Properties({required this.codiFinal, required this.dataIncen, required this.municipi, required this.gridCode});
+  Properties(
+      {String? name,
+      String? description,
+      String? codiFinal,
+      String? dataIncen,
+      String? municipi,
+      String? gridCode})
+      : name = name ?? '',
+        codiFinal = codiFinal ?? '',
+        dataIncen = dataIncen ?? '',
+        municipi = municipi ?? '',
+        gridCode = gridCode ?? '',
+        description = description ?? '';
 
   factory Properties.fromJson(Map<String, dynamic> json) {
     return Properties(
-      codiFinal: json['CODI_FINAL'],
-      dataIncen: json['DATA_INCEN'],
-      municipi: json['MUNICIPI'],
-      gridCode: json['GRID_CODE'],
+      codiFinal: (json['CODI_FINAL'] ?? json['Name']).toString(),
+      dataIncen: json['DATA_INCEN'] ?? '',
+      municipi: (json['MUNICIPI'] ?? json['MUNICIPI_D'] ?? '').toString(),
+      gridCode: (json['GRID_CODE'] ?? '').toString(),
+      name: (json['Name'] ?? '').toString(),
+      description: json['description'] ?? '',
     );
   }
 
@@ -113,7 +133,8 @@ class Properties {
 class Geometry {
   late String type;
   late double centeredLatitude;
-  late double centeredLongitude ;
+  late double centeredLongitude;
+
   late List<List<List<List<double>>>> coordinates;
 
   Geometry({required this.type, required this.coordinates}) {
@@ -128,13 +149,29 @@ class Geometry {
     }
     centeredLatitude = totalLatitude / coordinates[0][0].length;
     centeredLongitude = totalLongitude / coordinates[0][0].length;
-
-    }
+  }
 
   factory Geometry.fromJson(Map<String, dynamic> json) {
+    var type = json['type'];
+
+    List<List<List<List<double>>>> coordinates = [];
+
+    if (type == 'Polygon') {
+      coordinates =
+          List<List<List<List<double>>>>.from(json['coordinates'].map((x) => [
+                List<List<double>>.from(
+                    x.map((x) => List<double>.from(x.map((x) => x.toDouble()))))
+              ]));
+    } else if (type == 'MultiPolygon') {
+      coordinates = List<List<List<List<double>>>>.from(json['coordinates'].map(
+          (x) => List<List<List<double>>>.from(x.map((x) =>
+              List<List<double>>.from(x.map(
+                  (x) => List<double>.from(x.map((x) => x.toDouble()))))))));
+    }
+
     return Geometry(
-      type: json['type'],
-      coordinates: List<List<List<List<double>>>>.from(json['coordinates'].map((x) => List<List<List<double>>>.from(x.map((x) => List<List<double>>.from(x.map((x) => List<double>.from(x.map((x) => x.toDouble())))))))),
+      type: type,
+      coordinates: coordinates,
     );
   }
 
@@ -152,8 +189,6 @@ class Geometry {
         'altitude': 20.0,
       });
     }
-    //formatedCoordinates.add(formatedCoordinates.first);
-    print(formatedCoordinates);
     return formatedCoordinates;
   }
 }

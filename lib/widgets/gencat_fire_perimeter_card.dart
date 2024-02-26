@@ -78,7 +78,7 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                       ),
                       SizedBox(width: 10),
                       Text(
-                        widget.firePerimeter.properties.municipi,
+                        widget.firePerimeter.properties.municipi != "" ? widget.firePerimeter.properties.municipi : widget.firePerimeter.properties.codiFinal,
                         style: TextStyle(
                           color: ThemeColors.textPrimary,
                           fontWeight: FontWeight.w600,
@@ -104,7 +104,7 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                         Row(
                           children: [
                             Text(
-                                'Latitude: ${widget.firePerimeter.properties.dataIncen}',
+                                'Latitude: ${widget.firePerimeter.geometry.centeredLatitude}',
                                 style:
                                     TextStyle(color: ThemeColors.primaryColor)),
                           ],
@@ -112,7 +112,7 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                         Row(
                           children: [
                             Text(
-                                'Longitude: ${widget.firePerimeter.properties.dataIncen}',
+                                'Longitude: ${widget.firePerimeter.geometry.centeredLongitude}',
                                 style:
                                     TextStyle(color: ThemeColors.primaryColor)),
                           ],
@@ -156,7 +156,7 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${widget.firePerimeter.properties.codiFinal}',
+                    widget.firePerimeter.properties.dataIncen,
                     style: TextStyle(
                       color: ThemeColors.primaryColor,
                       fontWeight: FontWeight.bold,

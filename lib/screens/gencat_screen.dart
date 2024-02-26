@@ -1,4 +1,5 @@
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -21,7 +22,7 @@ class GencatPage extends StatefulWidget {
 }
 
 class _GencatState extends State<GencatPage> {
-  late HistoricYear _selectedHisotricYear;
+  late HistoricYear _selectedHisotricYear = HistoricYear(year: 0, filename: '');
 
   bool _loadingFirePerimeterData = false;
 
@@ -40,7 +41,7 @@ class _GencatState extends State<GencatPage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           title: const Text(
-            'Generalitat Catalunya - Historic Wildfire',
+            'Generalitat de Catalunya - Historic Wildfires',
             style: TextStyle(color: Colors.black),
           ),
           leading: IconButton(
@@ -64,7 +65,7 @@ class _GencatState extends State<GencatPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Select the country of live fires:',
+                  'Select the year of the historical Catalan forest fires:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -149,25 +150,6 @@ class _GencatState extends State<GencatPage> {
                   )
                 ],
               )),
-          Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Button(
-                onPressed: () async {
-                  List<FirePerimeter> fp =
-                      await _gencatService.getFirePerimeters('incendis22');
-                  print(fp[38]);
-                  await _lgService.clearKml();
-                  await _lgService.sendKml(fp[38].toKMLEntity());
-                  await _lgService.flyTo(fp[38].toLookAtEntity());
-
-                  await _lgService.sendTour(fp[38].buildOrbit(), 'Orbit');
-                  await _lgService.startTour('Orbit');
-
-                  /*_lgService.sendTour(
-                      satelliteData.buildOrbit(), 'Orbit');*/
-                },
-                label: 'Test',
-              )),
           _loadingFirePerimeterData
               ? _buildSpinner()
               : Expanded(
@@ -177,7 +159,7 @@ class _GencatState extends State<GencatPage> {
                   child: SizedBox(
                       width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
                       child: _firePerimeterData.isEmpty
-                          ? _buildEmptyMessage('No live fire data.')
+                          ? _buildEmptyMessage('There are no wildfire.')
                           : ListView.builder(
                               physics: const AlwaysScrollableScrollPhysics(),
                               shrinkWrap: true,
@@ -286,7 +268,24 @@ class _GencatState extends State<GencatPage> {
       _loadingFirePerimeterData = true;
     });
 
-    _firePerimeterData = await _gencatService.getFirePerimeters('incendis22');
+    if (_selectedHisotricYear.filename == '') {
+      showSnackbar(context, 'Please select a year.');
+      setState(() {
+        _loadingFirePerimeterData = false;
+      });
+      return;
+    }
+
+    try{
+      _firePerimeterData = await _gencatService.getFirePerimeters(_selectedHisotricYear.filename);
+    } catch (e) {
+      if (kDebugMode) {
+        rethrow;
+        print(e);
+      }
+      showSnackbar(context, 'Error getting fire perimeter data.');
+    }
+
 
     setState(() {
       _loadingFirePerimeterData = false;
