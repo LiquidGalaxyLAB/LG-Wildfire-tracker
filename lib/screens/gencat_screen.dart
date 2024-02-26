@@ -1,18 +1,19 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:responsive_framework/responsive_grid.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:wildfiretracker/entities/kml/kml_entity.dart';
 import 'package:wildfiretracker/services/gencat/fire_perimeter.dart';
 import 'package:wildfiretracker/services/gencat/gencat_service.dart';
 import 'package:wildfiretracker/services/gencat/historic_year.dart';
-import 'package:wildfiretracker/widgets/button.dart';
-import 'package:wildfiretracker/widgets/gencat_fire_perimeter_card.dart';
 
+import '../entities/kml/kml_entity.dart';
 import '../services/lg_service.dart';
 import '../utils/snackbar.dart';
 import '../utils/theme.dart';
+import '../widgets/gencat_fire_perimeter_card.dart';
 
 class GencatPage extends StatefulWidget {
   const GencatPage({super.key});
@@ -36,6 +37,7 @@ class _GencatState extends State<GencatPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    print(screenWidth);
 
     return Scaffold(
         appBar: AppBar(
@@ -54,7 +56,7 @@ class _GencatState extends State<GencatPage> {
           actions: const [
             Padding(
               padding: EdgeInsets.only(right: 16),
-              child: Icon(Icons.local_fire_department_outlined),
+              child: Icon(Icons.forest_outlined),
             )
           ],
         ),
@@ -154,13 +156,96 @@ class _GencatState extends State<GencatPage> {
               ? _buildSpinner()
               : Expanded(
                   child: Padding(
-                  padding:
-                      const EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0),
-                  child: SizedBox(
-                      width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
-                      child: _firePerimeterData.isEmpty
-                          ? _buildEmptyMessage('There are no wildfire.')
-                          : ListView.builder(
+                      padding: const EdgeInsets.only(
+                          top: 20.0, left: 10.0, right: 10.0),
+                      child: SizedBox(
+                        //width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+                        width: screenWidth,
+                        child: _firePerimeterData.isEmpty
+                            ? _buildEmptyMessage('There are no wildfire.')
+                            : ResponsiveGridView.builder(
+                                addAutomaticKeepAlives: true,
+                                gridDelegate: ResponsiveGridDelegate(
+                                  //maxCrossAxisExtent: 180,
+                                  //crossAxisExtent: screenWidth >= 768? screenWidth / 2 - 224 : 360,
+                                  // Maximum item size.
+                                  childAspectRatio: 2.5,
+                                  // Aspect ratio for items.
+                                  crossAxisSpacing: 16,
+                                  // Horizontal spacing between items.
+                                  mainAxisSpacing: 16,
+                                  // Vertical spacing between items.
+                                  minCrossAxisExtent: screenWidth > 820? screenWidth / 2 - 224 : screenWidth-100,
+                                  // Minimum item size.
+                                ),
+                                alignment: Alignment.topCenter,
+                                //maxRowCount: ,
+                                shrinkWrap: false,
+                                padding: const EdgeInsets.all(16),
+                                itemCount: _firePerimeterData.length,
+                                // Total number of items.
+                                itemBuilder: (context, index) {
+                                  return FadeIn(
+                                      duration: Duration(milliseconds: 600),
+                                      delay: Duration(
+                                          milliseconds: (250 * 1).round()),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(bottom: 16),
+                                        child: GencatFirePerimeterCard(
+                                          firePerimeter: _firePerimeterData[index],
+                                          selected: _selectedFirePerimeterData
+                                          is FirePerimeter &&
+                                              _firePerimeterData[index]
+                                                  .properties
+                                                  .codiFinal ==
+                                                  _selectedFirePerimeterData
+                                                      .properties.codiFinal,
+                                          disabled: false,
+                                          onBalloonToggle: (firePerimeter) async {
+                                            //viewFirePerimeter(firePerimeter: _firePerimeterData[index], showBallon: true);
+
+                                            final kmlBalloon = KMLEntity(
+                                              name: 'My Home City - Balloo',
+                                              content: firePerimeter
+                                                  .toPlacemarkEntity()
+                                                  .balloonOnlyTag,
+                                            );
+                                            await _lgService.sendKMLToSlave(
+                                              _lgService.balloonScreen,
+                                              kmlBalloon.body,
+                                            );
+                                          },
+                                          onOrbit: (value) async {
+                                            if (value) {
+                                              await _lgService.startTour('Orbit');
+                                            } else {
+                                              await _lgService.stopTour();
+                                            }
+                                          },
+                                          onView: (firePerimeter) async {
+                                            setState(() {
+                                              _selectedFirePerimeterData =
+                                                  firePerimeter;
+                                            });
+                                            viewFirePerimeter(
+                                                firePerimeter: firePerimeter,
+                                                showBallon: false);
+                                          },
+                                          onMaps: (firePerimeter) async {
+                                            String googleMapsUrl =
+                                                "https://www.google.com/maps/search/?api=1&query=${firePerimeter.geometry.centeredLatitude},${firePerimeter.geometry.centeredLongitude}";
+                                            if (!await launchUrlString(
+                                                googleMapsUrl)) {
+                                              showSnackbar(
+                                                  context, "Could not open the map.");
+                                            }
+                                          },
+                                        ),
+                                      ));
+                                },
+                              ),
+                      )
+                      /*ListView.builder(
                               physics: const AlwaysScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: _firePerimeterData.length,
@@ -219,8 +304,8 @@ class _GencatState extends State<GencatPage> {
                                   ),
                                 );
                               },
-                            )),
-                )),
+                            )),*/
+                      )),
         ]));
   }
 
@@ -276,8 +361,9 @@ class _GencatState extends State<GencatPage> {
       return;
     }
 
-    try{
-      _firePerimeterData = await _gencatService.getFirePerimeters(_selectedHisotricYear.filename);
+    try {
+      _firePerimeterData = await _gencatService
+          .getFirePerimeters(_selectedHisotricYear.filename);
     } catch (e) {
       if (kDebugMode) {
         rethrow;
@@ -285,7 +371,6 @@ class _GencatState extends State<GencatPage> {
       }
       showSnackbar(context, 'Error getting fire perimeter data.');
     }
-
 
     setState(() {
       _loadingFirePerimeterData = false;

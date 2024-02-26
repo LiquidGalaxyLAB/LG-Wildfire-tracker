@@ -56,7 +56,7 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
         elevation: MaterialStateProperty.all(0),
       ),
       child: Container(
-        width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+        //width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
         decoration: BoxDecoration(
             color: ThemeColors.card.withOpacity(0.7),
             border: Border.all(color: ThemeColors.cardBorder),
@@ -72,7 +72,7 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                   children: [
                     Row(children: [
                       Icon(
-                        Icons.local_fire_department,
+                        Icons.forest_outlined,
                         color: ThemeColors.primaryColor,
                         size: 24,
                       ),
