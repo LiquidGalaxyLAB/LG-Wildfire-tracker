@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:flutterapp/entities/kml/kml_entity.dart';
-import 'package:flutterapp/entities/kml/look_at_entity.dart';
-import 'package:flutterapp/entities/kml/screen_overlay_entity.dart';
-import 'package:flutterapp/services/file_service.dart';
-import 'package:flutterapp/services/lg_settings_service.dart';
-import 'package:flutterapp/services/local_storage_service.dart';
-import 'package:flutterapp/services/ssh_service.dart';
-import 'package:flutterapp/utils/storage_keys.dart';
+import 'package:flutterappgms/entities/kml/kml_entity.dart';
+import 'package:flutterappgms/entities/kml/look_at_entity.dart';
+import 'package:flutterappgms/entities/kml/screen_overlay_entity.dart';
+import 'package:flutterappgms/services/file_service.dart';
+import 'package:flutterappgms/services/lg_settings_service.dart';
+import 'package:flutterappgms/services/local_storage_service.dart';
+import 'package:flutterappgms/services/ssh_service.dart';
+import 'package:flutterappgms/utils/storage_keys.dart';
 
 /// Service responsible for managing the data transfer between the app and the LG rig.
 class LGService {

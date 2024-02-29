@@ -1,8 +1,8 @@
 import 'package:csv/csv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutterapp/services/local_storage_service.dart';
-import 'package:flutterapp/utils/storage_keys.dart';
+import 'package:flutterappgms/services/local_storage_service.dart';
+import 'package:flutterappgms/utils/storage_keys.dart';
 
 import 'country.dart';
 import 'nasa_service_settings.dart';

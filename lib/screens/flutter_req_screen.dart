@@ -2,14 +2,14 @@ import 'dart:ffi';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterapp/entities/kml/line_entity.dart';
-import 'package:flutterapp/entities/kml/look_at_entity.dart';
-import 'package:flutterapp/entities/kml/orbit_entity.dart';
-import 'package:flutterapp/entities/kml/placemark_entity.dart';
-import 'package:flutterapp/entities/kml/point_entity.dart';
-import 'package:flutterapp/entities/kml/tour_entity.dart';
-import 'package:flutterapp/screens/lg_settings_sreen.dart';
-import 'package:flutterapp/utils/theme.dart';
+import 'package:flutterappgms/entities/kml/line_entity.dart';
+import 'package:flutterappgms/entities/kml/look_at_entity.dart';
+import 'package:flutterappgms/entities/kml/orbit_entity.dart';
+import 'package:flutterappgms/entities/kml/placemark_entity.dart';
+import 'package:flutterappgms/entities/kml/point_entity.dart';
+import 'package:flutterappgms/entities/kml/tour_entity.dart';
+import 'package:flutterappgms/screens/lg_settings_sreen.dart';
+import 'package:flutterappgms/utils/theme.dart';
 import 'package:get_it/get_it.dart';
 
 import '../entities/kml/kml_entity.dart';

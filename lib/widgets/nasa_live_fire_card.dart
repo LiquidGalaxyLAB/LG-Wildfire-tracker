@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:flutterapp/services/nasa/nasa_service.dart';
+import 'package:flutterappgms/services/nasa/nasa_service.dart';
 
 import '../services/nasa/satellite_data.dart';
 import '../utils/theme.dart';

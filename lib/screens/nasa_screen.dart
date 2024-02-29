@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:flutterapp/services/nasa/nasa_service.dart';
-import 'package:flutterapp/widgets/nasa_live_fire_card.dart';
+import 'package:flutterappgms/services/nasa/nasa_service.dart';
+import 'package:flutterappgms/widgets/nasa_live_fire_card.dart';
 
 import '../services/lg_service.dart';
 import '../services/nasa/country.dart';

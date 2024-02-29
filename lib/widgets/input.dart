@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutterapp/utils/theme.dart';
+import 'package:flutterappgms/utils/theme.dart';
 
 class Input extends StatefulWidget {
   const Input({

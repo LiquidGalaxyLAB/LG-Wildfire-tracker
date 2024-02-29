@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterapp/utils/theme.dart';
+import 'package:flutterappgms/utils/theme.dart';
 
 class ErrorDialog extends StatelessWidget {
   const ErrorDialog({Key? key, required this.message, required this.onConfirm})

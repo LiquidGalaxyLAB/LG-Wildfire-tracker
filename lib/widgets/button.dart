@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterapp/utils/theme.dart';
+import 'package:flutterappgms/utils/theme.dart';
 
 class Button extends StatefulWidget {
   const Button({

@@ -1,5 +1,5 @@
-import 'package:flutterapp/entities/kml/point_entity.dart';
-import 'package:flutterapp/entities/kml/tour_entity.dart';
+import 'package:flutterappgms/entities/kml/point_entity.dart';
+import 'package:flutterappgms/entities/kml/tour_entity.dart';
 
 import 'line_entity.dart';
 import 'look_at_entity.dart';
