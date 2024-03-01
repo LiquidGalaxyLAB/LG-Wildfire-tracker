@@ -40,128 +40,69 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
 
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return ElevatedButton(
-      onPressed: () {
-        if (widget.disabled) {
-          return;
-        }
-
-        /*Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => {}
-               GroundStationInfoPage(satelliteData: widget.satelliteData),
-        ));*/
-      },
-      style: ButtonStyle(
-        padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
-        elevation: MaterialStateProperty.all(0),
-      ),
-      child: Container(
-        width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
-        decoration: BoxDecoration(
-            color: ThemeColors.card.withOpacity(0.7),
-            border: Border.all(color: ThemeColors.cardBorder),
-            borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      Icon(
-                        Icons.local_fire_department,
-                        color: ThemeColors.primaryColor,
-                        size: 24,
+    return  Container(
+      //width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+      decoration: BoxDecoration(
+          color: ThemeColors.card.withOpacity(0.7),
+          border: Border.all(color: ThemeColors.cardBorder),
+          borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(children: [
+                    Icon(
+                      Icons.forest_outlined,
+                      color: ThemeColors.primaryColor,
+                      size: 24,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      widget.firePerimeter.properties.municipi != "" ? widget.firePerimeter.properties.municipi : widget.firePerimeter.properties.codiFinal,
+                      style: TextStyle(
+                        color: ThemeColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
                       ),
-                      SizedBox(width: 10),
-                      Text(
-                        widget.firePerimeter.properties.municipi != "" ? widget.firePerimeter.properties.municipi : widget.firePerimeter.properties.codiFinal,
-                        style: TextStyle(
-                          color: ThemeColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ]),
-                    /*Text('${widget.satelliteData.version} - ${widget.satelliteData.satellite} - ${widget.satelliteData.instrument}',
+                    ),
+                  ]),
+                  /*Text('${widget.satelliteData.version} - ${widget.satelliteData.satellite} - ${widget.satelliteData.instrument}',
                         style: TextStyle(
                           color: ThemeColors.textPrimary,
                           fontWeight: FontWeight.w600,
 
                         )),*/
-                  ]),
-              Padding(
-                padding: const EdgeInsets.only(top: 16, bottom: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                                'Latitude: ${widget.firePerimeter.geometry.centeredLatitude}',
-                                style:
-                                    TextStyle(color: ThemeColors.primaryColor)),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                                'Longitude: ${widget.firePerimeter.geometry.centeredLongitude}',
-                                style:
-                                    TextStyle(color: ThemeColors.primaryColor)),
-                          ],
-                        )
-                      ],
-                    ),
-                    TextButton.icon(
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.all(0),
-                        tapTargetSize: MaterialTapTargetSize.padded,
-                        alignment: Alignment.centerRight,
-                        minimumSize: const Size(120, 24),
-                      ),
-                      icon: Icon(
-                        widget.selected ? Icons.map_sharp : Icons.map,
-                        color: widget.disabled
-                            ? Colors.grey
-                            : ThemeColors.primaryColor,
-                      ),
-                      label: Text(
-                        'VIEW IN MAPS',
-                        style: TextStyle(
-                          color: widget.disabled
-                              ? Colors.grey
-                              : ThemeColors.textPrimary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                      onPressed: () {
-                        if (widget.disabled) {
-                          return;
-                        }
-                        widget.onMaps(widget.firePerimeter);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Row(
+                ]),
+            Padding(
+              padding: const EdgeInsets.only(top: 16, bottom: 4),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    widget.firePerimeter.properties.dataIncen,
-                    style: TextStyle(
-                      color: ThemeColors.primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                              'Latitude: ${widget.firePerimeter.geometry.centeredLatitude.toString().substring(0, 10)}',
+                              style:
+                              TextStyle(color: ThemeColors.primaryColor)),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                              'Longitude: ${widget.firePerimeter.geometry.centeredLongitude.toString().substring(0, 10)}',
+                              style:
+                              TextStyle(color: ThemeColors.primaryColor)),
+                        ],
+                      )
+                    ],
                   ),
                   TextButton.icon(
                     style: TextButton.styleFrom(
@@ -171,19 +112,13 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                       minimumSize: const Size(120, 24),
                     ),
                     icon: Icon(
-                      widget.selected
-                          ? (!_orbiting
-                              ? Icons.flip_camera_android_rounded
-                              : Icons.stop_rounded)
-                          : Icons.travel_explore_rounded,
+                      widget.selected ? Icons.map_sharp : Icons.map,
                       color: widget.disabled
                           ? Colors.grey
                           : ThemeColors.primaryColor,
                     ),
                     label: Text(
-                      widget.selected
-                          ? (_orbiting ? 'STOP ORBIT' : 'ORBIT')
-                          : 'VIEW IN GALAXY',
+                      'VIEW IN MAPS',
                       style: TextStyle(
                         color: widget.disabled
                             ? Colors.grey
@@ -196,62 +131,111 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                       if (widget.disabled) {
                         return;
                       }
-
-                      if (widget.selected) {
-                        widget.onOrbit(!_orbiting);
-
-                        setState(() {
-                          _orbiting = !_orbiting;
-                        });
-
-                        return;
-                      }
-
-                      widget.onView(widget.firePerimeter);
-
-                      setState(() {
-                        _orbiting = false;
-                        _balloonVisible = true;
-                      });
+                      widget.onMaps(widget.firePerimeter);
                     },
-                  )
+                  ),
                 ],
               ),
-              widget.selected
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Balloon visibility',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        Switch(
-                          value: _balloonVisible,
-                          activeColor: ThemeColors.primaryColor,
-                          activeTrackColor:
-                              ThemeColors.primaryColor.withOpacity(0.6),
-                          inactiveThumbColor: Colors.grey,
-                          inactiveTrackColor: Colors.grey.withOpacity(0.6),
-                          onChanged: widget.disabled
-                              ? null
-                              : (value) {
-                                  setState(() {
-                                    _balloonVisible = value;
-                                    _orbiting = false;
-                                  });
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.firePerimeter.properties.dataIncen,
+                  style: TextStyle(
+                    color: ThemeColors.primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                TextButton.icon(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(0),
+                    tapTargetSize: MaterialTapTargetSize.padded,
+                    alignment: Alignment.centerRight,
+                    minimumSize: const Size(120, 24),
+                  ),
+                  icon: Icon(
+                    widget.selected
+                        ? (!_orbiting
+                        ? Icons.flip_camera_android_rounded
+                        : Icons.stop_rounded)
+                        : Icons.travel_explore_rounded,
+                    color: widget.disabled
+                        ? Colors.grey
+                        : ThemeColors.primaryColor,
+                  ),
+                  label: Text(
+                    widget.selected
+                        ? (_orbiting ? 'STOP ORBIT' : 'ORBIT')
+                        : 'VIEW IN GALAXY',
+                    style: TextStyle(
+                      color: widget.disabled
+                          ? Colors.grey
+                          : ThemeColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  onPressed: () {
+                    if (widget.disabled) {
+                      return;
+                    }
 
-                                  widget.onBalloonToggle(widget.firePerimeter);
-                                },
-                        )
-                      ],
-                    )
-                  : Container(),
-            ],
-          ),
+                    if (widget.selected) {
+                      widget.onOrbit(!_orbiting);
+
+                      setState(() {
+                        _orbiting = !_orbiting;
+                      });
+
+                      return;
+                    }
+
+                    widget.onView(widget.firePerimeter);
+
+                    setState(() {
+                      _orbiting = false;
+                      _balloonVisible = true;
+                    });
+                  },
+                )
+              ],
+            ),
+            widget.selected
+                ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Balloon visibility',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Switch(
+                  value: _balloonVisible,
+                  activeColor: ThemeColors.primaryColor,
+                  activeTrackColor:
+                  ThemeColors.primaryColor.withOpacity(0.6),
+                  inactiveThumbColor: Colors.grey,
+                  inactiveTrackColor: Colors.grey.withOpacity(0.6),
+                  onChanged: widget.disabled
+                      ? null
+                      : (value) {
+                    setState(() {
+                      _balloonVisible = value;
+                      _orbiting = false;
+                    });
+
+                    widget.onBalloonToggle(widget.firePerimeter);
+                  },
+                )
+              ],
+            )
+                : Container(),
+          ],
         ),
       ),
     );

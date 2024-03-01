@@ -63,10 +63,10 @@ class SSHService {
 
   /// Connects to the current client, executes a command into it and then disconnects.
   Future<SSHSession?> execute(String command) async {
-    await connect();
+    //await connect();
     SSHSession? execResult;
     execResult = await _client?.execute(command);
-    disconnect();
+    //disconnect();
     return execResult;
   }
 
@@ -89,8 +89,8 @@ class SSHService {
 
   /// Connects to the current client through SFTP, uploads a file into it and then disconnects.
   upload(File inputFile, String filename) async {
-    await connect();
-    Future.delayed(const Duration(seconds: 3));
+    //await connect();
+    Future.delayed(const Duration(seconds: 1));
     try {
       bool uploading = true;
       final sftp = await _client?.sftp();
@@ -115,7 +115,7 @@ class SSHService {
         print(error);
       }
     }
-    disconnect();
+    //disconnect();
   }
 
   Future waitWhile(bool Function() test,
