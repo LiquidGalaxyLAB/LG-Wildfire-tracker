@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../../entities/kml/kml_entity.dart';
 import '../../entities/kml/line_entity.dart';
 import '../../entities/kml/look_at_entity.dart';
@@ -21,15 +23,15 @@ class FirePerimeter {
     );
   }
 
-  KMLEntity toKMLEntity({bool showBallon = false}) {
+  KMLEntity toKMLEntity() {
     return KMLEntity(
-        name: properties.codiFinal, content: toPlacemarkEntity().tag);
+        name: properties.municipi.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''), content: toPlacemarkEntity().tag);
   }
 
   PlacemarkEntity toPlacemarkEntity() {
     return PlacemarkEntity(
       id: properties.codiFinal.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
-      name: properties.codiFinal,
+      name: properties.municipi,
       point: PointEntity(
           lat: geometry.centeredLatitude,
           lng: geometry.centeredLongitude,
@@ -39,11 +41,12 @@ class FirePerimeter {
           coordinates: geometry.getFormatedCoordinates()),
       lookAt: toLookAtEntity(),
       // viewOrbit: true,
+
       //visibility: true,
       balloonContent: getBallonContent(),
       //'Wildfire',
       icon: 'fire.png',
-      description: ' test',
+      description: 'Wild fire perimeter',
     );
   }
 
@@ -51,8 +54,10 @@ class FirePerimeter {
     return LookAtEntity(
       lat: geometry.centeredLatitude,
       lng: geometry.centeredLongitude,
-      altitude: 200,
-      range: '4000',
+      //altitude: 200, //2,3998
+      altitude: (geometry.area * 3.3998), //2,3998
+      //range: '3000', //35,99
+      range: (geometry.area * 45.99).toString(),
       tilt: '60',
       heading: '5',
     );
@@ -76,19 +81,20 @@ class FirePerimeter {
     return 'FirePerimeter{type: $type, properties: $properties, geometry: $geometry}';
   }
 
-  String getBallonContent() {
-    return '''
-      <div style="text-align:center;">
-      <b>ÀGER</b>
-      <b>Gerard Monsó Salmons</b>
-      Fire: properties.codiFinal
-      Date: properties.dataIncen
-      Municipality: properties.municipi
-      Grid Code: properties.gridCode
-      </div>
-      <br/>
-    ''';
-  }
+  String getBallonContent() => '''
+  <div>
+    <b><span style="font-size:15px;">${properties.municipi.toUpperCase()}</span></b>
+    <br/><br/>
+    <b>Wildfire date:</b> ${properties.dataIncen}<br/>
+    <b>Wildfire code:</b> ${properties.codiFinal}<br/>
+    <b>Wildfire name:</b> ${properties.municipi}<br/>
+    <b>Wildfire description:</b> ${properties.description}<br/>
+    <b>Wildfire grid code:</b> ${properties.gridCode}<br/>
+    <b>Centered latitude:</b> ${geometry.centeredLatitude.toString().substring(0, 10)}<br/>
+    <b>Centered longitude:</b> ${geometry.centeredLongitude.toString().substring(0, 10)}<br/>
+    <b>Area:</b> ${geometry.area.toString().substring(0, 8)} ha<br/>
+    </div>
+  ''';
 }
 
 class Properties {
@@ -134,6 +140,7 @@ class Geometry {
   late String type;
   late double centeredLatitude;
   late double centeredLongitude;
+  late double area = 0;
 
   late List<List<List<List<double>>>> coordinates;
 
@@ -141,14 +148,27 @@ class Geometry {
     centeredLatitude = coordinates[0][0][0][1];
     centeredLongitude = coordinates[0][0][0][0];
 
+    int length = coordinates[0][0].length;
     double totalLatitude = 0;
     double totalLongitude = 0;
+    double tmpArea = 0;
     for (var i = 0; i < coordinates[0][0].length; i++) {
       totalLatitude += coordinates[0][0][i][1];
       totalLongitude += coordinates[0][0][i][0];
+
+      double lon = coordinates[0][0][i][0] * 111000 * cos(coordinates[0][0][i][1] * pi / 180);
+      double lat = coordinates[0][0][i][1] * 111000;
+      double nextLon = coordinates[0][0][(i + 1) % length][0] * 111000 * cos(coordinates[0][0][(i + 1) % length][1] * pi / 180);
+      double nextLat = coordinates[0][0][(i + 1) % length][1] * 111000;
+
+      tmpArea += (lon * nextLat - nextLon * lat);
+
+
     }
     centeredLatitude = totalLatitude / coordinates[0][0].length;
     centeredLongitude = totalLongitude / coordinates[0][0].length;
+
+    area = (tmpArea / 2).abs()/10000;
   }
 
   factory Geometry.fromJson(Map<String, dynamic> json) {

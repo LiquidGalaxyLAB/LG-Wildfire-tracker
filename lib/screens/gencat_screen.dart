@@ -201,19 +201,10 @@ class _GencatState extends State<GencatPage> {
                                                   _selectedFirePerimeterData
                                                       .properties.codiFinal,
                                           disabled: false,
-                                          onBalloonToggle: (firePerimeter) async {
-                                            //viewFirePerimeter(firePerimeter: _firePerimeterData[index], showBallon: true);
-
-                                            final kmlBalloon = KMLEntity(
-                                              name: 'My Home City - Balloo',
-                                              content: firePerimeter
-                                                  .toPlacemarkEntity()
-                                                  .balloonOnlyTag,
-                                            );
-                                            await _lgService.sendKMLToSlave(
-                                              _lgService.balloonScreen,
-                                              kmlBalloon.body,
-                                            );
+                                          onBalloonToggle: (firePerimeter, showBallon) {
+                                            viewFirePerimeter(
+                                                firePerimeter: firePerimeter,
+                                                showBallon: showBallon);
                                           },
                                           onOrbit: (value) async {
                                             if (value) {
@@ -222,14 +213,14 @@ class _GencatState extends State<GencatPage> {
                                               await _lgService.stopTour();
                                             }
                                           },
-                                          onView: (firePerimeter) async {
+                                          onView: (firePerimeter) {
                                             setState(() {
                                               _selectedFirePerimeterData =
                                                   firePerimeter;
                                             });
                                             viewFirePerimeter(
                                                 firePerimeter: firePerimeter,
-                                                showBallon: false);
+                                                showBallon: true);
                                           },
                                           onMaps: (firePerimeter) async {
                                             String googleMapsUrl =
@@ -245,66 +236,6 @@ class _GencatState extends State<GencatPage> {
                                 },
                               ),
                       )
-                      /*ListView.builder(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: _firePerimeterData.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: GencatFirePerimeterCard(
-                                    firePerimeter: _firePerimeterData[index],
-                                    selected: _selectedFirePerimeterData
-                                            is FirePerimeter &&
-                                        _firePerimeterData[index]
-                                                .properties
-                                                .codiFinal ==
-                                            _selectedFirePerimeterData
-                                                .properties.codiFinal,
-                                    disabled: false,
-                                    onBalloonToggle: (firePerimeter) async {
-                                      //viewFirePerimeter(firePerimeter: _firePerimeterData[index], showBallon: true);
-
-                                      final kmlBalloon = KMLEntity(
-                                        name: 'My Home City - Balloo',
-                                        content: firePerimeter
-                                            .toPlacemarkEntity()
-                                            .balloonOnlyTag,
-                                      );
-                                      await _lgService.sendKMLToSlave(
-                                        _lgService.balloonScreen,
-                                        kmlBalloon.body,
-                                      );
-                                    },
-                                    onOrbit: (value) async {
-                                      if (value) {
-                                        await _lgService.startTour('Orbit');
-                                      } else {
-                                        await _lgService.stopTour();
-                                      }
-                                    },
-                                    onView: (firePerimeter) async {
-                                      setState(() {
-                                        _selectedFirePerimeterData =
-                                            firePerimeter;
-                                      });
-                                      viewFirePerimeter(
-                                          firePerimeter: firePerimeter,
-                                          showBallon: false);
-                                    },
-                                    onMaps: (firePerimeter) async {
-                                      String googleMapsUrl =
-                                          "https://www.google.com/maps/search/?api=1&query=${firePerimeter.geometry.centeredLatitude},${firePerimeter.geometry.centeredLongitude}";
-                                      if (!await launchUrlString(
-                                          googleMapsUrl)) {
-                                        showSnackbar(
-                                            context, "Could not open the map.");
-                                      }
-                                    },
-                                  ),
-                                );
-                              },
-                            )),*/
                       )),
         ]));
   }
@@ -377,11 +308,28 @@ class _GencatState extends State<GencatPage> {
     });
   }
 
-  void viewFirePerimeter(
+  Future<void> viewFirePerimeter(
       {required FirePerimeter firePerimeter, required bool showBallon}) async {
-    await _lgService.sendKml(firePerimeter.toKMLEntity(showBallon: showBallon),
+    print(showBallon);
+    print('show ballon');
+
+    await _lgService.sendKml(firePerimeter.toKMLEntity(),
         images: FirePerimeter.getFireImg());
+    if (showBallon) {
+      final kmlBalloon = KMLEntity(
+        name: '',
+        content: firePerimeter
+            .toPlacemarkEntity()
+            .balloonOnlyTag,
+      );
+      await _lgService.sendKMLToSlave(
+        _lgService.balloonScreen,
+        kmlBalloon.body,
+      );
+    }
     await _lgService.flyTo(firePerimeter.toLookAtEntity());
     await _lgService.sendTour(firePerimeter.buildOrbit(), 'Orbit');
+
+
   }
 }

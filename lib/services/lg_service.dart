@@ -93,6 +93,7 @@ class LGService {
 
     final kmlFile = await _fileService.createFile(fileName, kml.body);
     await _sshService.upload(kmlFile, fileName);
+    await Future.delayed(const Duration(seconds: 1));
     await _sshService
         .execute('echo "$_url/$fileName" > /var/www/html/kmls.txt');
   }

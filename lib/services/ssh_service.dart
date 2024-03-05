@@ -32,7 +32,8 @@ class SSHService {
       String? password;
       _client = SSHClient(socket,
         username: ssh.username,
-        onPasswordRequest: () => password = ssh.passwordOrKey,
+        onPasswordRequest: () => password = ssh.passwordOrKey
+
         //keepAliveInterval: const Duration(seconds: 5),
         //onAuthenticated: () async {}
       );
@@ -63,10 +64,26 @@ class SSHService {
 
   /// Connects to the current client, executes a command into it and then disconnects.
   Future<SSHSession?> execute(String command) async {
-    //await connect();
     SSHSession? execResult;
-    execResult = await _client?.execute(command);
-    //disconnect();
+    //await Future.delayed(const Duration(seconds: 1));
+    try {
+      execResult = await _client?.execute(command);
+    } catch (error) {
+      if (kDebugMode) {
+        print(error);
+      }
+
+      try {
+        await init();
+        execResult = await _client?.execute(command);
+      } catch (error) {
+        if (kDebugMode) {
+          print(error);
+        }
+      }
+    }
+
+
     return execResult;
   }
 
@@ -90,7 +107,7 @@ class SSHService {
   /// Connects to the current client through SFTP, uploads a file into it and then disconnects.
   upload(File inputFile, String filename) async {
     //await connect();
-    Future.delayed(const Duration(seconds: 1));
+    //await Future.delayed(const Duration(seconds: 1));
     try {
       bool uploading = true;
       final sftp = await _client?.sftp();

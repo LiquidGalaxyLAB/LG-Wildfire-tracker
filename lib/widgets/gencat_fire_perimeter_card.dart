@@ -21,7 +21,7 @@ class GencatFirePerimeterCard extends StatefulWidget {
   final FirePerimeter firePerimeter;
 
   final Function(bool) onOrbit;
-  final Function(FirePerimeter) onBalloonToggle;
+  final Function(FirePerimeter, bool) onBalloonToggle;
   final Function(FirePerimeter) onView;
   final Function(FirePerimeter) onMaps;
 
@@ -101,6 +101,14 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                               style:
                               TextStyle(color: ThemeColors.primaryColor)),
                         ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                              'Area: ${widget.firePerimeter.geometry.area.toStringAsFixed(4)} ha',
+                              style:
+                              TextStyle(color: ThemeColors.primaryColor)),
+                        ],
                       )
                     ],
                   ),
@@ -168,7 +176,7 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                   label: Text(
                     widget.selected
                         ? (_orbiting ? 'STOP ORBIT' : 'ORBIT')
-                        : 'VIEW IN GALAXY',
+                        : 'VIEW IN LG',
                     style: TextStyle(
                       color: widget.disabled
                           ? Colors.grey
@@ -204,16 +212,8 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
             ),
             widget.selected
                 ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const Text(
-                  'Balloon visibility',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
                 Switch(
                   value: _balloonVisible,
                   activeColor: ThemeColors.primaryColor,
@@ -225,13 +225,24 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                       ? null
                       : (value) {
                     setState(() {
-                      _balloonVisible = value;
+                      _balloonVisible = !_balloonVisible;
                       _orbiting = false;
                     });
 
-                    widget.onBalloonToggle(widget.firePerimeter);
+                    widget.onBalloonToggle(widget.firePerimeter, _balloonVisible);
                   },
-                )
+                ),
+                Text(
+                  'BALLON',
+                  style: TextStyle(
+                    color: widget.disabled
+                        ? Colors.grey
+                        : ThemeColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  selectionColor: ThemeColors.backgroundCardColor,
+                ),
               ],
             )
                 : Container(),
