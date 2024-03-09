@@ -29,7 +29,7 @@ class NASAServiceSettings {
     this.country = 'ESP',
     this.dayRange = 1,
     DateTime? date,
-  }) : date = date ?? DateTime.now();
+  }) : date = date ?? DateTime.now().subtract(const Duration(days: 1));
 
   String getFormattedDate() {
     return DateFormat('yyyy-MM-dd').format(date);
@@ -38,7 +38,6 @@ class NASAServiceSettings {
   String generateUrl({int satelliteIndex = 0}) {
     if (satelliteIndex >= satellites.length || satelliteIndex < 0)
       satelliteIndex = 0;
-    //print('$countryLiveFireUrl/$format/$apiKey/${satellites[satelliteIndex]}/$country/$dayRange/${getFormattedDate()}');
     return '$countryLiveFireUrl/$format/$apiKey/${satellites[satelliteIndex]}/$country/$dayRange/${getFormattedDate()}';
   }
 }

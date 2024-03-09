@@ -23,7 +23,7 @@ class NasaLiveFireCard extends StatefulWidget {
   final SatelliteData satelliteData;
 
   final Function(bool) onOrbit;
-  final Function(bool) onBalloonToggle;
+  final Function(SatelliteData, bool) onBalloonToggle;
   final Function(SatelliteData) onView;
   final Function(SatelliteData) onMaps;
 
@@ -41,22 +41,7 @@ class _NasaLiveFireCardState extends State<NasaLiveFireCard> {
 
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return ElevatedButton(
-      onPressed: () {
-        if (widget.disabled) {
-          return;
-        }
-
-        /*Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => {}
-               GroundStationInfoPage(satelliteData: widget.satelliteData),
-        ));*/
-      },
-      style: ButtonStyle(
-        padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
-        elevation: MaterialStateProperty.all(0),
-      ),
-      child: Container(
+    return Container(
         width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
         decoration: BoxDecoration(
             color: ThemeColors.card.withOpacity(0.7),
@@ -80,7 +65,7 @@ class _NasaLiveFireCardState extends State<NasaLiveFireCard> {
                         ),
                         SizedBox(width: 10),
                         Text(
-                          widget.satelliteData.countryId,
+                          '[${widget.satelliteData.countryId}] ${widget.satelliteData.geocodeAddress.countryName != null ? '${widget.satelliteData.geocodeAddress.countryName} - ':  ''}${widget.satelliteData.geocodeAddress.city ?? ''}' ,
                           style: TextStyle(
                             color: ThemeColors.textPrimary,
                             fontWeight: FontWeight.w600,
@@ -214,16 +199,8 @@ class _NasaLiveFireCardState extends State<NasaLiveFireCard> {
               ),
               widget.selected
                   ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        const Text(
-                          'Balloon visibility',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
                         Switch(
                           value: _balloonVisible,
                           activeColor: ThemeColors.primaryColor,
@@ -235,20 +212,31 @@ class _NasaLiveFireCardState extends State<NasaLiveFireCard> {
                               ? null
                               : (value) {
                                   setState(() {
-                                    _balloonVisible = value;
+                                    _balloonVisible = !_balloonVisible;
                                     _orbiting = false;
                                   });
 
-                                  widget.onBalloonToggle(value);
+                                  widget.onBalloonToggle(widget.satelliteData,
+                                      _balloonVisible);
                                 },
-                        )
+                        ),
+                        Text(
+                          'BALLON',
+                          style: TextStyle(
+                            color: widget.disabled
+                                ? Colors.grey
+                                : ThemeColors.textPrimary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          selectionColor: ThemeColors.backgroundCardColor,
+                        ),
                       ],
                     )
                   : Container(),
             ],
           ),
         ),
-      ),
     );
   }
 }

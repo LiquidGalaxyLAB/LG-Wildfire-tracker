@@ -1,13 +1,15 @@
 import 'dart:async';
 
+import 'package:animate_do/animate_do.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:responsive_framework/responsive_grid.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 import 'package:wildfiretracker/widgets/nasa_live_fire_card.dart';
 
+import '../entities/kml/kml_entity.dart';
 import '../services/lg_service.dart';
 import '../services/nasa/country.dart';
 import '../services/nasa/satellite_data.dart';
@@ -27,11 +29,12 @@ class _NasaApiState extends State<NasaApiPage> {
   late List<Country> _contries = [];
   late List<SatelliteData> _satelliteData = [];
 
-  late SatelliteData _selectedSatelliteData = SatelliteData();
+  late dynamic _selectedSatelliteData = false;
   late Country _selectedCountry = Country();
 
   bool _loadingCountries = true;
-  bool _loadingSatelliteData = false;
+  // bool _loadingSatelliteData = false;
+  final ValueNotifier<bool> _loadingSatelliteData = ValueNotifier<bool>(false);
 
 
   LGService get _lgService => GetIt.I<LGService>();
@@ -137,7 +140,9 @@ class _NasaApiState extends State<NasaApiPage> {
                           ),
                         ),
                       ),
-                      filterFn: (item, filter) => item.name.contains(filter),
+                      filterFn: (item, filter) => item.name
+                          .toLowerCase()
+                          .contains(filter.toLowerCase()),
                       itemAsString: (item) => item.name,
                       items: _contries,
                     ),
@@ -160,57 +165,89 @@ class _NasaApiState extends State<NasaApiPage> {
                   )
                 ],
               )),
-          _loadingSatelliteData
+          _loadingSatelliteData.value
               ? _buildSpinner()
               : Expanded(
                   child: Padding(
                   padding:
                       const EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0),
                   child: SizedBox(
-                      width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
-                      child: _satelliteData.isEmpty
-                          ? _buildEmptyMessage('No live fire data.')
-                          : ListView.builder(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: _satelliteData.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: NasaLiveFireCard(
-                                    satelliteData: _satelliteData[index],
-                                    selected: _satelliteData[index].id ==
-                                        _selectedSatelliteData.id,
-                                    disabled: false,
-                                    onBalloonToggle: (value) {
-                                      //onStationBalloonToggle!(_satelliteData[index], value);
-                                    },
-                                    onOrbit: (value) {
-                                      //onStationOrbit!(value);
-                                    },
-                                    onView: (satelliteData) {
-                                      _lgService.sendKml(
-                                          satelliteData.toPlacemarkEntity(),
-                                          images: SatelliteData.getFireImg());
-
-                                      _lgService.flyTo(
-                                          satelliteData.toLookAtEntity());
-
-                                      _lgService.sendTour(
-                                          satelliteData.buildOrbit(), 'Orbit');
-
-                                      //onStationView!(station);
-                                    },
-                                    onMaps: (satelliteData) async {
-                                      String googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=${satelliteData.latitude},${satelliteData.longitude}";
-                                      if (!await launchUrlString(googleMapsUrl)) {
-                                        showSnackbar(context, "Could not open the map.");
-                                      }
-                                    },
-                                  ),
-                                );
-                              },
-                            )),
+                    //width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+                    child: _satelliteData.isEmpty
+                        ? _buildEmptyMessage('No live fire data.')
+                        : ResponsiveGridView.builder(
+                            addAutomaticKeepAlives: true,
+                            gridDelegate: ResponsiveGridDelegate(
+                              //maxCrossAxisExtent: 180,
+                              //crossAxisExtent: screenWidth >= 768? screenWidth / 2 - 224 : 360,
+                              // Maximum item size.
+                              childAspectRatio: 2.5,
+                              // Aspect ratio for items.
+                              crossAxisSpacing: 16,
+                              // Horizontal spacing between items.
+                              mainAxisSpacing: 16,
+                              // Vertical spacing between items.
+                              minCrossAxisExtent: screenWidth > 820
+                                  ? screenWidth / 2 - 224
+                                  : screenWidth - 100,
+                              // Minimum item size.
+                            ),
+                            alignment: Alignment.topCenter,
+                            //maxRowCount: ,
+                            shrinkWrap: false,
+                            padding: const EdgeInsets.all(16),
+                            itemCount: _satelliteData.length,
+                            // Total number of items.
+                            itemBuilder: (context, index) {
+                              return FadeIn(
+                                  duration: Duration(milliseconds: 600),
+                                  delay:
+                                      Duration(milliseconds: (250 * 1).round()),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: NasaLiveFireCard(
+                                      satelliteData: _satelliteData[index],
+                                      selected: _selectedSatelliteData
+                                              is SatelliteData &&
+                                          _satelliteData[index].id ==
+                                              _selectedSatelliteData.id,
+                                      disabled: false,
+                                      onBalloonToggle:
+                                          (satelliteData, showBallon) {
+                                        viewSatelliteData(
+                                            satelliteData: satelliteData,
+                                            showBallon: showBallon);
+                                      },
+                                      onOrbit: (value) async {
+                                        if (value) {
+                                          await _lgService.startTour('Orbit');
+                                        } else {
+                                          await _lgService.stopTour();
+                                        }
+                                      },
+                                      onView: (satelliteData) {
+                                        setState(() {
+                                          _selectedSatelliteData =
+                                              satelliteData;
+                                        });
+                                        viewSatelliteData(
+                                            satelliteData: satelliteData,
+                                            showBallon: true);
+                                      },
+                                      onMaps: (satelliteData) async {
+                                        String googleMapsUrl =
+                                            "https://www.google.com/maps/search/?api=1&query=${satelliteData.latitude},${satelliteData.longitude}";
+                                        if (!await launchUrlString(
+                                            googleMapsUrl)) {
+                                          showSnackbar(context,
+                                              "Could not open the map.");
+                                        }
+                                      },
+                                    ),
+                                  ));
+                            },
+                          ),
+                  ),
                 )),
         ]));
   }
@@ -229,28 +266,40 @@ class _NasaApiState extends State<NasaApiPage> {
 
   void getLiveFireByCountry() {
     setState(() {
-      _loadingSatelliteData = true;
+      _loadingSatelliteData.value = true;
     });
     _nasaService
         .getLiveFire(countryAbbreviation: _selectedCountry.abbreviation)
-        .then((satelliteData) {
+        .then((satelliteData) async {
       _satelliteData = satelliteData;
       setState(() {
-        _loadingSatelliteData = false;
+        _loadingSatelliteData.value  = false;
       });
+      SatelliteData.setPlacemarkFromCoordinates(satelliteData, _loadingSatelliteData, refreshState);
     }).onError((error, stackTrace) {
       _satelliteData = [];
       setState(() {
-        _loadingSatelliteData = false;
+        _loadingSatelliteData.value  = false;
       });
       showSnackbar(context, 'NASA Api Timeout');
     });
+  }
+
+  void refreshState() {
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
     getCountries();
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    _loadingSatelliteData.dispose();
   }
 
   /// Builds the list empty warn message.
@@ -287,4 +336,26 @@ class _NasaApiState extends State<NasaApiPage> {
     );
   }
 
+
+
+  Future<void> viewSatelliteData(
+      {required SatelliteData satelliteData, required bool showBallon}) async {
+    await _lgService.sendKml(satelliteData.toKMLEntity(),
+        images: SatelliteData.getFireImg());
+    if (showBallon) {
+      final kmlBalloon = KMLEntity(
+        name: '',
+        content: satelliteData
+            .toPlacemarkEntity()
+            .balloonOnlyTag,
+      );
+      await _lgService.sendKMLToSlave(
+        _lgService.balloonScreen,
+        kmlBalloon.body,
+      );
+    }
+    await _lgService.flyTo(satelliteData.toLookAtEntity());
+    await _lgService.sendTour(satelliteData.buildOrbit(), 'Orbit');
+
+  }
 }

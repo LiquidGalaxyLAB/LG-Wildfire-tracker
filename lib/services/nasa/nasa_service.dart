@@ -1,4 +1,5 @@
 import 'package:csv/csv.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:wildfiretracker/services/local_storage_service.dart';
@@ -60,7 +61,16 @@ class NASAService {
       nasaApiCountryLiveFire.country = countryAbbreviation;
     }
 
+
+
     do {
+
+      if (kDebugMode){
+       print(Uri.parse(nasaApiCountryLiveFire.generateUrl(
+            satelliteIndex: satelliteIndex)));
+      }
+
+
       var request = http.Request(
           'GET',
           Uri.parse(nasaApiCountryLiveFire.generateUrl(
@@ -83,6 +93,8 @@ class NASAService {
 
       satelliteIndex++;
     } while (satelliteIndex < NASAServiceSettings.satellites.length);
+
+
 
     return satelliteData;
   }
