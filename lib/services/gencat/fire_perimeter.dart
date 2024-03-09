@@ -54,10 +54,8 @@ class FirePerimeter {
     return LookAtEntity(
       lat: geometry.centeredLatitude,
       lng: geometry.centeredLongitude,
-      //altitude: 200, //2,3998
-      altitude: (geometry.area * 3.3998), //2,3998
-      //range: '3000', //35,99
-      range: (geometry.area * 45.99).toString(),
+      altitude: 20 * log(geometry.area + 1), //2,3998
+      range:  (20 * log(geometry.area + 1) * 35.99).toString(),
       tilt: '60',
       heading: '5',
     );
