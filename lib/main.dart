@@ -14,6 +14,7 @@ import 'package:wildfiretracker/services/local_storage_service.dart';
 import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 import 'package:wildfiretracker/services/ssh_service.dart';
 import 'package:wildfiretracker/utils/theme.dart';
+import 'package:dcdg/dcdg.dart';
 
 /// Registers all services into the application.
 void setupServices() {

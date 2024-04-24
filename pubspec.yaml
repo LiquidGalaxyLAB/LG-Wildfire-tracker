@@ -47,6 +47,7 @@ dependencies:
   dropdown_search: ^5.0.6
   responsive_framework: ^1.2.0
   geocode: ^1.0.3
+  dcdg: ^4.1.0
 
 
 dev_dependencies:

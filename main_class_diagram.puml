@@ -1,0 +1,339 @@
+@startuml
+set namespaceSeparator ::
+
+class "wildfiretracker::entities::kml::kml_entity.dart::KMLEntity" {
+  +String name
+  +String content
+  +String screenOverlay
+  +String body
+  {static} +String generateBlank()
+}
+
+class "wildfiretracker::entities::kml::placemark_entity.dart::PlacemarkEntity" {
+  +String id
+  +String name
+  +String? description
+  +String? icon
+  +String balloonContent
+  +bool visibility
+  +bool viewOrbit
+  +double scale
+  +LookAtEntity? lookAt
+  +PointEntity point
+  +LineEntity line
+  +TourEntity? tour
+  +String tag
+  +String orbitTag
+  +String balloonOnlyTag
+  +Map<String, dynamic> toMap()
+}
+
+"wildfiretracker::entities::kml::placemark_entity.dart::PlacemarkEntity" o-- "wildfiretracker::entities::kml::look_at_entity.dart::LookAtEntity"
+"wildfiretracker::entities::kml::placemark_entity.dart::PlacemarkEntity" o-- "wildfiretracker::entities::kml::point_entity.dart::PointEntity"
+"wildfiretracker::entities::kml::placemark_entity.dart::PlacemarkEntity" o-- "wildfiretracker::entities::kml::line_entity.dart::LineEntity"
+"wildfiretracker::entities::kml::placemark_entity.dart::PlacemarkEntity" o-- "wildfiretracker::entities::kml::tour_entity.dart::TourEntity"
+
+class "wildfiretracker::entities::lg_settings_model.dart::LGSettingsEntity" {
+  +String username
+  +String password
+  +String ip
+  +int port
+  +Map<String, dynamic> toMap()
+}
+
+class "wildfiretracker::entities::settings_entity.dart::SettingsEntity" {
+  +String username
+  +String password
+  +String ip
+  +int port
+  +Map<String, dynamic> toMap()
+}
+
+class "wildfiretracker::entities::ssh_entity.dart::SSHEntity" {
+  +String host
+  +int port
+  +String username
+  +String passwordOrKey
+}
+
+class "wildfiretracker::main.dart::MyApp" {
+  +void setLogos()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "wildfiretracker::main.dart::MyApp"
+
+class "wildfiretracker::screens::gencat_screen.dart::GencatPage" {
+  +State<GencatPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "wildfiretracker::screens::gencat_screen.dart::GencatPage"
+
+class "wildfiretracker::screens::home_screen.dart::HomePage" {
+  +State<HomePage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "wildfiretracker::screens::home_screen.dart::HomePage"
+
+class "wildfiretracker::screens::lg_settings_sreen.dart::SettingsPage" {
+  +State<SettingsPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "wildfiretracker::screens::lg_settings_sreen.dart::SettingsPage"
+
+class "wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" {
+  -TextEditingController _ipController
+  -TextEditingController _portController
+  -TextEditingController _usernameController
+  -TextEditingController _pwController
+  -TextEditingController _screensController
+  -TextEditingController _nasaApiController
+  -TabController _tabController
+  +bool show
+  +bool isAuthenticated
+  -bool _loading
+  -bool _settingRefresh
+  -bool _resetingRefresh
+  -bool _clearingKml
+  -bool _rebooting
+  -bool _relaunching
+  -bool _shuttingDown
+  -Timer? _timer
+  -LGSettingsService _settingsService
+  -SSHService _sshService
+  -LGService _lgService
+  -NASAService _nasaService
+  -LocalStorageService _localStorageService
+  +void initState()
+  +void dispose()
+  +void setState()
+  +Widget build()
+  -Widget _buildConnectionSettings()
+  -Widget _buildSettings()
+  -Widget _buildLGSettings()
+  -Widget _buildLGTaskButton()
+  -void _initNetworkState()
+  -dynamic _checkConnection()
+  -void _onConnect()
+}
+
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "flutter::src::material::tab_controller.dart::TabController"
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "dart::async::Timer"
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "wildfiretracker::services::lg_settings_service.dart::LGSettingsService"
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "wildfiretracker::services::ssh_service.dart::SSHService"
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "wildfiretracker::services::lg_service.dart::LGService"
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "wildfiretracker::services::nasa::nasa_service.dart::NASAService"
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "wildfiretracker::services::local_storage_service.dart::LocalStorageService"
+"flutter::src::widgets::framework.dart::State" <|-- "wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState"
+"flutter::src::widgets::ticker_provider.dart::TickerProviderStateMixin" <|-- "wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState"
+
+class "wildfiretracker::screens::nasa_screen.dart::NasaApiPage" {
+  +State<NasaApiPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "wildfiretracker::screens::nasa_screen.dart::NasaApiPage"
+
+class "wildfiretracker::screens::splash_screen.dart::SplashScreenPage" {
+  +State<SplashScreenPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "wildfiretracker::screens::splash_screen.dart::SplashScreenPage"
+
+class "wildfiretracker::screens::splash_screen.dart::_SplashScreenPageState" {
+  -List<List<String>> _imageRows
+  +Widget build()
+  +void initState()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "wildfiretracker::screens::splash_screen.dart::_SplashScreenPageState"
+
+class "wildfiretracker::services::file_service.dart::FileService" {
+  +dynamic createFile()
+  +dynamic createImage()
+}
+
+class "wildfiretracker::services::gencat::fire_perimeter.dart::FirePerimeter" {
+  +String type
+  +Properties properties
+  +Geometry geometry
+  +KMLEntity toKMLEntity()
+  +PlacemarkEntity toPlacemarkEntity()
+  +LookAtEntity toLookAtEntity()
+  +String buildOrbit()
+  {static} +dynamic getFireImg()
+  +String toString()
+  +String getBallonContent()
+}
+
+"wildfiretracker::services::gencat::fire_perimeter.dart::FirePerimeter" o-- "wildfiretracker::services::gencat::fire_perimeter.dart::Properties"
+"wildfiretracker::services::gencat::fire_perimeter.dart::FirePerimeter" o-- "wildfiretracker::services::gencat::fire_perimeter.dart::Geometry"
+
+class "wildfiretracker::services::gencat::gencat_service.dart::GencatService" {
+  +dynamic getFirePerimeters()
+}
+
+class "wildfiretracker::services::gencat::historic_year.dart::HistoricYear" {
+  +int year
+  +String filename
+  {static} +List<HistoricYear> getLocalHistoricYears()
+}
+
+class "wildfiretracker::services::lg_service.dart::LGService" {
+  -String _url
+  +int screenAmount
+  -SSHService _sshService
+  -LocalStorageService _localStorageService
+  -FileService _fileService
+  -LGSettingsService _settingsService
+  +int logoScreen
+  +int balloonScreen
+  +dynamic setLogos()
+  +String? getScreenAmount()
+  +dynamic sendKml()
+  +dynamic sendTour()
+  +dynamic startTour()
+  +dynamic stopTour()
+  +dynamic sendKMLToSlave()
+  +dynamic query()
+  +dynamic flyTo()
+  +dynamic setRefresh()
+  +dynamic resetRefresh()
+  +dynamic clearKml()
+  +dynamic relaunch()
+  +dynamic reboot()
+  +dynamic shutdown()
+}
+
+"wildfiretracker::services::lg_service.dart::LGService" o-- "wildfiretracker::services::ssh_service.dart::SSHService"
+"wildfiretracker::services::lg_service.dart::LGService" o-- "wildfiretracker::services::local_storage_service.dart::LocalStorageService"
+"wildfiretracker::services::lg_service.dart::LGService" o-- "wildfiretracker::services::file_service.dart::FileService"
+"wildfiretracker::services::lg_service.dart::LGService" o-- "wildfiretracker::services::lg_settings_service.dart::LGSettingsService"
+
+class "wildfiretracker::services::lg_settings_service.dart::LGSettingsService" {
+  -LocalStorageService _localStorageService
+  +dynamic setSettings()
+  +LGSettingsEntity getSettings()
+}
+
+"wildfiretracker::services::lg_settings_service.dart::LGSettingsService" o-- "wildfiretracker::services::local_storage_service.dart::LocalStorageService"
+
+class "wildfiretracker::services::local_storage_service.dart::LocalStorageService" {
+  -SharedPreferences? _storage
+  +bool storageAvailable
+  +dynamic loadStorage()
+  +dynamic setItem()
+  +dynamic getItem()
+  +dynamic removeItem()
+  +bool hasItem()
+}
+
+"wildfiretracker::services::local_storage_service.dart::LocalStorageService" o-- "shared_preferences::shared_preferences.dart::SharedPreferences"
+
+class "wildfiretracker::services::nasa::country.dart::Country" {
+  +int id
+  +String abbreviation
+  +String name
+  +String extent
+  +String toString()
+}
+
+class "wildfiretracker::services::nasa::nasa_service.dart::NASAService" {
+  +NASAServiceSettings nasaApiCountryLiveFire
+  -LocalStorageService _localStorageService
+  +dynamic getCountries()
+  +dynamic getLiveFire()
+}
+
+"wildfiretracker::services::nasa::nasa_service.dart::NASAService" o-- "wildfiretracker::services::nasa::nasa_service_settings.dart::NASAServiceSettings"
+"wildfiretracker::services::nasa::nasa_service.dart::NASAService" o-- "wildfiretracker::services::local_storage_service.dart::LocalStorageService"
+
+class "wildfiretracker::services::nasa::nasa_service_settings.dart::NASAServiceSettings" {
+  {static} +String nasaApiKey
+  {static} +List<String> satellites
+  {static} +String countriesUrl
+  {static} +String countryLiveFireUrl
+  +String format
+  +String apiKey
+  +String source
+  +String country
+  +int dayRange
+  +DateTime date
+  +String getFormattedDate()
+  +String generateUrl()
+}
+
+class "wildfiretracker::services::nasa::satellite_data.dart::SatelliteData" {
+  +String id
+  +String countryId
+  +double latitude
+  +double longitude
+  +double brightTi4
+  +double scan
+  +double track
+  +DateTime? acqDate
+  +int acqTime
+  +String satellite
+  +String instrument
+  +String confidence
+  +String version
+  +double brightTi5
+  +double frp
+  +String dayNight
+  +Address geocodeAddress
+  +PlacemarkEntity toPlacemarkEntity()
+  +String toString()
+  +dynamic getDateTime()
+  +LookAtEntity toLookAtEntity()
+  +String buildOrbit()
+  {static} +dynamic getFireImg()
+  +KMLEntity toKMLEntity()
+  +String getBallonContent()
+  {static} +dynamic setPlacemarkFromCoordinates()
+}
+
+"wildfiretracker::services::nasa::satellite_data.dart::SatelliteData" o-- "geocode::src::model::address.dart::Address"
+
+class "wildfiretracker::services::ssh_service.dart::SSHService" {
+  -SSHClient? _client
+  -LGSettingsService _settingsService
+  +SSHClient? client
+  +dynamic setClient()
+  +dynamic init()
+  +dynamic execute()
+  +dynamic connect()
+  +SSHClient? disconnect()
+  +dynamic upload()
+  +dynamic waitWhile()
+}
+
+"wildfiretracker::services::ssh_service.dart::SSHService" o-- "dartssh2::src::ssh_client.dart::SSHClient"
+"wildfiretracker::services::ssh_service.dart::SSHService" o-- "wildfiretracker::services::lg_settings_service.dart::LGSettingsService"
+
+class "wildfiretracker::widgets::gencat_fire_perimeter_card.dart::GencatFirePerimeterCard" {
+  +bool selected
+  +bool disabled
+  +FirePerimeter firePerimeter
+  +dynamic Function(bool) onOrbit
+  +dynamic Function(FirePerimeter, bool) onBalloonToggle
+  +dynamic Function(FirePerimeter) onView
+  +dynamic Function(FirePerimeter) onMaps
+  +State<GencatFirePerimeterCard> createState()
+}
+
+"wildfiretracker::widgets::gencat_fire_perimeter_card.dart::GencatFirePerimeterCard" o-- "wildfiretracker::services::gencat::fire_perimeter.dart::FirePerimeter"
+"wildfiretracker::widgets::gencat_fire_perimeter_card.dart::GencatFirePerimeterCard" o-- "null::dynamic Function(bool)"
+"wildfiretracker::widgets::gencat_fire_perimeter_card.dart::GencatFirePerimeterCard" o-- "null::dynamic Function(FirePerimeter, bool)"
+"wildfiretracker::widgets::gencat_fire_perimeter_card.dart::GencatFirePerimeterCard" o-- "null::dynamic Function(FirePerimeter)"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "wildfiretracker::widgets::gencat_fire_perimeter_card.dart::GencatFirePerimeterCard"
+
+class "wildfiretracker::widgets::gencat_fire_perimeter_card.dart::_GencatFirePerimeterCardState" {
+  -bool _orbiting
+  -bool _balloonVisible
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "wildfiretracker::widgets::gencat_fire_perimeter_card.dart::_GencatFirePerimeterCardState"
+
+
+@enduml

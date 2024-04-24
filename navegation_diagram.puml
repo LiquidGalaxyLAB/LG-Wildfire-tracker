@@ -1,0 +1,12 @@
+@startuml
+
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+}
+[*] --> Splash
+Splash --> Home : Iniciem
+Home --> Configuration : Configuració
+Home --> LiveFire : Incendis a temps real
+Home --> HistoricalWildfire : Incendis històrics a Catalunya
+@enduml
