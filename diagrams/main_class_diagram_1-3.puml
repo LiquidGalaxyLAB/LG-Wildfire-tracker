@@ -1,0 +1,123 @@
+@startuml
+set namespaceSeparator ::
+left to right direction
+
+
+class "wildfiretracker::entities::kml::kml_entity.dart::KMLEntity" {
+  +String name
+  +String content
+  +String screenOverlay
+  +String body
+  {static} +String generateBlank()
+}
+
+class "wildfiretracker::entities::kml::placemark_entity.dart::PlacemarkEntity" {
+  +String id
+  +String name
+  +String? description
+  +String? icon
+  +String balloonContent
+  +bool visibility
+  +bool viewOrbit
+  +double scale
+  +LookAtEntity? lookAt
+  +PointEntity point
+  +LineEntity line
+  +TourEntity? tour
+  +String tag
+  +String orbitTag
+  +String balloonOnlyTag
+  +Map<String, dynamic> toMap()
+}
+
+"wildfiretracker::entities::kml::placemark_entity.dart::PlacemarkEntity" o-- "wildfiretracker::entities::kml::look_at_entity.dart::LookAtEntity"
+"wildfiretracker::entities::kml::placemark_entity.dart::PlacemarkEntity" o-- "wildfiretracker::entities::kml::point_entity.dart::PointEntity"
+"wildfiretracker::entities::kml::placemark_entity.dart::PlacemarkEntity" o-- "wildfiretracker::entities::kml::line_entity.dart::LineEntity"
+"wildfiretracker::entities::kml::placemark_entity.dart::PlacemarkEntity" o-- "wildfiretracker::entities::kml::tour_entity.dart::TourEntity"
+
+class "wildfiretracker::entities::lg_settings_model.dart::LGSettingsEntity" {
+  +String username
+  +String password
+  +String ip
+  +int port
+  +Map<String, dynamic> toMap()
+}
+
+class "wildfiretracker::entities::settings_entity.dart::SettingsEntity" {
+  +String username
+  +String password
+  +String ip
+  +int port
+  +Map<String, dynamic> toMap()
+}
+
+class "wildfiretracker::entities::ssh_entity.dart::SSHEntity" {
+  +String host
+  +int port
+  +String username
+  +String passwordOrKey
+}
+
+
+
+
+class "wildfiretracker::screens::gencat_screen.dart::GencatPage" {
+  +State<GencatPage> createState()
+}
+
+
+class "wildfiretracker::screens::home_screen.dart::HomePage" {
+  +State<HomePage> createState()
+}
+
+
+class "wildfiretracker::screens::lg_settings_sreen.dart::SettingsPage" {
+  +State<SettingsPage> createState()
+}
+
+
+class "wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" {
+  -TextEditingController _ipController
+  -TextEditingController _portController
+  -TextEditingController _usernameController
+  -TextEditingController _pwController
+  -TextEditingController _screensController
+  -TextEditingController _nasaApiController
+  -TabController _tabController
+  +bool show
+  +bool isAuthenticated
+  -bool _loading
+  -bool _settingRefresh
+  -bool _resetingRefresh
+  -bool _clearingKml
+  -bool _rebooting
+  -bool _relaunching
+  -bool _shuttingDown
+  -Timer? _timer
+  -LGSettingsService _settingsService
+  -SSHService _sshService
+  -LGService _lgService
+  -NASAService _nasaService
+  -LocalStorageService _localStorageService
+  +void initState()
+  +void dispose()
+  +void setState()
+  +Widget build()
+  -Widget _buildConnectionSettings()
+  -Widget _buildSettings()
+  -Widget _buildLGSettings()
+  -Widget _buildLGTaskButton()
+  -void _initNetworkState()
+  -dynamic _checkConnection()
+  -void _onConnect()
+}
+
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "wildfiretracker::services::lg_settings_service.dart::LGSettingsService"
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "wildfiretracker::services::ssh_service.dart::SSHService"
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "wildfiretracker::services::lg_service.dart::LGService"
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "wildfiretracker::services::nasa::nasa_service.dart::NASAService"
+"wildfiretracker::screens::lg_settings_sreen.dart::_SettingsPageState" o-- "wildfiretracker::services::local_storage_service.dart::LocalStorageService"
+
+
+
+@enduml

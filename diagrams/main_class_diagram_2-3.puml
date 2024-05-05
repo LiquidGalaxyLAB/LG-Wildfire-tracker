@@ -1,0 +1,107 @@
+@startuml
+set namespaceSeparator ::
+
+left to right direction
+
+
+class "wildfiretracker::screens::nasa_screen.dart::NasaApiPage" {
+  +State<NasaApiPage> createState()
+}
+
+
+class "wildfiretracker::screens::splash_screen.dart::SplashScreenPage" {
+  +State<SplashScreenPage> createState()
+}
+
+
+class "wildfiretracker::screens::splash_screen.dart::_SplashScreenPageState" {
+  -List<List<String>> _imageRows
+  +Widget build()
+  +void initState()
+}
+
+class "wildfiretracker::services::file_service.dart::FileService" {
+  +dynamic createFile()
+  +dynamic createImage()
+}
+
+class "wildfiretracker::services::gencat::fire_perimeter.dart::FirePerimeter" {
+  +String type
+  +Properties properties
+  +Geometry geometry
+  +KMLEntity toKMLEntity()
+  +PlacemarkEntity toPlacemarkEntity()
+  +LookAtEntity toLookAtEntity()
+  +String buildOrbit()
+  {static} +dynamic getFireImg()
+  +String toString()
+  +String getBallonContent()
+}
+
+"wildfiretracker::services::gencat::fire_perimeter.dart::FirePerimeter" o-- "wildfiretracker::services::gencat::fire_perimeter.dart::Properties"
+"wildfiretracker::services::gencat::fire_perimeter.dart::FirePerimeter" o-- "wildfiretracker::services::gencat::fire_perimeter.dart::Geometry"
+
+class "wildfiretracker::services::gencat::gencat_service.dart::GencatService" {
+  +dynamic getFirePerimeters()
+}
+
+class "wildfiretracker::services::gencat::historic_year.dart::HistoricYear" {
+  +int year
+  +String filename
+  {static} +List<HistoricYear> getLocalHistoricYears()
+}
+
+class "wildfiretracker::services::lg_service.dart::LGService" {
+  -String _url
+  +int screenAmount
+  -SSHService _sshService
+  -LocalStorageService _localStorageService
+  -FileService _fileService
+  -LGSettingsService _settingsService
+  +int logoScreen
+  +int balloonScreen
+  +dynamic setLogos()
+  +String? getScreenAmount()
+  +dynamic sendKml()
+  +dynamic sendTour()
+  +dynamic startTour()
+  +dynamic stopTour()
+  +dynamic sendKMLToSlave()
+  +dynamic query()
+  +dynamic flyTo()
+  +dynamic setRefresh()
+  +dynamic resetRefresh()
+  +dynamic clearKml()
+  +dynamic relaunch()
+  +dynamic reboot()
+  +dynamic shutdown()
+}
+
+"wildfiretracker::services::lg_service.dart::LGService" o-- "wildfiretracker::services::ssh_service.dart::SSHService"
+"wildfiretracker::services::lg_service.dart::LGService" o-- "wildfiretracker::services::local_storage_service.dart::LocalStorageService"
+"wildfiretracker::services::lg_service.dart::LGService" o-- "wildfiretracker::services::file_service.dart::FileService"
+"wildfiretracker::services::lg_service.dart::LGService" o-- "wildfiretracker::services::lg_settings_service.dart::LGSettingsService"
+
+class "wildfiretracker::services::lg_settings_service.dart::LGSettingsService" {
+  -LocalStorageService _localStorageService
+  +dynamic setSettings()
+  +LGSettingsEntity getSettings()
+}
+
+"wildfiretracker::services::lg_settings_service.dart::LGSettingsService" o-- "wildfiretracker::services::local_storage_service.dart::LocalStorageService"
+
+class "wildfiretracker::services::local_storage_service.dart::LocalStorageService" {
+  -SharedPreferences? _storage
+  +bool storageAvailable
+  +dynamic loadStorage()
+  +dynamic setItem()
+  +dynamic getItem()
+  +dynamic removeItem()
+  +bool hasItem()
+}
+
+"wildfiretracker::services::local_storage_service.dart::LocalStorageService" o-- "shared_preferences::shared_preferences.dart::SharedPreferences"
+
+
+
+@enduml

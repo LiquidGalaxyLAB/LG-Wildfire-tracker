@@ -1,0 +1,107 @@
+@startuml
+set namespaceSeparator ::
+
+left to right direction
+
+class "wildfiretracker::services::nasa::country.dart::Country" {
+  +int id
+  +String abbreviation
+  +String name
+  +String extent
+  +String toString()
+}
+
+class "wildfiretracker::services::nasa::nasa_service.dart::NASAService" {
+  +NASAServiceSettings nasaApiCountryLiveFire
+  -LocalStorageService _localStorageService
+  +dynamic getCountries()
+  +dynamic getLiveFire()
+}
+
+"wildfiretracker::services::nasa::nasa_service.dart::NASAService" o-- "wildfiretracker::services::nasa::nasa_service_settings.dart::NASAServiceSettings"
+"wildfiretracker::services::nasa::nasa_service.dart::NASAService" o-- "wildfiretracker::services::local_storage_service.dart::LocalStorageService"
+
+class "wildfiretracker::services::nasa::nasa_service_settings.dart::NASAServiceSettings" {
+  {static} +String nasaApiKey
+  {static} +List<String> satellites
+  {static} +String countriesUrl
+  {static} +String countryLiveFireUrl
+  +String format
+  +String apiKey
+  +String source
+  +String country
+  +int dayRange
+  +DateTime date
+  +String getFormattedDate()
+  +String generateUrl()
+}
+
+class "wildfiretracker::services::nasa::satellite_data.dart::SatelliteData" {
+  +String id
+  +String countryId
+  +double latitude
+  +double longitude
+  +double brightTi4
+  +double scan
+  +double track
+  +DateTime? acqDate
+  +int acqTime
+  +String satellite
+  +String instrument
+  +String confidence
+  +String version
+  +double brightTi5
+  +double frp
+  +String dayNight
+  +Address geocodeAddress
+  +PlacemarkEntity toPlacemarkEntity()
+  +String toString()
+  +dynamic getDateTime()
+  +LookAtEntity toLookAtEntity()
+  +String buildOrbit()
+  {static} +dynamic getFireImg()
+  +KMLEntity toKMLEntity()
+  +String getBallonContent()
+  {static} +dynamic setPlacemarkFromCoordinates()
+}
+
+"wildfiretracker::services::nasa::satellite_data.dart::SatelliteData" o-- "geocode::src::model::address.dart::Address"
+
+class "wildfiretracker::services::ssh_service.dart::SSHService" {
+  -SSHClient? _client
+  -LGSettingsService _settingsService
+  +SSHClient? client
+  +dynamic setClient()
+  +dynamic init()
+  +dynamic execute()
+  +dynamic connect()
+  +SSHClient? disconnect()
+  +dynamic upload()
+  +dynamic waitWhile()
+}
+
+"wildfiretracker::services::ssh_service.dart::SSHService" o-- "dartssh2::src::ssh_client.dart::SSHClient"
+"wildfiretracker::services::ssh_service.dart::SSHService" o-- "wildfiretracker::services::lg_settings_service.dart::LGSettingsService"
+
+class "wildfiretracker::widgets::gencat_fire_perimeter_card.dart::GencatFirePerimeterCard" {
+  +bool selected
+  +bool disabled
+  +FirePerimeter firePerimeter
+  +dynamic Function(bool) onOrbit
+  +dynamic Function(FirePerimeter, bool) onBalloonToggle
+  +dynamic Function(FirePerimeter) onView
+  +dynamic Function(FirePerimeter) onMaps
+  +State<GencatFirePerimeterCard> createState()
+}
+
+"wildfiretracker::widgets::gencat_fire_perimeter_card.dart::GencatFirePerimeterCard" o-- "wildfiretracker::services::gencat::fire_perimeter.dart::FirePerimeter"
+
+class "wildfiretracker::widgets::gencat_fire_perimeter_card.dart::_GencatFirePerimeterCardState" {
+  -bool _orbiting
+  -bool _balloonVisible
+  +Widget build()
+}
+
+
+
+@enduml

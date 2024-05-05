@@ -1,5 +1,7 @@
 @startuml
 set namespaceSeparator ::
+left to right direction
+
 
 class "wildfiretracker::entities::kml::kml_entity.dart::KMLEntity" {
   +String name
