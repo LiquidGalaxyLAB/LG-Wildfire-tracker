@@ -126,8 +126,8 @@ class _HomeState extends State<HomePage> {
       List<dynamic> keys, int index) {
     return GestureDetector(
       child: Container(
-        margin: EdgeInsets.only(right: 0),
-        padding: EdgeInsets.all(10.0),
+        margin: EdgeInsets.all(5.0),
+        padding: EdgeInsets.all(20.0),
         decoration: ShapeDecoration(
           color: Colors.grey.shade100,
           shadows: const [
@@ -224,6 +224,7 @@ class _HomeState extends State<HomePage> {
                                 child: Icon(
                                   keys[index]['icon'] as IconData,
                                   color: Colors.black,
+                                  size: 15.0,
                                 ),
                               ),
                               const SizedBox(width: 5),
@@ -232,7 +233,7 @@ class _HomeState extends State<HomePage> {
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   color: Color(0xFF49454F),
-                                  fontSize: 11,
+                                  fontSize: 9,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
