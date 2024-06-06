@@ -13,6 +13,7 @@ import 'package:wildfiretracker/services/lg_service.dart';
 import 'package:wildfiretracker/services/lg_settings_service.dart';
 import 'package:wildfiretracker/services/local_storage_service.dart';
 import 'package:wildfiretracker/services/nasa/nasa_service.dart';
+import 'package:wildfiretracker/services/precisely/precisely_service.dart';
 import 'package:wildfiretracker/services/ssh_service.dart';
 import 'package:wildfiretracker/utils/theme.dart';
 import 'package:dcdg/dcdg.dart';
@@ -26,6 +27,7 @@ void setupServices() {
   GetIt.I.registerLazySingleton(() => LGSettingsService());
   GetIt.I.registerLazySingleton(() => NASAService());
   GetIt.I.registerLazySingleton(() => GencatService());
+  GetIt.I.registerLazySingleton(() => PreciselyService());
 }
 
 Future<void> main() async {

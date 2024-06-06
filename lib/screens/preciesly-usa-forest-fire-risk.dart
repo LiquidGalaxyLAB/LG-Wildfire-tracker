@@ -1,14 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:get_it/get_it.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart' as loc;
+import 'package:wildfiretracker/services/lg_service.dart';
+import 'package:wildfiretracker/services/precisely/precisely_service.dart';
+import 'package:wildfiretracker/widgets/button.dart';
 
 class PreciselyUsaForestFireRisk extends StatefulWidget {
   const PreciselyUsaForestFireRisk({super.key});
 
   @override
-  State<PreciselyUsaForestFireRisk> createState() => _PreciselyUsaForestFireRisk();
+  State<PreciselyUsaForestFireRisk> createState() => _AddressInputScreenState();
 }
 
 class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
+
+  LGService get _lgService => GetIt.I<LGService>();
+
+  PreciselyService get _preciselyService  => GetIt.I<PreciselyService>();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,6 +57,13 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
               ],
             ),
           ),
+          Button(onPressed: (){
+
+            _preciselyService.getFireRisk('Death Valley National Park, USA').then((fr) {
+              print(fr);
+            });
+            
+          })
           /*Padding(
               padding: EdgeInsets.only(left: 20.0, right: 20.0),
               child: Row(
@@ -212,4 +231,224 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
         ]));
   }
 
+}
+
+
+
+class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
+  final _formKey = GlobalKey<FormState>();
+  final _streetController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _stateController = TextEditingController();
+  final _zipController = TextEditingController();
+
+  final String googleApiKey = 'YOUR_GOOGLE_API_KEY';
+
+  GoogleMapController? mapController;
+  LatLng? pickedLocation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Address Input'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              TextFormField(
+                controller: _streetController,
+                decoration: InputDecoration(
+                  labelText: 'Street Address',
+                ),
+                onTap: () async {
+                  /*Prediction? p = await PlacesAutocomplete.show(
+                    context: context,
+                    apiKey: googleApiKey,
+                    mode: Mode.overlay,
+                    language: "en",
+                    components: [Component(Component.country, "us")],
+                  );
+                  displayPrediction(p!, context);*/
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a valid street address';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _cityController,
+                decoration: InputDecoration(
+                  labelText: 'City',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a valid city';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _stateController,
+                decoration: InputDecoration(
+                  labelText: 'State',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a valid state';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _zipController,
+                decoration: InputDecoration(
+                  labelText: 'ZIP Code',
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty || value.length != 5) {
+                    return 'Please enter a valid ZIP code';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    // Process data
+                    print("Street: ${_streetController.text}");
+                    print("City: ${_cityController.text}");
+                    print("State: ${_stateController.text}");
+                    print("ZIP: ${_zipController.text}");
+                  }
+                },
+                child: Text('Submit'),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  await _pickLocationOnMap();
+                },
+                child: Text('Pick Location on Map'),
+              ),
+              SizedBox(height: 300, child: _buildGoogleMap())
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickLocationOnMap() async {
+    loc.Location location = loc.Location();
+    bool _serviceEnabled;
+    loc.PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == loc.PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != loc.PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    final Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    LatLng initialPosition = LatLng(position.latitude, position.longitude);
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: Container(
+          height: 400,
+          child: GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: initialPosition,
+              zoom: 14,
+            ),
+            onMapCreated: (controller) {
+              mapController = controller;
+            },
+            onTap: (LatLng location) {
+              setState(() {
+                pickedLocation = location;
+              });
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGoogleMap() {
+    return pickedLocation == null
+        ? Center(child: Text('No location selected'))
+        : GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: pickedLocation!,
+        zoom: 14,
+      ),
+      markers: {
+        Marker(
+          markerId: MarkerId('selected-location'),
+          position: pickedLocation!,
+        ),
+      },
+    );
+  }
+
+  /*Future<void> displayPrediction(Prediction p, BuildContext context) async {
+    if (p != null) {
+      GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: googleApiKey);
+      PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(p.placeId!);
+
+      final address = detail.result.addressComponents;
+
+      String street = "";
+      String city = "";
+      String state = "";
+      String zip = "";
+
+      for (var component in address) {
+        if (component.types.contains("street_number")) {
+          street = component.longName;
+        }
+        if (component.types.contains("route")) {
+          street += " ${component.longName}";
+        }
+        if (component.types.contains("locality")) {
+          city = component.longName;
+        }
+        if (component.types.contains("administrative_area_level_1")) {
+          state = component.shortName;
+        }
+        if (component.types.contains("postal_code")) {
+          zip = component.longName;
+        }
+      }
+
+      setState(() {
+        _streetController.text = street;
+        _cityController.text = city;
+        _stateController.text = state;
+        _zipController.text = zip;
+      });
+    }
+  }*/
 }
