@@ -1,12 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
-import 'package:wildfiretracker/services/lg_service.dart';
-import 'package:wildfiretracker/services/precisely/precisely_service.dart';
-import 'package:wildfiretracker/widgets/button.dart';
 
 class PreciselyUsaForestFireRisk extends StatefulWidget {
   const PreciselyUsaForestFireRisk({super.key});
@@ -15,7 +10,7 @@ class PreciselyUsaForestFireRisk extends StatefulWidget {
   State<PreciselyUsaForestFireRisk> createState() => _AddressInputScreenState();
 }
 
-class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
+/*class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
 
   LGService get _lgService => GetIt.I<LGService>();
 
@@ -231,9 +226,7 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
         ]));
   }
 
-}
-
-
+}*/
 
 class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
   final _formKey = GlobalKey<FormState>();
@@ -242,7 +235,7 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
   final _stateController = TextEditingController();
   final _zipController = TextEditingController();
 
-  final String googleApiKey = 'YOUR_GOOGLE_API_KEY';
+  final String googleApiKey = 'AIzaSyCgxeVrZewwcexEMz-MFGLsX74KMKU2YFc';
 
   GoogleMapController? mapController;
   LatLng? pickedLocation;
@@ -377,9 +370,13 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
         child: Container(
           height: 400,
           child: GoogleMap(
-            initialCameraPosition: CameraPosition(
+            /*initialCameraPosition: CameraPosition(
               target: initialPosition,
               zoom: 14,
+            ),*/
+            initialCameraPosition: CameraPosition(
+              target: LatLng(37.7749, -122.4194),
+              zoom: 10,
             ),
             onMapCreated: (controller) {
               mapController = controller;

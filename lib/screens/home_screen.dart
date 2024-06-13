@@ -88,49 +88,54 @@ class _HomeState extends State<HomePage> {
           )
         ],
       ),
-      body: Expanded(
-          child: Column(children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 20.0, right: 10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Categories',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          //padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          //height: screenHeight,
-          child: Container(
-            padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
-            child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: (screenWidth ~/ 300),
-                  //childAspectRatio: screenAspectRatio*1.5,
-                  crossAxisSpacing: 20.0,
-                  mainAxisSpacing: 20.0,
+      body: Flex(
+        direction: Axis.vertical,
+        children: [
+          Expanded(
+            child: Column(children: [
+              const Padding(
+                padding: EdgeInsets.only(left: 20.0, right: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Categories',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                // physics: NeverScrollableScrollPhysics(),
-                itemCount: services.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return FadeIn(
-                      duration: const Duration(milliseconds: 1000),
-                      delay: Duration(seconds: (1.0 + index).round()),
-                      child: serviceContainer(
-                          services[index]['asset']!,
-                          services[index]['name']!,
-                          services[index]['route']!,
-                          services[index]['icon']!,
-                          services[index]['keys']!,
-                          index));
-                })
-          )
-        )
-      ])),
+              ),
+              Expanded(
+                //padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                //height: screenHeight,
+                  child: Container(
+                      padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+                      child: GridView.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: (screenWidth ~/ 300),
+                            //childAspectRatio: screenAspectRatio*1.5,
+                            crossAxisSpacing: 20.0,
+                            mainAxisSpacing: 20.0,
+                          ),
+                          // physics: NeverScrollableScrollPhysics(),
+                          itemCount: services.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return FadeIn(
+                                duration: const Duration(milliseconds: 1000),
+                                delay: Duration(seconds: (1.0 + index).round()),
+                                child: serviceContainer(
+                                    services[index]['asset']!,
+                                    services[index]['name']!,
+                                    services[index]['route']!,
+                                    services[index]['icon']!,
+                                    services[index]['keys']!,
+                                    index));
+                          })
+                  )
+              )
+            ])),],
+      ),
+
     );
   }
 
