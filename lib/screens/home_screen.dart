@@ -37,6 +37,17 @@ class _HomeState extends State<HomePage> {
       ]
     },
     {
+      'name': 'Preciesly - USA Forest Fire Risk',
+      'route': '/precisely-usa-forest-fire-risk',
+      'asset': '',
+      'icon': Icons.forest_outlined,
+      'keys': [
+        {'name': 'Wildfires', 'icon': Icons.forest_outlined},
+        {'name': 'USA', 'icon': Icons.location_city},
+        {'name': 'Risk', 'icon': Icons.warning_amber}
+      ]
+    },
+    {
       'name': 'Settings',
       'route': '/settings',
       'asset': '',
@@ -56,70 +67,76 @@ class _HomeState extends State<HomePage> {
     final screenAspectRatio = MediaQuery.of(context).size.aspectRatio;
 
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: Text(
-            'Home',
-            style: TextStyle(color: Colors.black),
-          ),
-          elevation: 0,
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SettingsPage()));
-              },
-              icon: Icon(
-                Icons.settings,
-                color: Colors.grey.shade700,
-                size: 30,
-              ),
-            )
-          ],
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: const Text(
+          'Home',
+          style: TextStyle(color: Colors.black),
         ),
-        body: SingleChildScrollView(
-            child: Column(children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 20.0, right: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Categories',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ],
+        elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()));
+            },
+            icon: Icon(
+              Icons.settings,
+              color: Colors.grey.shade700,
+              size: 30,
             ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: screenHeight,
-            child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: (screenWidth ~/ 300),
-                  //childAspectRatio: screenAspectRatio*1.5,
-                  crossAxisSpacing: 20.0,
-                  mainAxisSpacing: 20.0,
+          )
+        ],
+      ),
+      body: Flex(
+        direction: Axis.vertical,
+        children: [
+          Expanded(
+            child: Column(children: [
+              const Padding(
+                padding: EdgeInsets.only(left: 20.0, right: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Categories',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                // physics: NeverScrollableScrollPhysics(),
-                itemCount: services.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return FadeIn(
-                      duration: Duration(milliseconds: 1000),
-                      delay: Duration(seconds: (1.0 + index).round()),
-                      child: serviceContainer(
-                          services[index]['asset']!,
-                          services[index]['name']!,
-                          services[index]['route']!,
-                          services[index]['icon']!,
-                          services[index]['keys']!,
-                          index));
-                }),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-        ])));
+              ),
+              Expanded(
+                //padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                //height: screenHeight,
+                  child: Container(
+                      padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+                      child: GridView.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: (screenWidth ~/ 300),
+                            //childAspectRatio: screenAspectRatio*1.5,
+                            crossAxisSpacing: 20.0,
+                            mainAxisSpacing: 20.0,
+                          ),
+                          // physics: NeverScrollableScrollPhysics(),
+                          itemCount: services.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return FadeIn(
+                                duration: const Duration(milliseconds: 1000),
+                                delay: Duration(seconds: (1.0 + index).round()),
+                                child: serviceContainer(
+                                    services[index]['asset']!,
+                                    services[index]['name']!,
+                                    services[index]['route']!,
+                                    services[index]['icon']!,
+                                    services[index]['keys']!,
+                                    index));
+                          })
+                  )
+              )
+            ])),],
+      ),
+
+    );
   }
 
   serviceContainer(String asset, String name, String route, dynamic icon,

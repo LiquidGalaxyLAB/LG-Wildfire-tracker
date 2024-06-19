@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:geocode/geocode.dart';
 import 'package:intl/intl.dart';
+import 'package:wildfiretracker/entities/kml/point_entity.dart';
 
 import '../../entities/kml/kml_entity.dart';
 import '../../entities/kml/line_entity.dart';
 import '../../entities/kml/look_at_entity.dart';
 import '../../entities/kml/orbit_entity.dart';
 import '../../entities/kml/placemark_entity.dart';
-import '../../entities/kml/point_entity.dart';
 
 class SatelliteData {
   String id = '';

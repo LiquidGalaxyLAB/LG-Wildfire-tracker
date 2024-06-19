@@ -43,6 +43,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
   final _screensController = TextEditingController();
 
   late final _nasaApiController = TextEditingController();
+  // todo: fer la api de precaisly
 
   late TabController _tabController;
 

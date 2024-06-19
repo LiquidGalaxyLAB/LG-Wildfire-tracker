@@ -1,0 +1,2 @@
+key: wildfiretracker
+password: wildfiretracker

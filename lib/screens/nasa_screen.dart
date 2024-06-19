@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:wildfiretracker/services/nasa/country.dart';
 import 'package:wildfiretracker/services/nasa/nasa_service.dart';
+import 'package:wildfiretracker/services/nasa/satellite_data.dart';
 import 'package:wildfiretracker/widgets/nasa_live_fire_card.dart';
 
 import '../entities/kml/kml_entity.dart';
 import '../services/lg_service.dart';
-import '../services/nasa/country.dart';
-import '../services/nasa/satellite_data.dart';
 import '../utils/snackbar.dart';
 import '../utils/theme.dart';
 

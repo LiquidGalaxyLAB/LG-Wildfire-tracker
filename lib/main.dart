@@ -5,6 +5,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:wildfiretracker/screens/gencat_screen.dart';
 import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
 import 'package:wildfiretracker/screens/nasa_screen.dart';
+import 'package:wildfiretracker/screens/preciesly_usa_forest_fire_risk.dart';
 import 'package:wildfiretracker/screens/splash_screen.dart';
 import 'package:wildfiretracker/services/file_service.dart';
 import 'package:wildfiretracker/services/gencat/gencat_service.dart';
@@ -12,6 +13,7 @@ import 'package:wildfiretracker/services/lg_service.dart';
 import 'package:wildfiretracker/services/lg_settings_service.dart';
 import 'package:wildfiretracker/services/local_storage_service.dart';
 import 'package:wildfiretracker/services/nasa/nasa_service.dart';
+import 'package:wildfiretracker/services/precisely/precisely_service.dart';
 import 'package:wildfiretracker/services/ssh_service.dart';
 import 'package:wildfiretracker/utils/theme.dart';
 import 'package:dcdg/dcdg.dart';
@@ -25,6 +27,7 @@ void setupServices() {
   GetIt.I.registerLazySingleton(() => LGSettingsService());
   GetIt.I.registerLazySingleton(() => NASAService());
   GetIt.I.registerLazySingleton(() => GencatService());
+  GetIt.I.registerLazySingleton(() => PreciselyService());
 }
 
 Future<void> main() async {
@@ -100,6 +103,7 @@ class MyApp extends StatelessWidget {
         '/nasa': (context) => const NasaApiPage(),
         '/settings': (context) => const SettingsPage(),
         '/gencat': (context) => const GencatPage(),
+        '/precisely-usa-forest-fire-risk': (context) => const PreciselyUsaForestFireRisk(),
       },
       debugShowCheckedModeBanner: false,
     );

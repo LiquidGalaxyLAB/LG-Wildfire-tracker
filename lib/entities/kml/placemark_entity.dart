@@ -96,7 +96,7 @@ class PlacemarkEntity {
         <gx:labelVisibility>0</gx:labelVisibility>
       </LineStyle>
       <PolyStyle>
-        <color>00000000</color>
+        <color>00000000</color> // todo: cambiar el color per 7d00ffff (verde) per ficar el layer amb color. fire risk
       </PolyStyle>
     </Style>
     <StyleMap id="$id">

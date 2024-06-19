@@ -12,4 +12,7 @@ class StorageKeys {
   static const lgCurrentConnection = 'CST__LG_CURRENT_CONNECTION';
   static const lgScreens = 'CST__LG_SCREENS';
   static const nasaApiKey = 'CST__NASA_API_KEY';
+  static const preciselyApiKey = 'CST__PRECISELY_API_KEY';
+  static const preciselyApiSecret = 'CST__PRECISELY_API_SECRET';
+  static const preciselyOAuthToken = 'CST__PRECISELY_OAUTH_TOKEN';
 }
