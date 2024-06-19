@@ -84,4 +84,6 @@ class FireRisk {
       'matchedAddress': matchedAddress,
     };
   }
+
+  // todo: implement methods to convert to kml for LG sending
 }

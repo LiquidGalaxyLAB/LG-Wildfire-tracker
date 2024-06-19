@@ -3,6 +3,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
 
+import '../utils/theme.dart';
+
 class PreciselyUsaForestFireRisk extends StatefulWidget {
   const PreciselyUsaForestFireRisk({super.key});
 
@@ -244,21 +246,63 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Address Input'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                controller: _streetController,
-                decoration: InputDecoration(
-                  labelText: 'Street Address',
+          backgroundColor: Colors.transparent,
+          title: const Text(
+            'Preciesly - USA Forest Risk',
+            style: TextStyle(color: Colors.black),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_rounded),
+            splashRadius: 24,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: const [
+            Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Icon(Icons.warning_amber_rounded),
+            )
+          ],
+        ),
+        body: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 20.0, right: 10.0, bottom: 10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Text fores fire risk:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                onTap: () async {
-                  /*Prediction? p = await PlacesAutocomplete.show(
+              ],
+            ),
+          ),
+          Padding(
+              padding: EdgeInsets.only(left: 20.0, right: 20.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField( // todo: fer que al seleccionar del mapa es fiqui l'adreça.
+                      controller: _streetController,
+                      decoration: const InputDecoration(
+                        label: Text('Select address'),
+                        prefixIcon: Icon(Icons.edit_road_sharp),
+                        contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        hintText: 'Select address',
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            bottomLeft: Radius.circular(10),
+                          ),
+                        ),
+                      ),
+                      onTap: () async {
+                        /*Prediction? p = await PlacesAutocomplete.show(
                     context: context,
                     apiKey: googleApiKey,
                     mode: Mode.overlay,
@@ -266,77 +310,47 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                     components: [Component(Component.country, "us")],
                   );
                   displayPrediction(p!, context);*/
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a valid street address';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _cityController,
-                decoration: InputDecoration(
-                  labelText: 'City',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a valid city';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _stateController,
-                decoration: InputDecoration(
-                  labelText: 'State',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a valid state';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _zipController,
-                decoration: InputDecoration(
-                  labelText: 'ZIP Code',
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty || value.length != 5) {
-                    return 'Please enter a valid ZIP code';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Process data
-                    print("Street: ${_streetController.text}");
-                    print("City: ${_cityController.text}");
-                    print("State: ${_stateController.text}");
-                    print("ZIP: ${_zipController.text}");
-                  }
-                },
-                child: Text('Submit'),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  await _pickLocationOnMap();
-                },
-                child: Text('Pick Location on Map'),
-              ),
-              SizedBox(height: 300, child: _buildGoogleMap())
-            ],
-          ),
-        ),
-      ),
-    );
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a valid street address';
+                        }
+                        return null;
+                      },
+                    )
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: ThemeColors.primaryColor,
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.search),
+                      color: Colors.white,
+                      onPressed: () { // todo: fer que al cercar, faci la crida a la api i faci print
+                        //getLiveFireByCountry();
+                      },
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(10),
+                        bottomRight: Radius.circular(10),
+                      ),
+                      color: ThemeColors.primaryColor,
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.map),
+                      color: Colors.white,
+                      onPressed: () async {
+                        await _pickLocationOnMap();
+                      },
+                    ),
+                  ),
+                ],
+              )),
+          SizedBox(height: 500, child: _buildGoogleMap())// todo: create a design for modeling all page and buttons to send to LG
+        ]));
   }
 
   Future<void> _pickLocationOnMap() async {

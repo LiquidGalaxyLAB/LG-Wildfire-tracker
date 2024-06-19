@@ -1,4 +1,4 @@
-package com.example.wildfiretracker
+package lg.wildfiretracker
 
 import io.flutter.embedding.android.FlutterActivity
 

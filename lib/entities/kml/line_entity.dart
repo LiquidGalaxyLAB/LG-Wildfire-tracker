@@ -57,7 +57,9 @@ class LineEntity {
   /// ```
   String get tag => '''
       <Polygon id="$id">
-        <extrude>0</extrude>
+        <extrude>0</extrude> 
+        <!-- <extrude>1</extrude>
+					   <tessellate>1</tessellate>  -->
         <altitudeMode>$altitudeMode</altitudeMode>
         <outerBoundaryIs>
           <LinearRing>
