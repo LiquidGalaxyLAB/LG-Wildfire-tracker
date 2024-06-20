@@ -1,3 +1,13 @@
+
+import 'dart:math';
+
+import '../../entities/kml/kml_entity.dart';
+import '../../entities/kml/line_entity.dart';
+import '../../entities/kml/look_at_entity.dart';
+import '../../entities/kml/orbit_entity.dart';
+import '../../entities/kml/placemark_entity.dart';
+import '../../entities/kml/point_entity.dart';
+
 class FireRisk {
   String state;
   String noharmId;
@@ -17,6 +27,9 @@ class FireRisk {
   Map<String, dynamic> mitigationGroupElements;
   Map<String, dynamic> geometry;
   Map<String, dynamic> matchedAddress;
+  late double centeredLatitude;
+  late double centeredLongitude;
+  late double area = 0;
 
   FireRisk({
     required this.state,
@@ -85,5 +98,86 @@ class FireRisk {
     };
   }
 
-  // todo: implement methods to convert to kml for LG sending
+  // todo: implement methods to convert to kml for LG sending (test with LG)
+
+
+  KMLEntity toKMLEntity() {
+    return KMLEntity(
+        name: noharmId.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''), content: toPlacemarkEntity().tag);
+  }
+
+  PlacemarkEntity toPlacemarkEntity() {
+    return PlacemarkEntity(
+      id: noharmId.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
+      name: noharmId,
+      point: PointEntity(
+          lat: centeredLatitude,
+          lng: centeredLongitude,
+          altitude: 25),
+      line: LineEntity(
+          id: noharmId,
+          coordinates: geometry['coordinates'],
+      ),
+      layerColor: getColorByRisk(), // color verd
+      lookAt: toLookAtEntity(),
+      // viewOrbit: true,
+      //visibility: true,
+      balloonContent: getBallonContent(),
+      //'Wildfire',
+      icon: 'risk.png',
+      description: 'Wildfire risk',
+    );
+  }
+
+  LookAtEntity toLookAtEntity() {
+    return LookAtEntity(
+      lat: centeredLatitude,
+      lng: centeredLongitude,
+      altitude: 20 * log(area + 1), //2,3998
+      range: (20 * log(area + 1) * 35.99).toString(),
+      tilt: '60',
+      heading: '5',
+    );
+  }
+
+  String buildOrbit() {
+    return OrbitEntity.buildOrbit(OrbitEntity.tag(toLookAtEntity()));
+  }
+
+  static getFireImg() {
+    return [
+      {
+        'name': 'risk.png',
+        'path': 'assets/images/risk.png',
+      }
+    ];
+  }
+
+  String getBallonContent() => '''
+  <div>
+    <b><span style="font-size:15px;">${state.toUpperCase()} - ${noharmId.toUpperCase()}</span></b>
+    <br/><br/>
+    <b>Model:</b> $noharmModel<br/>
+    <b>Risk:</b> $riskDesc<br/>
+    <b>Risk level:</b> $risk50<br/>
+    <b>Severity:</b> $severity<br/>
+    <b>Frequency:</b> $frequency<br/>
+    <b>Community:</b> $community<br/>
+    <b>Damage:</b> $damage<br/>
+    <b>Mitigation:</b> $mitigation<br/>
+    <b>Country:</b> ${matchedAddress['country']}<br/>
+    <b>Post Code:</b> ${matchedAddress['postalCode']}<br/>
+    <b>Street name:</b> ${matchedAddress['streetName']}<br/>
+    <b>Complete street:</b> ${matchedAddress['formattedAddress']}<br/>
+    </div>
+  ''';
+
+  String getColorByRisk() {
+    return '7d00ffff';
+    // todo: test this !!!!
+    int red = (risk50 / 50 * 255).round();
+    int green = ((50 - risk50) / 50 * 255).round();
+    return 'ff${red.toRadixString(16).padLeft(2, '0')}${green.toRadixString(16).padLeft(2, '0')}00';
+  }
+
 }

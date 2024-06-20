@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
+import 'package:wildfiretracker/services/precisely/fire_risk.dart';
+import 'package:wildfiretracker/services/precisely/precisely_service.dart';
 
+import '../services/lg_service.dart';
+import '../utils/snackbar.dart';
 import '../utils/theme.dart';
 
 class PreciselyUsaForestFireRisk extends StatefulWidget {
@@ -231,11 +236,15 @@ class PreciselyUsaForestFireRisk extends StatefulWidget {
 }*/
 
 class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
-  final _formKey = GlobalKey<FormState>();
-  final _streetController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _stateController = TextEditingController();
-  final _zipController = TextEditingController();
+
+  late FireRisk _fireRisk;
+
+  final ValueNotifier<bool> _loadingFireRisk = ValueNotifier<bool>(false);
+
+  LGService get _lgService => GetIt.I<LGService>();
+
+  PreciselyService get _preciselyService => GetIt.I<PreciselyService>();
+  final _addressController = TextEditingController();
 
   final String googleApiKey = 'AIzaSyCgxeVrZewwcexEMz-MFGLsX74KMKU2YFc';
 
@@ -284,7 +293,7 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                 children: [
                   Expanded(
                     child: TextFormField( // todo: fer que al seleccionar del mapa es fiqui l'adreça.
-                      controller: _streetController,
+                      controller: _addressController,
                       decoration: const InputDecoration(
                         label: Text('Select address'),
                         prefixIcon: Icon(Icons.edit_road_sharp),
@@ -328,6 +337,7 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                       color: Colors.white,
                       onPressed: () { // todo: fer que al cercar, faci la crida a la api i faci print
                         //getLiveFireByCountry();
+                        getFireRiskByAddress();
                       },
                     ),
                   ),
@@ -422,6 +432,25 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
         ),
       },
     );
+  }
+
+  void getFireRiskByAddress() {
+    setState(() {
+      _loadingFireRisk.value = true;
+    });
+    _preciselyService
+        .getFireRisk(_addressController.text)
+        .then((fireRisk) async {
+      _fireRisk = fireRisk;
+      setState(() {
+        _loadingFireRisk.value = false;
+      });
+    }).onError((error, stackTrace) {
+      setState(() {
+        _loadingFireRisk.value = false;
+      });
+      showSnackbar(context, 'Preciesly Api Timeout');
+    });
   }
 
   /*Future<void> displayPrediction(Prediction p, BuildContext context) async {

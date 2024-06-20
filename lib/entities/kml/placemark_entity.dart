@@ -43,6 +43,9 @@ class PlacemarkEntity {
   /// Property that defines the placemark `tour` entity.
   TourEntity? tour;
 
+  /// Property that defines the placemark `layer color`.
+  String layerColor;
+
   PlacemarkEntity({
     this.description,
     this.icon,
@@ -56,6 +59,7 @@ class PlacemarkEntity {
     required this.name,
     required this.point,
     required this.line,
+    this.layerColor = '',
   });
 
   /// Property that defines the placemark `tag` according to its current
@@ -96,7 +100,7 @@ class PlacemarkEntity {
         <gx:labelVisibility>0</gx:labelVisibility>
       </LineStyle>
       <PolyStyle>
-        <color>00000000</color> // todo: cambiar el color per 7d00ffff (verde) per ficar el layer amb color. fire risk
+        <color>${layerColor == '' ? '00000000' : layerColor}</color>
       </PolyStyle>
     </Style>
     <StyleMap id="$id">
