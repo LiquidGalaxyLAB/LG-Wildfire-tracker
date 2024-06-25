@@ -10,6 +10,7 @@ class PreciselyServiceSettings {
   String apiSecret;
 
   static String fireRiskUrl = "https://api.precisely.com/risks/v2/fire/byaddress";
+  static String fireRiskLocationUrl = "https://api.precisely.com/risks/v2/fire/bylocation";
   static String oAuthTokenUrl = "https://api.precisely.com/oauth/token";
 
   PreciselyServiceSettings({

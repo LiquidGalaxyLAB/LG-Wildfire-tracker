@@ -27,51 +27,78 @@ class FireRisk {
   Map<String, dynamic> mitigationGroupElements;
   Map<String, dynamic> geometry;
   Map<String, dynamic> matchedAddress;
-  late double centeredLatitude;
-  late double centeredLongitude;
+  late double centeredLatitude = 0;
+  late double centeredLongitude = 0;
   late double area = 0;
 
   FireRisk({
-    required this.state,
-    required this.noharmId,
-    required this.noharmCls,
-    required this.noharmModel,
-    required this.riskDesc,
-    required this.risk50,
-    required this.severity,
-    required this.frequency,
-    required this.community,
-    required this.damage,
-    required this.mitigation,
-    required this.severityGroupElements,
-    required this.frequencyGroupElements,
-    required this.communityGroupElements,
-    required this.damageGroupElements,
-    required this.mitigationGroupElements,
-    required this.geometry,
-    required this.matchedAddress,
-  });
+    this.state = '',
+    this.noharmId = '',
+    this.noharmCls = '',
+    this.noharmModel = '',
+    this.riskDesc = '',
+    this.risk50 = 0,
+    this.severity = 0,
+    this.frequency = 0,
+    this.community = 0,
+    this.damage = 0,
+    this.mitigation = 0,
+    this.severityGroupElements = const {},
+    this.frequencyGroupElements = const {},
+    this.communityGroupElements = const {},
+    this.damageGroupElements = const {},
+    this.mitigationGroupElements = const {},
+    this.geometry = const {},
+    this.matchedAddress = const {},
+  }){
+    if (geometry['coordinates'] == null) return;
+
+    centeredLatitude = geometry['coordinates'][0][0][1];
+    centeredLongitude = geometry['coordinates'][0][0][0];
+
+    int length = geometry['coordinates'][0].length;
+    double totalLatitude = 0;
+    double totalLongitude = 0;
+    double tmpArea = 0;
+    for (var i = 0; i < geometry['coordinates'][0].length; i++) {
+      totalLatitude += geometry['coordinates'][0][i][1];
+      totalLongitude += geometry['coordinates'][0][i][0];
+
+      double lon = geometry['coordinates'][0][i][0] * 111000 * cos(geometry['coordinates'][0][i][1] * pi / 180);
+      double lat = geometry['coordinates'][0][i][1] * 111000;
+      double nextLon = geometry['coordinates'][0][(i + 1) % length][0] * 111000 * cos(geometry['coordinates'][0][(i + 1) % length][1] * pi / 180);
+      double nextLat = geometry['coordinates'][0][(i + 1) % length][1] * 111000;
+
+      tmpArea += (lon * nextLat - nextLon * lat);
+
+
+    }
+    centeredLatitude = totalLatitude / geometry['coordinates'][0].length;
+    centeredLongitude = totalLongitude / geometry['coordinates'][0].length;
+
+    area = (tmpArea / 2).abs()/10000;
+  }
 
   factory FireRisk.fromJson(Map<String, dynamic> json) {
     return FireRisk(
-      state: json['state'],
-      noharmId: json['noharmId'],
-      noharmCls: json['noharmCls'],
-      noharmModel: json['noharmModel'],
-      riskDesc: json['riskDesc'],
-      risk50: json['risk50'],
-      severity: json['severity'],
-      frequency: json['frequency'],
-      community: json['community'],
-      damage: json['damage'],
-      mitigation: json['mitigation'],
-      severityGroupElements: json['severityGroupElements'],
-      frequencyGroupElements: json['frequencyGroupElements'],
-      communityGroupElements: json['communityGroupElements'],
-      damageGroupElements: json['damageGroupElements'],
-      mitigationGroupElements: json['mitigationGroupElements'],
-      geometry: json['geometry'],
-      matchedAddress: json['matchedAddress'],
+      state: json['state'] ?? '',
+      noharmId: json['noharmId'] ?? '',
+      noharmCls: json['noharmCls'] ?? '',
+      noharmModel: json['noharmModel'] ?? '',
+      riskDesc: json['riskDesc'] ?? '',
+      risk50: json['risk50'] ?? 0,
+      severity: json['severity'] ?? 0,
+      frequency: json['frequency'] ?? 0,
+      community: json['community'] ?? 0,
+      damage: json['damage'] ?? 0,
+      mitigation: json['mitigation'] ?? 0,
+      severityGroupElements: json['severityGroupElements'] ?? {},
+      frequencyGroupElements: json['frequencyGroupElements'] ?? {},
+      communityGroupElements: json['communityGroupElements'] ?? {},
+      damageGroupElements: json['damageGroupElements'] ?? {},
+      mitigationGroupElements: json['mitigationGroupElements'] ?? {},
+      geometry: json['geometry'] ?? {},
+      matchedAddress: json['matchedAddress'] ?? {},
     );
   }
 
@@ -116,7 +143,7 @@ class FireRisk {
           altitude: 25),
       line: LineEntity(
           id: noharmId,
-          coordinates: geometry['coordinates'],
+          coordinates: getFormatedCoordinates(),
       ),
       layerColor: getColorByRisk(), // color verd
       lookAt: toLookAtEntity(),
@@ -144,7 +171,7 @@ class FireRisk {
     return OrbitEntity.buildOrbit(OrbitEntity.tag(toLookAtEntity()));
   }
 
-  static getFireImg() {
+  static getRiskImg() {
     return [
       {
         'name': 'risk.png',
@@ -172,12 +199,47 @@ class FireRisk {
     </div>
   ''';
 
-  String getColorByRisk() {
-    return '7d00ffff';
-    // todo: test this !!!!
+  String getColorByRisk1() {
     int red = (risk50 / 50 * 255).round();
     int green = ((50 - risk50) / 50 * 255).round();
     return 'ff${red.toRadixString(16).padLeft(2, '0')}${green.toRadixString(16).padLeft(2, '0')}00';
+  }
+  String getColorByRisk2() {
+    int red = (risk50 / 50 * 255).round();
+    int green = ((50 - risk50) / 50 * 255).round();
+    return '${red.toRadixString(16).padLeft(2, '0')}ff${green.toRadixString(16).padLeft(2, '0')}00';
+  }
+
+  String getColorByRisk() {
+    int red;
+    int green;
+
+    if (risk50 <= 25) {
+      // Transition from green (#008000) to yellow (#FFFF00)
+      red = (risk50 / 25 * 255).round();
+      green = 128 + ((risk50 / 25) * 127).round();
+    } else {
+      // Transition from yellow (#FFFF00) to red (#FF0000)
+      red = 255;
+      green = ((50 - risk50) / 25 * 255).round();
+    }
+
+    return '${red.toRadixString(16).padLeft(2, '0')}${green.toRadixString(16).padLeft(2, '0')}00ff';
+  }
+
+
+
+  getFormatedCoordinates() {
+    List<Map<String, double>> formatedCoordinates = [];
+    for (var i = 0; i < geometry['coordinates'][0].length; i++) {
+      formatedCoordinates.add({
+        'lat': geometry['coordinates'][0][i][1],
+        'lng': geometry['coordinates'][0][i][0],
+        'altitude': 20.0,
+      });
+    }
+    print(formatedCoordinates);
+    return formatedCoordinates;
   }
 
 }

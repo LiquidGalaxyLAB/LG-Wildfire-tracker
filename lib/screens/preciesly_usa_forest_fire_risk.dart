@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
@@ -6,6 +7,7 @@ import 'package:location/location.dart' as loc;
 import 'package:wildfiretracker/services/precisely/fire_risk.dart';
 import 'package:wildfiretracker/services/precisely/precisely_service.dart';
 
+import '../entities/kml/kml_entity.dart';
 import '../services/lg_service.dart';
 import '../utils/snackbar.dart';
 import '../utils/theme.dart';
@@ -237,9 +239,12 @@ class PreciselyUsaForestFireRisk extends StatefulWidget {
 
 class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
 
-  late FireRisk _fireRisk;
+  FireRisk _fireRisk = FireRisk();
 
   final ValueNotifier<bool> _loadingFireRisk = ValueNotifier<bool>(false);
+
+  bool _orbiting = false;
+  bool _searched = false;
 
   LGService get _lgService => GetIt.I<LGService>();
 
@@ -249,10 +254,18 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
   final String googleApiKey = 'AIzaSyCgxeVrZewwcexEMz-MFGLsX74KMKU2YFc';
 
   GoogleMapController? mapController;
-  LatLng? pickedLocation;
+  LatLng? pickedLocation = const LatLng(37.7749, -122.4194);
+
+
+  @override
+  void initState() {
+    super.initState();
+    _addressController.text = 'Death Valley National Park, USA';
+  }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -281,7 +294,7 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Text fores fire risk:',
+                  'Text forest fire risk:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -336,7 +349,7 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                       icon: const Icon(Icons.search),
                       color: Colors.white,
                       onPressed: () { // todo: fer que al cercar, faci la crida a la api i faci print
-                        //getLiveFireByCountry();
+                        pickedLocation = null;
                         getFireRiskByAddress();
                       },
                     ),
@@ -359,7 +372,116 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                   ),
                 ],
               )),
-          SizedBox(height: 500, child: _buildGoogleMap())// todo: create a design for modeling all page and buttons to send to LG
+          _loadingFireRisk.value
+              ? _buildSpinner()
+              : Expanded(
+              child: Padding(
+                padding:
+                const EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0),
+                child: SizedBox(
+                  //width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+                  child: _fireRisk.noharmId.isEmpty
+                      ? _buildEmptyMessage('No fire risk data.')
+                      : ListView(
+                    padding: const EdgeInsets.all(16.0),
+                    children: [
+                      _buildCard('State', _fireRisk.state),
+                      _buildCard('No Harm ID', _fireRisk.noharmId),
+                      _buildCard('No Harm Class', _fireRisk.noharmCls),
+                      _buildCard('No Harm Model', _fireRisk.noharmModel),
+                      _buildCard('Risk Description', _fireRisk.riskDesc),
+                      _buildCard('Risk 50', _fireRisk.risk50.toString()),
+                      _buildCard('Severity', _fireRisk.severity.toString()),
+                      _buildCard('Frequency', _fireRisk.frequency.toString()),
+                      _buildCard('Community', _fireRisk.community.toString()),
+                      _buildCard('Damage', _fireRisk.damage.toString()),
+                      _buildCard('Mitigation', _fireRisk.mitigation.toString()),
+                      _buildMapCard('Severity Group Elements', _fireRisk.severityGroupElements),
+                      _buildMapCard('Frequency Group Elements', _fireRisk.frequencyGroupElements),
+                      _buildMapCard('Community Group Elements', _fireRisk.communityGroupElements),
+                      _buildMapCard('Damage Group Elements', _fireRisk.damageGroupElements),
+                      _buildMapCard('Mitigation Group Elements', _fireRisk.mitigationGroupElements),
+                      _buildMapCard('Geometry', _fireRisk.geometry),
+                      _buildMapCard('Matched Address', _fireRisk.matchedAddress),
+                      _buildCard('Centered Latitude', _fireRisk.centeredLatitude.toString()),
+                      _buildCard('Centered Longitude', _fireRisk.centeredLongitude.toString()),
+                      _buildCard('Area', _fireRisk.area.toString()),
+                    ],
+                  ),
+                ),
+              )),
+          const SizedBox(height: 16.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Positioned(
+                bottom: 16.0,
+                left: 16.0,
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(10),
+                    tapTargetSize: MaterialTapTargetSize.padded,
+                    alignment: Alignment.centerRight,
+                    backgroundColor: _searched
+                        ? ThemeColors.primaryColor
+                        : Colors.grey,                  ),
+                  icon: Icon(
+                    Icons.travel_explore_rounded,
+                    color: ThemeColors.backgroundColor,
+                  ),
+                  label: Text(
+                    'VIEW IN LG',
+                    style: TextStyle(
+                      color: ThemeColors.backgroundColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  onPressed: () {
+                    viewFirePerimeter(showBallon: true);
+
+                  },
+                )
+                ,
+              ),
+              const SizedBox(width: 16.0),
+              Positioned(
+                bottom: 16.0,
+                left: 16.0,
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(10),
+                    tapTargetSize: MaterialTapTargetSize.padded,
+                    alignment: Alignment.centerRight,
+                    backgroundColor: _searched
+                        ? ThemeColors.primaryColor
+                        : Colors.grey,
+                  ),
+                  icon: Icon(
+                  !_orbiting
+                    ? Icons.flip_camera_android_rounded
+                        : Icons.stop_rounded,
+                  color: _searched
+                    ? ThemeColors.backgroundColor
+                        : ThemeColors.backgroundColor,
+                ),
+                label: Text(
+                'ORBIT',
+                style: TextStyle(
+                color: _searched
+                  ? ThemeColors.backgroundColor
+                  : ThemeColors.backgroundColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                ),
+                ),
+                onPressed: () {
+                    //print(_fireRisk.getColorByRiskTest(34));
+                },
+              ),
+              )],
+          ),
+          const SizedBox(height: 16.0),
         ]));
   }
 
@@ -376,17 +498,17 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
       }
     }
 
-    _permissionGranted = await location.hasPermission();
+    /*_permissionGranted = await location.hasPermission();
     if (_permissionGranted == loc.PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
       if (_permissionGranted != loc.PermissionStatus.granted) {
         return;
       }
-    }
+    }*/
 
-    final Position position = await Geolocator.getCurrentPosition(
+    /*final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    LatLng initialPosition = LatLng(position.latitude, position.longitude);
+    LatLng initialPosition = LatLng(position.latitude, position.longitude);*/
 
     showDialog(
       context: context,
@@ -399,7 +521,7 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
               zoom: 14,
             ),*/
             initialCameraPosition: CameraPosition(
-              target: LatLng(37.7749, -122.4194),
+              target: pickedLocation ?? const LatLng(37.7749, -122.4194),
               zoom: 10,
             ),
             onMapCreated: (controller) {
@@ -408,7 +530,9 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
             onTap: (LatLng location) {
               setState(() {
                 pickedLocation = location;
+                _addressController.text = '${location.latitude}, ${location.latitude}';
               });
+              getFireRiskByAddress();
               Navigator.pop(context);
             },
           ),
@@ -434,23 +558,108 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
     );
   }
 
+
+  Widget _buildCard(String title, String content) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8.0),
+      child: ListTile(
+        title: Text(title),
+        subtitle: Text(content),
+      ),
+    );
+  }
+
+  Widget _buildMapCard(String title, Map<String, dynamic> map) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8.0),
+      child: ExpansionTile(
+        title: Text(title),
+        children: map.entries
+            .map((entry) => ListTile(
+          title: Text(entry.key),
+          subtitle: Text(entry.value.toString()),
+        ))
+            .toList(),
+      ),
+    );
+  }
+
   void getFireRiskByAddress() {
     setState(() {
       _loadingFireRisk.value = true;
+      _searched = false;
+
     });
     _preciselyService
-        .getFireRisk(_addressController.text)
+        .getFireRisk(_addressController.text, pickedLocation)
         .then((fireRisk) async {
       _fireRisk = fireRisk;
       setState(() {
         _loadingFireRisk.value = false;
+        _searched = true;
       });
     }).onError((error, stackTrace) {
       setState(() {
+        _fireRisk = FireRisk();
         _loadingFireRisk.value = false;
+        _searched = false;
+
       });
+      if (kDebugMode) print(error);
       showSnackbar(context, 'Preciesly Api Timeout');
     });
+  }
+
+  Widget _buildSpinner() {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return SizedBox(
+      width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16),
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          CircularProgressIndicator(color: ThemeColors.primaryColor)
+        ]),
+      ),
+    );
+  }
+
+  Widget _buildEmptyMessage(String message) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            message,
+            style: const TextStyle(
+                color: Colors.red, fontSize: 18, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> viewFirePerimeter(
+      {required bool showBallon}) async {
+
+    await _lgService.sendKml(_fireRisk.toKMLEntity(),
+        images: FireRisk.getRiskImg());
+    if (showBallon) {
+      final kmlBalloon = KMLEntity(
+        name: '',
+        content: _fireRisk
+            .toPlacemarkEntity()
+            .balloonOnlyTag,
+      );
+      await _lgService.sendKMLToSlave(
+        _lgService.balloonScreen,
+        kmlBalloon.body,
+      );
+    }
+    await _lgService.flyTo(_fireRisk.toLookAtEntity());
+    await _lgService.sendTour(_fireRisk.buildOrbit(), 'Orbit');
   }
 
   /*Future<void> displayPrediction(Prediction p, BuildContext context) async {

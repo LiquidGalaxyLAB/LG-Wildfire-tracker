@@ -44,6 +44,7 @@ class _NasaApiState extends State<NasaApiPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    print(screenWidth);
 
     return Scaffold(
         appBar: AppBar(
@@ -178,25 +179,23 @@ class _NasaApiState extends State<NasaApiPage> {
                         : ResponsiveGridView.builder(
                             addAutomaticKeepAlives: true,
                             gridDelegate: ResponsiveGridDelegate(
-                              //maxCrossAxisExtent: 180,
-                              //crossAxisExtent: screenWidth >= 768? screenWidth / 2 - 224 : 360,
                               // Maximum item size.
-                              childAspectRatio: 2.5,
+                              childAspectRatio: screenWidth > 820 ? 1.8 : 2.5,
                               // Aspect ratio for items.
                               crossAxisSpacing: 16,
                               // Horizontal spacing between items.
                               mainAxisSpacing: 16,
                               // Vertical spacing between items.
-                              minCrossAxisExtent: screenWidth > 820
-                                  ? screenWidth / 2 - 224
-                                  : screenWidth - 100,
-                              // Minimum item size.
+                              minCrossAxisExtent: screenWidth > 820?
+                              screenWidth/2 - screenWidth*0.1 :
+                              screenWidth-100,
                             ),
                             alignment: Alignment.topCenter,
                             //maxRowCount: ,
                             shrinkWrap: false,
                             padding: const EdgeInsets.all(16),
                             itemCount: _satelliteData.length,
+                            //maxRowCount: 2,
                             // Total number of items.
                             itemBuilder: (context, index) {
                               return FadeIn(
