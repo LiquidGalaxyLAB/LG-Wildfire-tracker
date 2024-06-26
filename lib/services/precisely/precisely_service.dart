@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:wildfiretracker/services/precisely/fire_risk.dart';
 import 'package:wildfiretracker/services/precisely/precisely_service_settings.dart';
@@ -33,7 +34,7 @@ class PreciselyService {
     }
   }
 
-  Future<FireRisk> getFireRisk(String address) async {
+  Future<FireRisk> getFireRisk(String address, LatLng? latLng) async {
     // todo: implement getFireRisk
     // includeGeometry=Y&address=Death Valley National Park, USA
 
@@ -41,8 +42,18 @@ class PreciselyService {
       'Accept': 'application/json',
       'Authorization': 'Bearer ${await getSessionOAuthToken() ?? ''}'
     };
+    
+    print(headers);
+
     var url = Uri.parse(
-        '${PreciselyServiceSettings.fireRiskUrl}?includeGeometry=Y&address=$address');
+    '${PreciselyServiceSettings.fireRiskUrl}?includeGeometry=Y&address=$address');
+    if (latLng != null) {
+      url = Uri.parse(
+          '${PreciselyServiceSettings.fireRiskLocationUrl}?includeGeometry=Y&longitude=${latLng.longitude}&latitude=${latLng.latitude}');
+    }
+
+    print(url);
+
     var request = Request('GET', url);
     request.headers.addAll(headers);
 
@@ -87,6 +98,7 @@ class PreciselyService {
   }
 
   Future<String?> getSessionOAuthToken() async {
+    return await getBearer(); // todo: expiresIn element
     var oauthToken = _localStorageService.getItem(StorageKeys.preciselyOAuthToken);
     if (oauthToken == null || oauthToken.isEmpty) {
       oauthToken = await getBearer();
