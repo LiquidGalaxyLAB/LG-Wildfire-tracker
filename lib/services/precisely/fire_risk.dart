@@ -156,7 +156,7 @@ class FireRisk {
     );
   }
 
-  LookAtEntity toLookAtEntity() {
+  LookAtEntity toLookAtEntity() { // todo: ajust zoom on LG
     return LookAtEntity(
       lat: centeredLatitude,
       lng: centeredLongitude,
@@ -199,17 +199,7 @@ class FireRisk {
     </div>
   ''';
 
-  String getColorByRisk1() {
-    int red = (risk50 / 50 * 255).round();
-    int green = ((50 - risk50) / 50 * 255).round();
-    return 'ff${red.toRadixString(16).padLeft(2, '0')}${green.toRadixString(16).padLeft(2, '0')}00';
-  }
-  String getColorByRisk2() {
-    int red = (risk50 / 50 * 255).round();
-    int green = ((50 - risk50) / 50 * 255).round();
-    return '${red.toRadixString(16).padLeft(2, '0')}ff${green.toRadixString(16).padLeft(2, '0')}00';
-  }
-
+  // todo: test on LG the color
   String getColorByRisk() {
     int red;
     int green;
@@ -224,9 +214,8 @@ class FireRisk {
       green = ((50 - risk50) / 25 * 255).round();
     }
 
-    return '${red.toRadixString(16).padLeft(2, '0')}${green.toRadixString(16).padLeft(2, '0')}00ff';
+    return '${red.toRadixString(16).padLeft(2, '0')}${green.toRadixString(16).padLeft(2, '0')}00c2';
   }
-
 
 
   getFormatedCoordinates() {

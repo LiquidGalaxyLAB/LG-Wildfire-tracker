@@ -1,9 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
+//import 'package:google_places_flutter/google_places_flutter.dart';
+//import 'package:google_places_flutter/model/prediction.dart';
 import 'package:location/location.dart' as loc;
+import 'package:uuid/uuid.dart';
 import 'package:wildfiretracker/services/precisely/fire_risk.dart';
 import 'package:wildfiretracker/services/precisely/precisely_service.dart';
 
@@ -11,6 +18,8 @@ import '../entities/kml/kml_entity.dart';
 import '../services/lg_service.dart';
 import '../utils/snackbar.dart';
 import '../utils/theme.dart';
+import 'package:http/http.dart' as http;
+
 
 class PreciselyUsaForestFireRisk extends StatefulWidget {
   const PreciselyUsaForestFireRisk({super.key});
@@ -250,18 +259,59 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
 
   PreciselyService get _preciselyService => GetIt.I<PreciselyService>();
   final _addressController = TextEditingController();
+  var uuid =  const Uuid();
+  String _sessionToken = '1234567890';
+  List<dynamic> _placeList = [];
 
-  final String googleApiKey = 'AIzaSyCgxeVrZewwcexEMz-MFGLsX74KMKU2YFc';
+  final String googleApiKey = 'AIzaSyBXWiedpaiODFgXjsm1VMguHJo5Bf3jqtI';
 
   GoogleMapController? mapController;
   LatLng? pickedLocation = const LatLng(37.7749, -122.4194);
+
+  TextEditingController controller = TextEditingController();
+
 
 
   @override
   void initState() {
     super.initState();
-    _addressController.text = 'Death Valley National Park, USA';
+    //_addressController.text = 'Death Valley National Park, USA';
+    /*_addressController.addListener(() {
+      _onChanged();
+    });*/
   }
+
+  /*_onChanged() {
+    if (_sessionToken == null) {
+      setState(() {
+        _sessionToken = uuid.v4();
+      });
+    }
+    getSuggestion(_addressController.text);
+  }*/
+
+  /*void getSuggestion(String input) async {
+    try{
+      String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+      String request = '$baseURL?input=$input&key=$googleApiKey&sessiontoken=$_sessionToken';
+      var response = await http.get(Uri.parse(request));
+      var data = json.decode(response.body);
+      if (kDebugMode) {
+        print('mydata');
+        print(data);
+      }
+      if (response.statusCode == 200) {
+        setState(() {
+          _placeList = json.decode(response.body)['predictions'];
+        });
+      } else {
+        throw Exception('Failed to load predictions');
+      }
+    }catch(e){
+      print(e);
+    }
+
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -301,11 +351,66 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
             ),
           ),
           Padding(
-              padding: EdgeInsets.only(left: 20.0, right: 20.0),
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: Row(
                 children: [
-                  Expanded(
-                    child: TextFormField( // todo: fer que al seleccionar del mapa es fiqui l'adreça.
+                  Expanded(// todo: fer que al seleccionar del mapa es fiqui l'adreça.
+                    child: GooglePlaceAutoCompleteTextField(
+                      textEditingController: _addressController,
+                      googleAPIKey: googleApiKey,
+                      inputDecoration: const InputDecoration(
+                        label: Text('Select address'),
+                        prefixIcon: Icon(Icons.edit_road_sharp),
+                        contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        hintText: 'Select address',
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            bottomLeft: Radius.circular(10),
+                          ),
+                        ),
+                      ),
+                      debounceTime: 400,
+                      countries: const ["us"],
+                      isLatLngRequired: true,
+                      getPlaceDetailWithLatLng: (Prediction prediction) {
+                        print("placeDetails${prediction.lat}");
+                      },
+                      itemClick: (Prediction prediction) {
+                        setState(() {
+                          _addressController.text = prediction.description ?? "";
+                          _addressController.selection = TextSelection.fromPosition(
+                              TextPosition(offset: prediction.description?.length ?? 0));
+                        });
+                      },
+                      seperatedBuilder: Container(
+                          color: ThemeColors.backgroundColor,
+                          child: Divider()
+                      ),
+                      // containerHorizontalPadding: 10,
+
+                      itemBuilder: (context, index, Prediction prediction) {
+                        return Container(
+                          color: ThemeColors.backgroundColor,
+                          padding: const EdgeInsets.all(6),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.location_on),
+                              const SizedBox(
+                                width: 7,
+                              ),
+                              Expanded(child: Text(prediction.description ?? ""))
+                            ],
+                          ),
+                        );
+                      },
+                      isCrossBtnShown: true,
+                    ),
+                    /*TextFormField(
                       controller: _addressController,
                       decoration: const InputDecoration(
                         label: Text('Select address'),
@@ -324,14 +429,6 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                         ),
                       ),
                       onTap: () async {
-                        /*Prediction? p = await PlacesAutocomplete.show(
-                    context: context,
-                    apiKey: googleApiKey,
-                    mode: Mode.overlay,
-                    language: "en",
-                    components: [Component(Component.country, "us")],
-                  );
-                  displayPrediction(p!, context);*/
                       },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -339,7 +436,7 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                         }
                         return null;
                       },
-                    )
+                    )*/
                   ),
                   Container(
                     decoration: BoxDecoration(
@@ -372,6 +469,23 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                   ),
                 ],
               )),
+          /*Expanded(
+            child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: _placeList.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () async {
+
+                  },
+                  child: ListTile(
+                    title: Text(_placeList[index]["description"]),
+                  ),
+                );
+              },
+            ),
+          ),*/
           _loadingFireRisk.value
               ? _buildSpinner()
               : Expanded(

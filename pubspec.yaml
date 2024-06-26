@@ -51,6 +51,7 @@ dependencies:
   location: ^6.0.2
   google_maps_flutter: ^2.7.0
   geolocator: ^12.0.0
+  uuid: ^4.4.0
   google_places_flutter: ^2.0.8
 
 
