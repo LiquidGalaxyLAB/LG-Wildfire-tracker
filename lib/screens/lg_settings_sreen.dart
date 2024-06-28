@@ -7,6 +7,8 @@ import 'package:get_it/get_it.dart';
 import 'package:wildfiretracker/entities/lg_settings_model.dart';
 import 'package:wildfiretracker/services/local_storage_service.dart';
 import 'package:wildfiretracker/services/nasa/nasa_service.dart';
+import 'package:wildfiretracker/services/precisely/precisely_service.dart';
+import 'package:wildfiretracker/services/precisely/precisely_service_settings.dart';
 import 'package:wildfiretracker/utils/storage_keys.dart';
 import 'package:wildfiretracker/utils/theme.dart';
 import 'package:wildfiretracker/widgets/button.dart';
@@ -33,6 +35,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
   SSHService get _sshService => GetIt.I<SSHService>();
   LGService get _lgService => GetIt.I<LGService>();
   NASAService get _nasaService => GetIt.I<NASAService>();
+  PreciselyService get _preciselyService => GetIt.I<PreciselyService>();
   LocalStorageService get _localStorageService =>
       GetIt.I<LocalStorageService>();
 
@@ -43,6 +46,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
   final _screensController = TextEditingController();
 
   late final _nasaApiController = TextEditingController();
+  late final _preciselyApiKeyController = TextEditingController();
+  late final _preciselyApiSecretController = TextEditingController();
   // todo: fer la api de precaisly
 
   late TabController _tabController;
@@ -290,6 +295,40 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                 ),
               ),
             ),
+            const Text(
+              'Setup Precisely custom API credentials',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Input(
+                controller: _preciselyApiKeyController,
+                label: 'Precisely API Key',
+                hint: PreciselyServiceSettings.defaultApiKey,
+                type: TextInputType.text,
+                prefixIcon: const Padding(
+                  padding: EdgeInsets.only(left: 4),
+                  child: Icon(Icons.key, color: Colors.grey),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Input(
+                controller: _preciselyApiSecretController,
+                label: 'Precisely API Secret',
+                hint: PreciselyServiceSettings.defaultApiSecret,
+                type: TextInputType.text,
+                prefixIcon: const Padding(
+                  padding: EdgeInsets.only(left: 4),
+                  child: Icon(Icons.key, color: Colors.grey),
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Button(
@@ -306,6 +345,12 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       _nasaApiController.text.toString());
                   _nasaService.nasaApiCountryLiveFire.apiKey =
                       _nasaApiController.text.toString();
+                  
+                  _localStorageService.setItem(StorageKeys.preciselyApiKey, _preciselyApiKeyController.text.toString());
+                  _localStorageService.setItem(StorageKeys.preciselyApiSecret, _preciselyApiSecretController.text.toString());
+                  _preciselyService.preciselyApiServiceSettings.apiKey = _preciselyApiKeyController.text.toString();
+                  _preciselyService.preciselyApiServiceSettings.apiSecret = _preciselyApiSecretController.text.toString();
+
                   showSnackbar(context, 'Saved');
                 },
               ),
@@ -624,6 +669,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
             _localStorageService.getItem(StorageKeys.lgCurrentConnection);
       }
       _nasaApiController.text = _nasaService.nasaApiCountryLiveFire.apiKey;
+      _preciselyApiKeyController.text = PreciselyServiceSettings.defaultApiKey;
+      _preciselyApiSecretController.text =
+          PreciselyServiceSettings.defaultApiSecret;
     });
 
     /*_onConnect();

@@ -16,7 +16,8 @@ import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 import 'package:wildfiretracker/services/precisely/precisely_service.dart';
 import 'package:wildfiretracker/services/ssh_service.dart';
 import 'package:wildfiretracker/utils/theme.dart';
-import 'package:dcdg/dcdg.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 /// Registers all services into the application.
 void setupServices() {
@@ -35,6 +36,8 @@ Future<void> main() async {
   setupServices();
 
   await GetIt.I<LocalStorageService>().loadStorage();
+
+  await dotenv.load();
 
   GetIt.I<SSHService>().init();
   runApp(const MyApp());

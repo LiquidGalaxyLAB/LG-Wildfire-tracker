@@ -1,7 +1,8 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 
 class NASAServiceSettings {
-  static String nasaApiKey = "fae96ccddec310c0a7538eaebc30a426";
+  static String nasaApiKey = dotenv.get('NASA_API_KEY');
   static List<String> satellites = [
     'VIIRS_NOAA21_NRT',
     'VIIRS_SNPP_SP',

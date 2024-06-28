@@ -1,10 +1,11 @@
 
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class PreciselyServiceSettings {
-  // base64 ( nceA63Z017WJ8uzBINPZacIVeHYcJ0AE:0Ms1D9NeXdLeOkyJ)
-  static String defaultApiKey = 'nceA63Z017WJ8uzBINPZacIVeHYcJ0AE';
-  static String defaultApiSecret = '0Ms1D9NeXdLeOkyJ';
+  static String defaultApiKey = dotenv.get('PRECISELY_API_KEY');
+  static String defaultApiSecret = dotenv.get('PRECISELY_API_SECRET');
 
   String apiKey;
   String apiSecret;
