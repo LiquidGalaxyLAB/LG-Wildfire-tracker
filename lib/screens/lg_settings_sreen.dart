@@ -345,13 +345,35 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       _nasaApiController.text.toString());
                   _nasaService.nasaApiCountryLiveFire.apiKey =
                       _nasaApiController.text.toString();
-                  
+
                   _localStorageService.setItem(StorageKeys.preciselyApiKey, _preciselyApiKeyController.text.toString());
                   _localStorageService.setItem(StorageKeys.preciselyApiSecret, _preciselyApiSecretController.text.toString());
                   _preciselyService.preciselyApiServiceSettings.apiKey = _preciselyApiKeyController.text.toString();
                   _preciselyService.preciselyApiServiceSettings.apiSecret = _preciselyApiSecretController.text.toString();
 
                   showSnackbar(context, 'Saved');
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Button(
+                label: 'Clear custom API keys',
+                width: 280,
+                height: 48,
+                icon: Icon(
+                  Icons.clear_all,
+                  color: ThemeColors.backgroundColor,
+                ),
+                onPressed: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  _localStorageService.setItem(StorageKeys.nasaApiKey,
+                      NASAServiceSettings.nasaApiKey);
+                  _localStorageService.setItem(StorageKeys.preciselyApiKey,
+                      PreciselyServiceSettings.defaultApiKey);
+                  _localStorageService.setItem(StorageKeys.preciselyApiSecret,
+                      PreciselyServiceSettings.defaultApiSecret);
+                  showSnackbar(context, 'Clear custom API keys');
                 },
               ),
             ),
