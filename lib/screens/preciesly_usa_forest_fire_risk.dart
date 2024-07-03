@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -263,7 +264,7 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
   String _sessionToken = '1234567890';
   List<dynamic> _placeList = [];
 
-  final String googleApiKey = 'AIzaSyBXWiedpaiODFgXjsm1VMguHJo5Bf3jqtI';
+  final String googleApiKey = dotenv.get('GOOGLE_MAPS_APY_KEY');
 
   GoogleMapController? mapController;
   LatLng? pickedLocation = const LatLng(37.7749, -122.4194);
