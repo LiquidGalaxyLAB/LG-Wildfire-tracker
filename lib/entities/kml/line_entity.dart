@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 /// Class that defines the `line` entity, which contains its properties and
 /// methods.
 class LineEntity {
@@ -121,4 +123,32 @@ class LineEntity {
       drawOrder: map['drawOrder'],
     );
   }
+
+
+
+  static List<Map<String, double>> createCircle(double lat, double lng, double diameter) {
+    final int numPoints = 100;
+    final double radius = diameter / 2;
+    final double angularDistance = radius / 6371000;
+    final double earthRadius = 6371e3; // Earth's radius in meters
+    List<Map<String, double>> coordinates = [];
+
+    for (int i = 0; i < numPoints; i++) {
+      double theta = (math.pi / 180) * (i * (360 / numPoints));
+      double dx = radius * math.cos(theta);
+      double dy = radius * math.sin(theta);
+      double deltaLongitude = dx / (earthRadius * math.cos(lat));
+      double deltaLatitude = dy / earthRadius;
+      coordinates.add({
+        'lat': lat + deltaLatitude,
+        'lng': lng + deltaLongitude,
+        'altitude': 20.0,
+      });
+    }
+
+    return coordinates;
+  }
+
+
+
 }
