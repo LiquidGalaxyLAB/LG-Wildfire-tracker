@@ -93,7 +93,11 @@ class SatelliteData {
       id: '$id'.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
       name: '[$countryId] ${geocodeAddress.city != null ? '${geocodeAddress.city} - ':  ''} ${geocodeAddress.countryName ?? ''}',
       point: PointEntity(altitude: 5, lat: latitude, lng: longitude),
-      line: LineEntity(id: '', coordinates: []),
+      line: LineEntity(
+          id: 'line-${id}',
+          coordinates: LineEntity.createCircle(latitude, longitude, 30),
+      ),
+        layerColor: 'ff0000c2', //todo: red transparent ¿?¿?
       balloonContent: getBallonContent(),
       icon: 'fire.png',
       lookAt: toLookAtEntity(),
