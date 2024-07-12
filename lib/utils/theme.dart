@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 class ThemeColors {
+  static Color defaultPaltetteColor = const Color(0xffff7656);
+  static Color paltetteColor1 = const Color(0xffff5a5a);
+  static Color paltetteColor2 = const Color(0xffff9252);
+
   static int backgroundColorHex = 0xFFFFFFFF; //0xFF2D2D2D
   static Color backgroundColor = const Color(0xFFFFFFFF); //const Color(0xFF2D2D2D);
 
@@ -17,7 +21,7 @@ class ThemeColors {
   static Color? backgroundCardColor = Colors.grey[100];
 
   static Color secondaryColor = const Color(0xFFE8503C);
-  static Color textPrimary = const Color(0xFF000000);
+  static Color textPrimary = const Color(0x8A000000);
   static Color textSecondary = const Color(0xFF616161);
   static Color dividerColor = const Color(0x8A000000);
   static Color snackBarBackgroundColor = const Color(0xFFF44336);

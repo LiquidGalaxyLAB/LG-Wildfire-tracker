@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:wildfiretracker/screens/new_home.dart';
 
 import 'home_screen.dart';
 
@@ -18,20 +19,21 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     [
       'assets/images/lg-logo.png',
       'assets/images/gsoc.png',
-      'assets/images/flutter-lleida.png',
-      'assets/images/logo-eps.png',
-      'assets/images/logo-udl.png',
+      'assets/images/gsoc20_years.png',
     ],
     [
-      'assets/images/lglab-logo.png',
       'assets/images/lgeu-logo.png',
+      'assets/images/lglab-logo.png',
+      'assets/images/gdglleida.png',
+      'assets/images/flutter-lleida.png',
       'assets/images/laboratoris-tic-logo.png',
-      'assets/images/pcital-logo.jpg',
-      'assets/images/nasa-firms.png',
+      'assets/images/parcagrobiotech.png',
     ],
     [
-      'assets/images/bombers-catalunya.jpg',
-      'assets/images/generalitat-de-catalunya.png'
+      'assets/images/logo-udl.png',
+      'assets/images/logo-eps.png',
+      'assets/images/android.png',
+      'assets/images/flutter.png',
     ]
   ];
 
@@ -39,6 +41,9 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    double padding = 16.0;
+    double spacing = 8.0;
+    double rowSpacing = 8.0;
 
     /*Timer(const Duration(seconds: 3), (){
 
@@ -55,22 +60,48 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
               Container(
                 width: 200,
                 height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(20),
-                ),
                 alignment: Alignment.center,
                 //transformAlignment: Alignment.center,
                 //padding: const EdgeInsets.all(30),
-                margin: const EdgeInsets.only(top: 16, bottom: 16),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  // Adjust the border radius as needed.
-                  child: Center(child: Image.asset('assets/images/logo.jpeg')),
-                ), // Image.asset('assets/images/logo.jpeg'),
+                margin: const EdgeInsets.only(top: 16, bottom: 0),
+                child: Center(child: Image.asset('assets/images/logo_gsoc24_round.png')),
               ),
               Expanded(
-                child: ResponsiveGridView.builder(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: _imageRows.asMap().entries.map((imageRow) {
+                      int rowCount = imageRow.value.length;
+                      double effectiveHeight = screenHeight*0.6 - (padding * 2) - (spacing * (rowCount - 1));
+                      double effectiveWidth = screenWidth*0.90 - (padding * 2) - (spacing * (rowCount - 1));
+                      double imageHeightSize = effectiveHeight / rowCount;
+                      double imageWidthSize = effectiveWidth / rowCount;
+
+                      return FadeIn(
+                          duration: Duration(milliseconds: 300),
+                          delay: Duration(milliseconds: (1500 * imageRow.key).round()),
+                          child:
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: screenWidth * 0.05),
+                        child: Wrap(
+                          alignment: WrapAlignment.start,
+                          spacing: spacing, // Space between images
+                          runSpacing: spacing, // Space between rows
+                          children: imageRow.value.map((imagePath) {
+                            return Image.asset(
+                              imagePath,
+                              fit: BoxFit.contain,
+                              width: imageWidthSize, // Dynamic width for each image
+                              height: imageHeightSize, // Dynamic height for each image
+                            );
+                          }).toList(),
+                        ),
+                      ));
+                    }).toList(),
+                  ),
+                ),
+                /*child: ResponsiveGridView.builder(
                   gridDelegate: const ResponsiveGridDelegate(
                     maxCrossAxisExtent: 180,
                     // Maximum item size.
@@ -98,7 +129,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                         delay: Duration(milliseconds: (250 * index).round()),
                         child: Image.asset(img));
                   },
-                ),
+                ),*/
               ),
             ],
           ),
@@ -113,7 +144,8 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     Timer(const Duration(seconds: 6), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        //MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => NewHomeScreen()),
       );
     });
   }
