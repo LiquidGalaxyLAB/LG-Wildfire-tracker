@@ -24,12 +24,12 @@ import '../utils/theme.dart';
 import '../utils/theme.dart';
 
 
-class NewHomeScreen extends StatefulWidget {
+class NasaApiPage extends StatefulWidget {
   @override
-  _NewHomeScreenState createState() => _NewHomeScreenState();
+  _NasaApiPageState createState() => _NasaApiPageState();
 }
 
-class _NewHomeScreenState extends State<NewHomeScreen> {
+class _NasaApiPageState extends State<NasaApiPage> {
   late List<Country> _contries = [];
   late List<SatelliteData> _satelliteData = [];
 
@@ -230,7 +230,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                               child: GoogleMap(
                                 initialCameraPosition: const CameraPosition(
                                   target: LatLng(37.7749, -122.4194), // replace with your initial coordinates
-                                  zoom: 10,
+                                  zoom: 0.0,
                                 ),
                                 onMapCreated: (GoogleMapController controller) {
                                   // handle map created

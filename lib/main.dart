@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:wildfiretracker/screens/gencat_screen.dart';
 import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
+import 'package:wildfiretracker/screens/nasa_screen.dart';
 import 'package:wildfiretracker/screens/nasa_screen_old.dart';
 import 'package:wildfiretracker/screens/preciesly_usa_forest_fire_risk.dart';
 import 'package:wildfiretracker/screens/splash_screen.dart';
@@ -91,7 +92,7 @@ class MyApp extends StatelessWidget {
       routes: {
         // '/': (context) => const HomePage(),
         '/splash': (context) => const SplashScreenPage(),
-        '/nasa': (context) => const NasaApiPage(),
+        '/nasa': (context) => NasaApiPage(),
         '/settings': (context) => const SettingsPage(),
         '/gencat': (context) => const GencatPage(),
         '/precisely-usa-forest-fire-risk': (context) => const PreciselyUsaForestFireRisk(),

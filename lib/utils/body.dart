@@ -12,7 +12,19 @@ class CustomBody extends StatefulWidget {
 }
 
 class CustomBodyState extends State<CustomBody> {
-  String _selectedMenu = 'Home';
+  String _selectedMenu = '/nasa';
+
+  // get current named page and set to _selectedMenu
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final routeName = ModalRoute.of(context)?.settings.name;
+      setState(() {
+        _selectedMenu = routeName ?? '/nasa'; // default to '/nasa' if routeName is null
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +35,10 @@ class CustomBodyState extends State<CustomBody> {
             setState(() {
               _selectedMenu = menu;
             });
+            Navigator.pushReplacementNamed(context, menu);
+          },
+          isMenuSelected: (menu) {
+            return _selectedMenu == menu;
           },
         ),
         Expanded(
@@ -50,8 +66,9 @@ class CustomBodyState extends State<CustomBody> {
 
 class NavigationDrawer extends StatelessWidget {
   final Function(String) onMenuSelected;
+  final Function(String) isMenuSelected;
 
-  NavigationDrawer({required this.onMenuSelected});
+  NavigationDrawer({required this.onMenuSelected, required this.isMenuSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +85,11 @@ class NavigationDrawer extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: <Widget>[
-                  _createDrawerItem(icon: Icons.local_fire_department, text: 'Live Fire', onTap: () => onMenuSelected('Home')),
-                  _createDrawerItem(icon: Icons.forest, text: 'Historic Wildfire', onTap: () => onMenuSelected('Home')),
-                  _createDrawerItem(icon: Icons.forest_outlined, text: 'Forest Fire Risk', onTap: () => onMenuSelected('Home')),
-                  _createDrawerItem(icon: Icons.settings, text: 'Settings', onTap: () => onMenuSelected('Settings')),
-                  _createDrawerItem(icon: Icons.info, text: 'About', onTap: () => onMenuSelected('About')),
+                  _createDrawerItem(name:'/nasa', icon: Icons.local_fire_department, text: 'Live Fire', onTap: () =>  onMenuSelected('/nasa'), isSelected: () => isMenuSelected('/nasa')),
+                  _createDrawerItem(name:'/gencat', icon: Icons.forest, text: 'Historic Wildfire', onTap: () => onMenuSelected('/gencat'), isSelected: () => isMenuSelected('/gencat')),
+                  _createDrawerItem(name:'/precisely-usa-forest-fire-risk', icon: Icons.forest_outlined, text: 'Forest Fire Risk', onTap: () => onMenuSelected('/precisely-usa-forest-fire-risk'), isSelected: () => isMenuSelected('/precisely-usa-forest-fire-risk')),
+                  _createDrawerItem(name:'/settings', icon: Icons.settings, text: 'Settings', onTap: () => onMenuSelected('/settings'), isSelected: () => isMenuSelected('/settings')),
+                  _createDrawerItem(name:'/about', icon: Icons.info, text: 'About', onTap: () => onMenuSelected('/settings'), isSelected: () => isMenuSelected('/about')),
                 ],
               ),
             ),
@@ -83,19 +100,44 @@ class NavigationDrawer extends StatelessWidget {
   }
 
 
-  Widget _createDrawerItem({required IconData icon, required String text, required GestureTapCallback onTap}) {
+  Widget _createDrawerItem({required IconData icon, required String text, required GestureTapCallback onTap, required String name, required Function() isSelected}) {
     return ListTile(
       focusColor: ThemeColors.warning,
       hoverColor: ThemeColors.warning,
       selectedColor: ThemeColors.info,
       //selected: true,
       titleAlignment: ListTileTitleAlignment.center,
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
         children: <Widget>[
-          Icon(icon, color: Colors.black,size: 40),
-          Text(
-              text, textAlign: TextAlign.center)
+          // get selectedMenu from CustomBodyState
+        isSelected() ?
+          Container(
+            width: 5,
+            height: 70,
+            color: ThemeColors.primaryColor,
+          ) :   SizedBox(height: 70, width: 5,),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Icon(icon, color: Colors.black,size: 40),
+              Container(
+                  width: 100,
+                  child: Text(
+                text, textAlign: TextAlign.center, softWrap: true, overflow: TextOverflow.clip,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w500,
+                ),)),
+
+
+            ],
+          ),
+          SizedBox(height: 70, width: 5,)
         ],
       ),
       onTap: onTap,
@@ -107,6 +149,7 @@ class NavigationDrawer extends StatelessWidget {
       ),
     );
   }
+
 }
 
 

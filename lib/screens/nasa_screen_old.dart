@@ -16,14 +16,14 @@ import '../services/lg_service.dart';
 import '../utils/snackbar.dart';
 import '../utils/theme.dart';
 
-class NasaApiPage extends StatefulWidget {
-  const NasaApiPage({super.key});
+class NasaApiPageOld extends StatefulWidget {
+  const NasaApiPageOld({super.key});
 
   @override
-  State<NasaApiPage> createState() => _NasaApiState();
+  State<NasaApiPageOld> createState() => _NasaApiStateOld();
 }
 
-class _NasaApiState extends State<NasaApiPage> {
+class _NasaApiStateOld extends State<NasaApiPageOld> {
   //bool _uploading = false;
 
   late List<Country> _contries = [];

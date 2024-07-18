@@ -145,7 +145,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
       Navigator.pushReplacement(
         context,
         //MaterialPageRoute(builder: (context) => const HomePage()),
-        MaterialPageRoute(builder: (context) => NewHomeScreen()),
+        MaterialPageRoute(builder: (context) => NasaApiPage()),
       );
     });
   }
