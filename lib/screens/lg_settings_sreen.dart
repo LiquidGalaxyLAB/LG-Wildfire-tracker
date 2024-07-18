@@ -19,6 +19,8 @@ import '../services/lg_service.dart';
 import '../services/lg_settings_service.dart';
 import '../services/nasa/nasa_service_settings.dart';
 import '../services/ssh_service.dart';
+import '../utils/body.dart';
+import '../utils/custom_appbar.dart';
 import '../utils/snackbar.dart';
 import '../widgets/confirm_dialog.dart';
 
@@ -89,54 +91,43 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ThemeColors.backgroundColor,
-      appBar: AppBar(
-        title: const Text('Settings'),
-        shadowColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          splashRadius: 24,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.build_rounded),
-          )
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: ThemeColors.primaryColor,
-          labelColor: ThemeColors.primaryColor,
-          unselectedLabelColor: Colors.black,
-          tabs: const [
-            Tab(
-              icon: Icon(Icons.connected_tv_rounded),
-              text: 'Connection',
-            ),
-            Tab(
-              icon: Icon(Icons.public),
-              text: 'Liquid Galaxy',
-            ),
-            Tab(
-              icon: Icon(Icons.settings),
-              text: 'Settings',
-            ),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildConnectionSettings(),
-          _buildLGSettings(),
-          _buildSettings(),
-        ],
-      ),
-    );
+        backgroundColor: ThemeColors.paltetteColor1,
+        appBar: CustomAppBar(),
+        body: CustomBody(
+            content: Expanded(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(child: TabBar(
+                        controller: _tabController,
+                        indicatorColor: ThemeColors.primaryColor,
+                        labelColor: ThemeColors.primaryColor,
+                        unselectedLabelColor: Colors.black,
+                        tabs: const [
+                          Tab(
+                            icon: Icon(Icons.connected_tv_rounded),
+                            text: 'Connection',
+                          ),
+                          Tab(
+                            icon: Icon(Icons.public),
+                            text: 'Liquid Galaxy',
+                          ),
+                          Tab(
+                            icon: Icon(Icons.settings),
+                            text: 'Settings',
+                          ),
+                        ],
+                      ),),
+              Expanded(child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildConnectionSettings(),
+                  _buildLGSettings(),
+                  _buildSettings(),
+                ],
+              ),),
+
+            ]))));
   }
 
   /// Builds the connection settings/form.

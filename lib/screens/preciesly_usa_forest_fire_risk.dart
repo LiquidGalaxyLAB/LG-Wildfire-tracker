@@ -17,6 +17,8 @@ import 'package:wildfiretracker/services/precisely/precisely_service.dart';
 
 import '../entities/kml/kml_entity.dart';
 import '../services/lg_service.dart';
+import '../utils/body.dart';
+import '../utils/custom_appbar.dart';
 import '../utils/snackbar.dart';
 import '../utils/theme.dart';
 import 'package:http/http.dart' as http;
@@ -318,27 +320,11 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const Text(
-            'Preciesly - USA Forest Risk',
-            style: TextStyle(color: Colors.black),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
-            splashRadius: 24,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Icon(Icons.warning_amber_rounded),
-            )
-          ],
-        ),
-        body: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+        backgroundColor: ThemeColors.paltetteColor1,
+        appBar: CustomAppBar(),
+        body: CustomBody(
+            content:
+                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
           const Padding(
             padding: EdgeInsets.only(left: 20.0, right: 10.0, bottom: 10.0),
             child: Row(
@@ -355,7 +341,8 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
               padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: Row(
                 children: [
-                  Expanded(// todo: fer que al seleccionar del mapa es fiqui l'adreça.
+                  Expanded(
+                    // todo: fer que al seleccionar del mapa es fiqui l'adreça.
                     child: GooglePlaceAutoCompleteTextField(
                       textEditingController: _addressController,
                       googleAPIKey: googleApiKey,
@@ -383,15 +370,15 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                       },
                       itemClick: (Prediction prediction) {
                         setState(() {
-                          _addressController.text = prediction.description ?? "";
-                          _addressController.selection = TextSelection.fromPosition(
-                              TextPosition(offset: prediction.description?.length ?? 0));
+                          _addressController.text =
+                              prediction.description ?? "";
+                          _addressController.selection =
+                              TextSelection.fromPosition(TextPosition(
+                                  offset: prediction.description?.length ?? 0));
                         });
                       },
                       seperatedBuilder: Container(
-                          color: ThemeColors.backgroundColor,
-                          child: Divider()
-                      ),
+                          color: ThemeColors.backgroundColor, child: Divider()),
                       // containerHorizontalPadding: 10,
 
                       itemBuilder: (context, index, Prediction prediction) {
@@ -404,7 +391,8 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                               const SizedBox(
                                 width: 7,
                               ),
-                              Expanded(child: Text(prediction.description ?? ""))
+                              Expanded(
+                                  child: Text(prediction.description ?? ""))
                             ],
                           ),
                         );
@@ -446,7 +434,8 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                     child: IconButton(
                       icon: const Icon(Icons.search),
                       color: Colors.white,
-                      onPressed: () { // todo: fer que al cercar, faci la crida a la api i faci print
+                      onPressed: () {
+                        // todo: fer que al cercar, faci la crida a la api i faci print
                         pickedLocation = null;
                         getFireRiskByAddress();
                       },
@@ -490,114 +479,163 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
           _loadingFireRisk.value
               ? _buildSpinner()
               : Expanded(
-              child: Padding(
-                padding:
-                const EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0),
-                child: SizedBox(
-                  //width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
-                  child: _fireRisk.noharmId.isEmpty
-                      ? _buildEmptyMessage('No fire risk data.')
-                      : ListView(
-                    padding: const EdgeInsets.all(16.0),
-                    children: [
-                      _buildCard('State', _fireRisk.state),
-                      _buildCard('No Harm ID', _fireRisk.noharmId),
-                      _buildCard('No Harm Class', _fireRisk.noharmCls),
-                      _buildCard('No Harm Model', _fireRisk.noharmModel),
-                      _buildCard('Risk Description', _fireRisk.riskDesc),
-                      _buildCard('Risk 50', _fireRisk.risk50.toString()),
-                      _buildCard('Severity', _fireRisk.severity.toString()),
-                      _buildCard('Frequency', _fireRisk.frequency.toString()),
-                      _buildCard('Community', _fireRisk.community.toString()),
-                      _buildCard('Damage', _fireRisk.damage.toString()),
-                      _buildCard('Mitigation', _fireRisk.mitigation.toString()),
-                      _buildMapCard('Severity Group Elements', _fireRisk.severityGroupElements),
-                      _buildMapCard('Frequency Group Elements', _fireRisk.frequencyGroupElements),
-                      _buildMapCard('Community Group Elements', _fireRisk.communityGroupElements),
-                      _buildMapCard('Damage Group Elements', _fireRisk.damageGroupElements),
-                      _buildMapCard('Mitigation Group Elements', _fireRisk.mitigationGroupElements),
-                      _buildMapCard('Geometry', _fireRisk.geometry),
-                      _buildMapCard('Matched Address', _fireRisk.matchedAddress),
-                      _buildCard('Centered Latitude', _fireRisk.centeredLatitude.toString()),
-                      _buildCard('Centered Longitude', _fireRisk.centeredLongitude.toString()),
-                      _buildCard('Area', _fireRisk.area.toString()),
-                    ],
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Padding(padding: const EdgeInsets.only(top: 15.0, left: 20.0, right: 20.0, bottom: 10.0),
+                      child: Column(
+                        children: [
+                          Expanded(
+                              child: Padding(
+                                padding:
+                                const EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0),
+                                child: SizedBox(
+                                  //width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+                                  child: _fireRisk.noharmId.isEmpty
+                                      ? _buildEmptyMessage('No fire risk data.')
+                                      : ListView(
+                                    padding: const EdgeInsets.all(16.0),
+                                    children: [
+                                      _buildCard('State', _fireRisk.state),
+                                      _buildCard('No Harm ID', _fireRisk.noharmId),
+                                      _buildCard('No Harm Class', _fireRisk.noharmCls),
+                                      _buildCard(
+                                          'No Harm Model', _fireRisk.noharmModel),
+                                      _buildCard(
+                                          'Risk Description', _fireRisk.riskDesc),
+                                      _buildCard(
+                                          'Risk 50', _fireRisk.risk50.toString()),
+                                      _buildCard(
+                                          'Severity', _fireRisk.severity.toString()),
+                                      _buildCard(
+                                          'Frequency', _fireRisk.frequency.toString()),
+                                      _buildCard(
+                                          'Community', _fireRisk.community.toString()),
+                                      _buildCard('Damage', _fireRisk.damage.toString()),
+                                      _buildCard('Mitigation',
+                                          _fireRisk.mitigation.toString()),
+                                      _buildMapCard('Severity Group Elements',
+                                          _fireRisk.severityGroupElements),
+                                      _buildMapCard('Frequency Group Elements',
+                                          _fireRisk.frequencyGroupElements),
+                                      _buildMapCard('Community Group Elements',
+                                          _fireRisk.communityGroupElements),
+                                      _buildMapCard('Damage Group Elements',
+                                          _fireRisk.damageGroupElements),
+                                      _buildMapCard('Mitigation Group Elements',
+                                          _fireRisk.mitigationGroupElements),
+                                      _buildMapCard('Geometry', _fireRisk.geometry),
+                                      _buildMapCard(
+                                          'Matched Address', _fireRisk.matchedAddress),
+                                      _buildCard('Centered Latitude',
+                                          _fireRisk.centeredLatitude.toString()),
+                                      _buildCard('Centered Longitude',
+                                          _fireRisk.centeredLongitude.toString()),
+                                      _buildCard('Area', _fireRisk.area.toString()),
+                                    ],
+                                  ),
+                                ),
+                              )),
+                          const SizedBox(height: 16.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Positioned(
+                                bottom: 16.0,
+                                left: 16.0,
+                                child: TextButton.icon(
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.all(10),
+                                    tapTargetSize: MaterialTapTargetSize.padded,
+                                    alignment: Alignment.centerRight,
+                                    backgroundColor:
+                                    _searched ? ThemeColors.primaryColor : Colors.grey,
+                                  ),
+                                  icon: Icon(
+                                    Icons.travel_explore_rounded,
+                                    color: ThemeColors.backgroundColor,
+                                  ),
+                                  label: Text(
+                                    'VIEW IN LG',
+                                    style: TextStyle(
+                                      color: ThemeColors.backgroundColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    viewFirePerimeter(showBallon: true);
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 16.0),
+                              Positioned(
+                                bottom: 16.0,
+                                left: 16.0,
+                                child: TextButton.icon(
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.all(10),
+                                    tapTargetSize: MaterialTapTargetSize.padded,
+                                    alignment: Alignment.centerRight,
+                                    backgroundColor:
+                                    _searched ? ThemeColors.primaryColor : Colors.grey,
+                                  ),
+                                  icon: Icon(
+                                    !_orbiting
+                                        ? Icons.flip_camera_android_rounded
+                                        : Icons.stop_rounded,
+                                    color: _searched
+                                        ? ThemeColors.backgroundColor
+                                        : ThemeColors.backgroundColor,
+                                  ),
+                                  label: Text(
+                                    'ORBIT',
+                                    style: TextStyle(
+                                      color: _searched
+                                          ? ThemeColors.backgroundColor
+                                          : ThemeColors.backgroundColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    //print(_fireRisk.getColorByRiskTest(34));
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(height: 16.0),
+                        ],
+                      )
                   ),
                 ),
-              )),
-          const SizedBox(height: 16.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Positioned(
-                bottom: 16.0,
-                left: 16.0,
-                child: TextButton.icon(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.all(10),
-                    tapTargetSize: MaterialTapTargetSize.padded,
-                    alignment: Alignment.centerRight,
-                    backgroundColor: _searched
-                        ? ThemeColors.primaryColor
-                        : Colors.grey,                  ),
-                  icon: Icon(
-                    Icons.travel_explore_rounded,
-                    color: ThemeColors.backgroundColor,
-                  ),
-                  label: Text(
-                    'VIEW IN LG',
-                    style: TextStyle(
-                      color: ThemeColors.backgroundColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  onPressed: () {
-                    viewFirePerimeter(showBallon: true);
+                Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12), // Adjust the radius as needed
+                      ),
+                      padding: const EdgeInsets.only(top: 15.0, right: 20.0, bottom: 5.0), // Adjust the padding as needed
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12), // Same as the outer container
+                        child: GoogleMap(
+                          initialCameraPosition: const CameraPosition(
+                            target: LatLng(37.7749, -122.4194), // replace with your initial coordinates
+                            zoom: 0.0,
+                          ),
+                          onMapCreated: (GoogleMapController controller) {
+                            // handle map created
+                          },
+                        ),
+                      ),
+                    )
 
-                  },
-                )
-                ,
-              ),
-              const SizedBox(width: 16.0),
-              Positioned(
-                bottom: 16.0,
-                left: 16.0,
-                child: TextButton.icon(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.all(10),
-                    tapTargetSize: MaterialTapTargetSize.padded,
-                    alignment: Alignment.centerRight,
-                    backgroundColor: _searched
-                        ? ThemeColors.primaryColor
-                        : Colors.grey,
-                  ),
-                  icon: Icon(
-                  !_orbiting
-                    ? Icons.flip_camera_android_rounded
-                        : Icons.stop_rounded,
-                  color: _searched
-                    ? ThemeColors.backgroundColor
-                        : ThemeColors.backgroundColor,
                 ),
-                label: Text(
-                'ORBIT',
-                style: TextStyle(
-                color: _searched
-                  ? ThemeColors.backgroundColor
-                  : ThemeColors.backgroundColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                ),
-                ),
-                onPressed: () {
-                    //print(_fireRisk.getColorByRiskTest(34));
-                },
-              ),
-              )],
+              ],
+            ),
           ),
-          const SizedBox(height: 16.0),
-        ]));
+        ])));
   }
 
   Future<void> _pickLocationOnMap() async {

@@ -3,6 +3,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wildfiretracker/services/gencat/fire_perimeter.dart';
@@ -11,6 +12,8 @@ import 'package:wildfiretracker/services/gencat/historic_year.dart';
 
 import '../entities/kml/kml_entity.dart';
 import '../services/lg_service.dart';
+import '../utils/body.dart';
+import '../utils/custom_appbar.dart';
 import '../utils/snackbar.dart';
 import '../utils/theme.dart';
 import '../widgets/gencat_fire_perimeter_card.dart';
@@ -40,75 +43,58 @@ class _GencatState extends State<GencatPage> {
     print(screenWidth);
 
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const Text(
-            'Generalitat de Catalunya - Historic Wildfires',
-            style: TextStyle(color: Colors.black),
+        backgroundColor: ThemeColors.paltetteColor1,
+        appBar: CustomAppBar(),
+    body: CustomBody(
+      content: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 20.0, right: 10.0, bottom: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Select the year of the historical Catalan forest fires:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
-            splashRadius: 24,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Icon(Icons.forest_outlined),
-            )
-          ],
         ),
-        body: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 20.0, right: 10.0, bottom: 10.0),
+        Padding(
+            padding: EdgeInsets.only(left: 20.0, right: 20.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Select the year of the historical Catalan forest fires:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-              padding: EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: DropdownSearch<HistoricYear>(
-                      /*clearButtonProps: ClearButtonProps(
+                Expanded(
+                  child: DropdownSearch<HistoricYear>(
+                    /*clearButtonProps: ClearButtonProps(
                               isVisible: true,
                             ),*/
-                      onChanged: (HistoricYear? hy) {
-                        _selectedHisotricYear = hy!;
-                      },
-                      enabled: true,
-                      dropdownDecoratorProps: const DropDownDecoratorProps(
-                        dropdownSearchDecoration: InputDecoration(
-                          label: Text('Select historic year'),
-                          prefixIcon: Icon(Icons.flag),
-                          contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          hintText: 'Select year',
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                            ),
+                    onChanged: (HistoricYear? hy) {
+                      _selectedHisotricYear = hy!;
+                    },
+                    enabled: true,
+                    dropdownDecoratorProps: const DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                        label: Text('Select historic year'),
+                        prefixIcon: Icon(Icons.flag),
+                        contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        hintText: 'Select year',
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            bottomLeft: Radius.circular(10),
                           ),
                         ),
                       ),
-                      dropdownButtonProps: const DropdownButtonProps(
-                        icon: Icon(Icons.arrow_drop_down),
-                        selectedIcon: Icon(Icons.arrow_drop_up),
-                      ),
-                      /*dropdownBuilder: (context, selectedItem) =>
+                    ),
+                    dropdownButtonProps: const DropdownButtonProps(
+                      icon: Icon(Icons.arrow_drop_down),
+                      selectedIcon: Icon(Icons.arrow_drop_up),
+                    ),
+                    /*dropdownBuilder: (context, selectedItem) =>
                             Padding(
                               padding: EdgeInsets.only(left: 0),
                               child: Row(children: [
@@ -119,124 +105,128 @@ class _GencatState extends State<GencatPage> {
                                 )
                               ]),
                             ),*/
-                      popupProps: const PopupProps.menu(
-                        showSearchBox: true,
-                        searchFieldProps: TextFieldProps(
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.search),
-                            hintText: 'Search year',
-                          ),
+                    popupProps: const PopupProps.menu(
+                      showSearchBox: true,
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.search),
+                          hintText: 'Search year',
                         ),
                       ),
-                      filterFn: (item, filter) =>
-                          item.year.toString().contains(filter.toLowerCase()),
-                      itemAsString: (item) => item.year.toString(),
-                      items: HistoricYear.getLocalHistoricYears(),
                     ),
+                    filterFn: (item, filter) =>
+                        item.year.toString().contains(filter.toLowerCase()),
+                    itemAsString: (item) => item.year.toString(),
+                    items: HistoricYear.getLocalHistoricYears(),
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
-                      ),
-                      color: ThemeColors.primaryColor,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
                     ),
-                    child: IconButton(
-                      icon: const Icon(Icons.search),
-                      color: Colors.white,
-                      onPressed: () {
-                        getHistoricFirePerimeter();
-                      },
-                    ),
-                  )
-                ],
-              )),
-          _loadingFirePerimeterData
-              ? _buildSpinner()
-              : Expanded(
-                  child: Padding(
-                      padding: const EdgeInsets.only(
-                          top: 20.0, left: 10.0, right: 10.0),
-                      child: SizedBox(
-                        //width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
-                        width: screenWidth,
-                        child: _firePerimeterData.isEmpty
-                            ? _buildEmptyMessage('There are no wildfire.')
-                            : ResponsiveGridView.builder(
-                                addAutomaticKeepAlives: true,
-                                gridDelegate: ResponsiveGridDelegate(
-                                  // Maximum item size.
-                                  childAspectRatio: screenWidth > 820 ? 1.8 : 2.5,
-                                  // Aspect ratio for items.
-                                  crossAxisSpacing: 16,
-                                  // Horizontal spacing between items.
-                                  mainAxisSpacing: 16,
-                                  // Vertical spacing between items.
-                                  minCrossAxisExtent: screenWidth > 820?
-                                    screenWidth/2 - screenWidth*0.1 :
-                                    screenWidth-100,
-                                ),
-                                alignment: Alignment.topCenter,
-                                //maxRowCount: ,
-                                shrinkWrap: false,
-                                padding: const EdgeInsets.all(16),
-                                itemCount: _firePerimeterData.length,
-                                // Total number of items.
-                                itemBuilder: (context, index) {
-                                  return FadeIn(
-                                      duration: Duration(milliseconds: 600),
-                                      delay: Duration(
-                                          milliseconds: (250 * 1).round()),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(bottom: 16),
-                                        child: GencatFirePerimeterCard(
-                                          firePerimeter: _firePerimeterData[index],
-                                          selected: _selectedFirePerimeterData
-                                          is FirePerimeter &&
-                                              _firePerimeterData[index]
-                                                  .properties
-                                                  .codiFinal ==
-                                                  _selectedFirePerimeterData
-                                                      .properties.codiFinal,
-                                          disabled: false,
-                                          onBalloonToggle: (firePerimeter, showBallon) {
-                                            viewFirePerimeter(
-                                                firePerimeter: firePerimeter,
-                                                showBallon: showBallon);
-                                          },
-                                          onOrbit: (value) async {
-                                            if (value) {
-                                              await _lgService.startTour('Orbit');
-                                            } else {
-                                              await _lgService.stopTour();
-                                            }
-                                          },
-                                          onView: (firePerimeter) {
-                                            setState(() {
-                                              _selectedFirePerimeterData =
-                                                  firePerimeter;
-                                            });
-                                            viewFirePerimeter(
-                                                firePerimeter: firePerimeter,
-                                                showBallon: true);
-                                          },
-                                          onMaps: (firePerimeter) async {
-                                            String googleMapsUrl =
-                                                "https://www.google.com/maps/search/?api=1&query=${firePerimeter.geometry.centeredLatitude},${firePerimeter.geometry.centeredLongitude}";
-                                            if (!await launchUrlString(
-                                                googleMapsUrl)) {
-                                              showSnackbar(
-                                                  context, "Could not open the map.");
-                                            }
-                                          },
-                                        ),
-                                      ));
+                    color: ThemeColors.primaryColor,
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.search),
+                    color: Colors.white,
+                    onPressed: () {
+                      getHistoricFirePerimeter();
+                    },
+                  ),
+                )
+              ],
+            )),
+        _loadingFirePerimeterData
+            ? _buildSpinner()
+            : Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Padding(padding: const EdgeInsets.only(top: 15.0, left: 20.0, right: 20.0, bottom: 10.0),
+                    child: ListView.builder(
+                      itemCount: _firePerimeterData.length,
+                      itemBuilder: (context, index) {
+                        return FadeIn(
+                            duration: Duration(milliseconds: 600),
+                            delay: Duration(
+                                milliseconds: (250 * 1).round()),
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: GencatFirePerimeterCard(
+                                firePerimeter: _firePerimeterData[index],
+                                selected: _selectedFirePerimeterData
+                                is FirePerimeter &&
+                                    _firePerimeterData[index]
+                                        .properties
+                                        .codiFinal ==
+                                        _selectedFirePerimeterData
+                                            .properties.codiFinal,
+                                disabled: false,
+                                onBalloonToggle: (firePerimeter, showBallon) {
+                                  viewFirePerimeter(
+                                      firePerimeter: firePerimeter,
+                                      showBallon: showBallon);
+                                },
+                                onOrbit: (value) async {
+                                  if (value) {
+                                    await _lgService.startTour('Orbit');
+                                  } else {
+                                    await _lgService.stopTour();
+                                  }
+                                },
+                                onView: (firePerimeter) {
+                                  setState(() {
+                                    _selectedFirePerimeterData =
+                                        firePerimeter;
+                                  });
+                                  viewFirePerimeter(
+                                      firePerimeter: firePerimeter,
+                                      showBallon: true);
+                                },
+                                onMaps: (firePerimeter) async {
+                                  String googleMapsUrl =
+                                      "https://www.google.com/maps/search/?api=1&query=${firePerimeter.geometry.centeredLatitude},${firePerimeter.geometry.centeredLongitude}";
+                                  if (!await launchUrlString(
+                                      googleMapsUrl)) {
+                                    showSnackbar(
+                                        context, "Could not open the map.");
+                                  }
                                 },
                               ),
-                      )
-                      )),
-        ]));
+                            ));
+                      },
+                    )
+                ),
+              ),
+              Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12), // Adjust the radius as needed
+                    ),
+                    padding: const EdgeInsets.only(top: 15.0, right: 20.0, bottom: 5.0), // Adjust the padding as needed
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12), // Same as the outer container
+                      child: GoogleMap(
+                        initialCameraPosition: const CameraPosition(
+                          target: LatLng(37.7749, -122.4194), // replace with your initial coordinates
+                          zoom: 0.0,
+                        ),
+                        onMapCreated: (GoogleMapController controller) {
+                          // handle map created
+                        },
+                      ),
+                    ),
+                  )
+
+              ),
+            ],
+          ),
+        ),
+      ]),
+    ));
   }
 
   @override
