@@ -1,95 +1,52 @@
+
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wildfiretracker/utils/theme.dart';
 
-import '../utils/theme.dart';
+class CustomBody extends StatefulWidget {
+  var content;
 
+  CustomBody({super.key, required this.content});
 
-class NewHomeScreen extends StatefulWidget {
   @override
-  _NewHomeScreenState createState() => _NewHomeScreenState();
+  CustomBodyState createState() => CustomBodyState();
 }
 
-class _NewHomeScreenState extends State<NewHomeScreen> {
+class CustomBodyState extends State<CustomBody> {
   String _selectedMenu = 'Home';
-  bool _isOnline = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ThemeColors.paltetteColor1,
-      appBar: AppBar(
-        backgroundColor: ThemeColors.paltetteColor1,
-        title: Row(
-          children: [
-            Expanded(
-              child: Text('Wildfire Tracker for LG', style: GoogleFonts.racingSansOne(fontSize: 24)),
-            ),
-            _buildStatusIndicator(),
-          ],
-        ),
-      ),
-      body: Row(
-        children: <Widget>[
-          NavigationDrawer(
-            onMenuSelected: (menu) {
-              setState(() {
-                _selectedMenu = menu;
-              });
-            },
-          ),
-          Expanded(
-            child: Container(
-                decoration: BoxDecoration(
-                  //color: Colors.red,
-                ),
-                child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                  child:  Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10.0,
-                      ),
-                    ],
-                  ),
-                )),
-              ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatusIndicator() {
     return Row(
-      children: [
-        Icon(
-          _isOnline ? Icons.connected_tv_rounded : Icons.circle_outlined,
-          color: _isOnline ? Colors.green : Colors.red,
-          size: 24,
-        ),
-        SizedBox(width: 8),
-        Text(
-          _isOnline ? 'Connected' : 'Disconnected',
-          style: TextStyle(fontSize: 14),
-        ),
-        Switch(
-          value: _isOnline,
-          onChanged: (value) {
+      children: <Widget>[
+        NavigationDrawer(
+          onMenuSelected: (menu) {
             setState(() {
-              _isOnline = value;
+              _selectedMenu = menu;
             });
           },
-          activeColor: Colors.green,
-          inactiveThumbColor: Colors.red,
+        ),
+        Expanded(
+          child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child:  Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10.0,
+                    ),
+                  ],
+                ),
+                child:  widget.content,
+              )),
         ),
       ],
     );
   }
 }
+
 
 class NavigationDrawer extends StatelessWidget {
   final Function(String) onMenuSelected;

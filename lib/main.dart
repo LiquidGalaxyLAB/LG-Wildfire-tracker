@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:wildfiretracker/screens/gencat_screen.dart';
 import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
-import 'package:wildfiretracker/screens/nasa_screen.dart';
+import 'package:wildfiretracker/screens/nasa_screen_old.dart';
 import 'package:wildfiretracker/screens/preciesly_usa_forest_fire_risk.dart';
 import 'package:wildfiretracker/screens/splash_screen.dart';
 import 'package:wildfiretracker/services/file_service.dart';

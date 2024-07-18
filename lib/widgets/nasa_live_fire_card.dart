@@ -42,7 +42,8 @@ class _NasaLiveFireCardState extends State<NasaLiveFireCard> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Container(
-        width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+        //width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
+      //width: 100,
         decoration: BoxDecoration(
             color: ThemeColors.card.withOpacity(0.7),
             border: Border.all(color: ThemeColors.cardBorder),

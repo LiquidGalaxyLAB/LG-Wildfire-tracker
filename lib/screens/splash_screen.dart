@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'package:wildfiretracker/screens/new_home.dart';
+import 'package:wildfiretracker/screens/nasa_screen.dart';
 
 import 'home_screen.dart';
 
