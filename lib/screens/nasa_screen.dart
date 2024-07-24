@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geocode/geocode.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wildfiretracker/utils/body.dart';
@@ -40,6 +41,8 @@ class _NasaApiPageState extends State<NasaApiPage> {
 
   // bool _loadingSatelliteData = false;
   final ValueNotifier<bool> _loadingSatelliteData = ValueNotifier<bool>(false);
+
+  GoogleMapController? _mapsController;
 
   LGService get _lgService => GetIt.I<LGService>();
 
@@ -205,13 +208,15 @@ class _NasaApiPageState extends State<NasaApiPage> {
                                                 showBallon: true);
                                           },
                                           onMaps: (satelliteData) async {
-                                            String googleMapsUrl =
+                                            /*String googleMapsUrl =
                                                 "https://www.google.com/maps/search/?api=1&query=${satelliteData.latitude},${satelliteData.longitude}";
                                             if (!await launchUrlString(
                                                 googleMapsUrl)) {
                                               showSnackbar(context,
                                                   "Could not open the map.");
-                                            }
+                                            }*/
+
+
                                           },
                                         ),
                                       ));
@@ -229,11 +234,14 @@ class _NasaApiPageState extends State<NasaApiPage> {
                               borderRadius: BorderRadius.circular(12), // Same as the outer container
                               child: GoogleMap(
                                 initialCameraPosition: const CameraPosition(
-                                  target: LatLng(37.7749, -122.4194), // replace with your initial coordinates
+                                  target: LatLng(10.7749, -122.4194), // replace with your initial coordinates
                                   zoom: 0.0,
                                 ),
+
                                 onMapCreated: (GoogleMapController controller) {
-                                  // handle map created
+                                  setState(() {
+                                    _mapsController = controller;
+                                  });
                                 },
                               ),
                             ),
@@ -260,7 +268,46 @@ class _NasaApiPageState extends State<NasaApiPage> {
     });
   }
 
+  Future<void> _goToLatLang(double lat, double lng) async {
+    // wait 1 second
+    await Future.delayed(const Duration(seconds: 3));
+
+    CameraPosition position = CameraPosition(
+      bearing: 192.8334901395799,
+      target: LatLng(lat, lng),
+      zoom: 5.0,
+      tilt: 59.440717697143555,
+    );
+    setState(() {
+      _mapsController?.animateCamera(CameraUpdate.newCameraPosition(position));
+    });
+  }
+
+  Future<void> _goToCountry(String countryName) async {
+    // wait 1 second
+    //await Future.delayed(Duration(seconds: 5));
+    Coordinates cords = await GeoCode().forwardGeocoding(address: _selectedCountry.name);
+    CameraPosition _kLake = CameraPosition(
+        bearing: 192.8334901395799,
+        target: LatLng(37.43296265331129, -122.08832357078792),
+        tilt: 59.440717697143555,
+        zoom: 9.151926040649414);
+    CameraPosition position = CameraPosition(
+      bearing: 192.8334901395799,
+      target: LatLng(cords.latitude ?? 40.712776, cords.longitude ?? -74.005974),
+      zoom: 6.0,
+      tilt: 59.440717697143555,
+    );
+    //final GoogleMapController controller = await _mapsController.future;
+    setState(() {
+      _mapsController?.animateCamera(CameraUpdate.newCameraPosition(position));
+    });
+  }
+
   void getLiveFireByCountry() {
+    //_goToLatLang(33.89589, 62.97857);
+    //return;
+
     setState(() {
       _loadingSatelliteData.value = true;
     });
@@ -273,6 +320,11 @@ class _NasaApiPageState extends State<NasaApiPage> {
       });
       SatelliteData.setPlacemarkFromCoordinates(
           satelliteData, _loadingSatelliteData, refreshState);
+      //_goToCountry(_selectedCountry.name);
+      if (_satelliteData.isNotEmpty) {
+        _goToLatLang(_satelliteData[0].latitude, _satelliteData[0].longitude);
+      }
+
     }).onError((error, stackTrace) {
       _satelliteData = [];
       setState(() {
