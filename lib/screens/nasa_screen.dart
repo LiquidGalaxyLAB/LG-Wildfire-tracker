@@ -215,7 +215,7 @@ class _NasaApiPageState extends State<NasaApiPage> {
                                               showSnackbar(context,
                                                   "Could not open the map.");
                                             }*/
-
+                                            _pinToLatLang(satelliteData.latitude, satelliteData.longitude, MarkerId(satelliteData.id));
 
                                           },
                                         ),
@@ -237,7 +237,16 @@ class _NasaApiPageState extends State<NasaApiPage> {
                                   target: LatLng(10.7749, -122.4194), // replace with your initial coordinates
                                   zoom: 0.0,
                                 ),
-
+                                markers: _satelliteData
+                                    .map((e) => Marker(
+                                  markerId: MarkerId(e.id),
+                                  position: LatLng(e.latitude, e.longitude),
+                                  infoWindow: InfoWindow(
+                                    title: e.countryId,
+                                    snippet: e.acqDate.toString(),
+                                  ),
+                                ))
+                                    .toSet(),
                                 onMapCreated: (GoogleMapController controller) {
                                   setState(() {
                                     _mapsController = controller;
@@ -273,13 +282,28 @@ class _NasaApiPageState extends State<NasaApiPage> {
     await Future.delayed(const Duration(seconds: 3));
 
     CameraPosition position = CameraPosition(
-      bearing: 192.8334901395799,
+      //bearing: 80.8334901395799,
       target: LatLng(lat, lng),
       zoom: 5.0,
+      //tilt: 59.440717697143555,
+    );
+    setState(() {
+      _mapsController?.animateCamera(CameraUpdate.newCameraPosition(position));
+    });
+  }
+
+  Future<void> _pinToLatLang(double lat, double lng, MarkerId markerId) async {
+    // wait 1 second
+    //await Future.delayed(const Duration(seconds: 3));
+    CameraPosition position = CameraPosition(
+      // bearing: 192.8334901395799,
+      target: LatLng(lat, lng),
+      zoom: 12.0,
       tilt: 59.440717697143555,
     );
     setState(() {
       _mapsController?.animateCamera(CameraUpdate.newCameraPosition(position));
+      _mapsController?.showMarkerInfoWindow(markerId);
     });
   }
 
