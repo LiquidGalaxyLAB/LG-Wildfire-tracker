@@ -255,6 +255,8 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
 
   final ValueNotifier<bool> _loadingFireRisk = ValueNotifier<bool>(false);
 
+  GoogleMapController? _mapsController;
+
   bool _orbiting = false;
   bool _searched = false;
 
@@ -621,11 +623,34 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
                         borderRadius: BorderRadius.circular(12), // Same as the outer container
                         child: GoogleMap(
                           initialCameraPosition: const CameraPosition(
-                            target: LatLng(37.7749, -122.4194), // replace with your initial coordinates
-                            zoom: 0.0,
+                            target: LatLng(39.8283, -98.5795), // Coordinates for the center of the USA
+                            zoom: 4.0,
                           ),
+                          markers: {
+                            Marker(
+                              markerId: MarkerId(_fireRisk.noharmId),
+                              position: LatLng(_fireRisk.centeredLatitude, _fireRisk.centeredLongitude),
+                              infoWindow: InfoWindow(
+                                title: _fireRisk.state,
+                                snippet: _fireRisk.riskDesc,
+                              ),
+                            )
+                          },
+                          /*polygons: {
+                            Polygon(
+                              polygonId: PolygonId(_fireRisk.noharmId),
+                              points: _fireRisk?.geometry['coordinates']?[0]
+                                  ?.map((e) => LatLng(e[1], e[0]))
+                                  ?.toList() ?? [],
+                              //fillColor: _fireRisk.getColorByRisk(),
+                              //strokeColor: _fireRisk.getColorByRisk(),
+                              strokeWidth: 2,
+                            )
+                          },*/
                           onMapCreated: (GoogleMapController controller) {
-                            // handle map created
+                            setState(() {
+                              _mapsController = controller;
+                            });
                           },
                         ),
                       ),
@@ -636,6 +661,21 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
             ),
           ),
         ])));
+  }
+
+  Future<void> _pinToLatLang(double lat, double lng, MarkerId markerId) async {
+    // wait 1 second
+    await Future.delayed(const Duration(seconds: 1));
+    CameraPosition position = CameraPosition(
+      // bearing: 192.8334901395799,
+      target: LatLng(lat, lng),
+      zoom: 12.0,
+      tilt: 59.440717697143555,
+    );
+    setState(() {
+      _mapsController?.animateCamera(CameraUpdate.newCameraPosition(position));
+      _mapsController?.showMarkerInfoWindow(markerId);
+    });
   }
 
   Future<void> _pickLocationOnMap() async {
@@ -750,6 +790,7 @@ class _AddressInputScreenState extends State<PreciselyUsaForestFireRisk> {
       setState(() {
         _loadingFireRisk.value = false;
         _searched = true;
+        _pinToLatLang(_fireRisk.centeredLatitude, _fireRisk.centeredLongitude, MarkerId(_fireRisk.noharmId));
       });
     }).onError((error, stackTrace) {
       setState(() {

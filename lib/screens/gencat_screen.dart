@@ -32,6 +32,8 @@ class _GencatState extends State<GencatPage> {
 
   LGService get _lgService => GetIt.I<LGService>();
 
+  GoogleMapController? _mapsController;
+
   GencatService get _gencatService => GetIt.I<GencatService>();
 
   late List<FirePerimeter> _firePerimeterData = [];
@@ -187,13 +189,15 @@ class _GencatState extends State<GencatPage> {
                                       showBallon: true);
                                 },
                                 onMaps: (firePerimeter) async {
-                                  String googleMapsUrl =
+                                  /*String googleMapsUrl =
                                       "https://www.google.com/maps/search/?api=1&query=${firePerimeter.geometry.centeredLatitude},${firePerimeter.geometry.centeredLongitude}";
                                   if (!await launchUrlString(
                                       googleMapsUrl)) {
                                     showSnackbar(
                                         context, "Could not open the map.");
-                                  }
+                                  }*/
+                                  _pinToLatLang(firePerimeter.geometry.centeredLatitude, firePerimeter.geometry.centeredLongitude, MarkerId(firePerimeter.properties.name));
+
                                 },
                               ),
                             ));
@@ -211,11 +215,23 @@ class _GencatState extends State<GencatPage> {
                       borderRadius: BorderRadius.circular(12), // Same as the outer container
                       child: GoogleMap(
                         initialCameraPosition: const CameraPosition(
-                          target: LatLng(37.7749, -122.4194), // replace with your initial coordinates
-                          zoom: 0.0,
+                          target: LatLng(41.5912, 1.5209),
+                          zoom: 7.0,
                         ),
+                        markers: _firePerimeterData
+                            .map((e) => Marker(
+                          markerId: MarkerId(e.properties.name),
+                          position: LatLng(e.geometry.centeredLatitude, e.geometry.centeredLongitude),
+                          infoWindow: InfoWindow(
+                            title: e.properties.name,
+                            snippet: e.properties.dataIncen,
+                          ),
+                        ))
+                            .toSet(),
                         onMapCreated: (GoogleMapController controller) {
-                          // handle map created
+                          setState(() {
+                            _mapsController = controller;
+                          });
                         },
                       ),
                     ),
@@ -232,6 +248,36 @@ class _GencatState extends State<GencatPage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<void> _goToLatLang(double lat, double lng) async {
+    // wait 1 second
+    await Future.delayed(const Duration(seconds: 3));
+
+    CameraPosition position = CameraPosition(
+      //bearing: 80.8334901395799,
+      target: LatLng(lat, lng),
+      zoom: 5.0,
+      //tilt: 59.440717697143555,
+    );
+    setState(() {
+      _mapsController?.animateCamera(CameraUpdate.newCameraPosition(position));
+    });
+  }
+
+  Future<void> _pinToLatLang(double lat, double lng, MarkerId markerId) async {
+    // wait 1 second
+    //await Future.delayed(const Duration(seconds: 3));
+    CameraPosition position = CameraPosition(
+      // bearing: 192.8334901395799,
+      target: LatLng(lat, lng),
+      zoom: 12.0,
+      tilt: 59.440717697143555,
+    );
+    setState(() {
+      _mapsController?.animateCamera(CameraUpdate.newCameraPosition(position));
+      _mapsController?.showMarkerInfoWindow(markerId);
+    });
   }
 
   /// Builds the list empty warn message.
