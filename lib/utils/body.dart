@@ -1,6 +1,10 @@
 
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wildfiretracker/utils/storage_keys.dart';
 import 'package:wildfiretracker/utils/theme.dart';
+
+import '../services/local_storage_service.dart';
 
 class CustomBody extends StatefulWidget {
   var content;
@@ -24,6 +28,7 @@ class CustomBodyState extends State<CustomBody> {
         _selectedMenu = routeName ?? '/nasa'; // default to '/nasa' if routeName is null
       });
     });
+    // check on local store if LG is connected
   }
 
   @override
@@ -89,7 +94,7 @@ class NavigationDrawer extends StatelessWidget {
                   _createDrawerItem(name:'/gencat', icon: Icons.forest, text: 'Historic Wildfire', onTap: () => onMenuSelected('/gencat'), isSelected: () => isMenuSelected('/gencat')),
                   _createDrawerItem(name:'/precisely-usa-forest-fire-risk', icon: Icons.forest_outlined, text: 'Forest Fire Risk', onTap: () => onMenuSelected('/precisely-usa-forest-fire-risk'), isSelected: () => isMenuSelected('/precisely-usa-forest-fire-risk')),
                   _createDrawerItem(name:'/settings', icon: Icons.settings, text: 'Settings', onTap: () => onMenuSelected('/settings'), isSelected: () => isMenuSelected('/settings')),
-                  _createDrawerItem(name:'/about', icon: Icons.info, text: 'About', onTap: () => onMenuSelected('/settings'), isSelected: () => isMenuSelected('/about')),
+                  _createDrawerItem(name:'/about', icon: Icons.info, text: 'About', onTap: () => onMenuSelected('/info'), isSelected: () => isMenuSelected('/info')),
                 ],
               ),
             ),
@@ -150,84 +155,4 @@ class NavigationDrawer extends StatelessWidget {
     );
   }
 
-}
-
-
-class AnimatedDrawerItem extends StatefulWidget {
-  final IconData icon;
-  final String title;
-  final Color selectedColor;
-  final Color unselectedColor;
-  final ValueChanged<bool> onTap;
-
-  AnimatedDrawerItem({
-    required this.icon,
-    required this.title,
-    required this.selectedColor,
-    required this.unselectedColor,
-    required this.onTap,
-  });
-
-  @override
-  _AnimatedDrawerItemState createState() => _AnimatedDrawerItemState();
-}
-
-class _AnimatedDrawerItemState extends State<AnimatedDrawerItem> with SingleTickerProviderStateMixin {
-  bool isSelected = false;
-  late AnimationController _controller;
-  late Animation<Color?> _colorAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _colorAnimation = ColorTween(
-      begin: widget.unselectedColor,
-      end: widget.selectedColor,
-    ).animate(_controller);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _handleTap() {
-    setState(() {
-      isSelected = !isSelected;
-      isSelected ? _controller.forward() : _controller.reverse();
-    });
-    widget.onTap(isSelected);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _handleTap,
-      child: AnimatedBuilder(
-        animation: _colorAnimation,
-        builder: (context, child) {
-          return Container(
-            color: _colorAnimation.value,
-            child: ListTile(
-              leading: Icon(
-                widget.icon,
-                color: isSelected ? widget.selectedColor : widget.unselectedColor,
-              ),
-              title: Text(
-                widget.title,
-                style: TextStyle(
-                  color: isSelected ? widget.selectedColor : widget.unselectedColor,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
 }

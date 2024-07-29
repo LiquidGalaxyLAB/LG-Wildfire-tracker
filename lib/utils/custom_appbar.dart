@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wildfiretracker/utils/storage_keys.dart';
 import 'package:wildfiretracker/utils/theme.dart';
+
+import '../services/local_storage_service.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   CustomAppBar() : preferredSize = Size.fromHeight(kToolbarHeight);
@@ -15,6 +19,16 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _CustomAppBarState extends State<CustomAppBar> {
   bool _isOnline = false;
 
+  LocalStorageService get _localStorageService =>
+      GetIt.I<LocalStorageService>();
+
+  void initState() {
+    super.initState();
+    // check on local store if LG is connected
+    setState(() {
+      _isOnline = _localStorageService.getItem(StorageKeys.lgCurrentConnection) ?? false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +62,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
           _isOnline ? 'Connected' : 'Disconnected',
           style: TextStyle(fontSize: 14),
         ),
-        Switch(
+        /*Switch(
           value: _isOnline,
           onChanged: (value) {
             setState(() {
@@ -57,7 +71,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
           },
           activeColor: Colors.green,
           inactiveThumbColor: Colors.red,
-        ),
+        ),*/
       ],
     );
   }

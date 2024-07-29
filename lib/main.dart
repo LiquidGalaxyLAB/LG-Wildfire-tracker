@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:wildfiretracker/screens/gencat_screen.dart';
+import 'package:wildfiretracker/screens/info_screen.dart';
 import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
 import 'package:wildfiretracker/screens/nasa_screen.dart';
 import 'package:wildfiretracker/screens/nasa_screen_old.dart';
@@ -96,6 +97,7 @@ class MyApp extends StatelessWidget {
         '/settings': (context) => const SettingsPage(),
         '/gencat': (context) => const GencatPage(),
         '/precisely-usa-forest-fire-risk': (context) => const PreciselyUsaForestFireRisk(),
+        '/info': (context) => InfoScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
