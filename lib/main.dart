@@ -7,7 +7,6 @@ import 'package:wildfiretracker/screens/gencat_screen.dart';
 import 'package:wildfiretracker/screens/info_screen.dart';
 import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
 import 'package:wildfiretracker/screens/nasa_screen.dart';
-import 'package:wildfiretracker/screens/nasa_screen_old.dart';
 import 'package:wildfiretracker/screens/preciesly_usa_forest_fire_risk.dart';
 import 'package:wildfiretracker/screens/splash_screen.dart';
 import 'package:wildfiretracker/services/file_service.dart';

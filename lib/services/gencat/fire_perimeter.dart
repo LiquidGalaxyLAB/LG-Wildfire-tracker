@@ -51,13 +51,16 @@ class FirePerimeter {
   }
 
   LookAtEntity toLookAtEntity() {
+    //print("min range: " + (20 * log(geometry.area + 1) * 8).toString());
+    var range = (20 * log(geometry.area + 1) * 8);
+    if (range < 570) range = 570;
     return LookAtEntity(
       lat: geometry.centeredLatitude,
       lng: geometry.centeredLongitude,
-      altitude: 20 * log(geometry.area + 1), //2,3998
-      range:  (20 * log(geometry.area + 1) * 35.99).toString(),
-      tilt: '60',
-      heading: '5',
+      altitude: 0, //2,3998
+      range:  range.toString(),
+      tilt: '65',
+      heading: '0',
     );
   }
 
@@ -80,8 +83,23 @@ class FirePerimeter {
   }
 
   String getBallonContent() => '''
+<div style="font-size:30px;position:relative; padding:10px; border:1px solid #ccc; border-radius:5px; font-family:Arial, sans-serif;">
+<table style="width:100%; border-collapse:collapse;">
+  <tr>
+    <td style="width:33%; text-align:left; vertical-align:middle;">
+      <img src="https://i.imgur.com/M9DHvEi.png" alt="Fire Logo" style="height:100px;"> <!-- logo foc -->
+    </td>
+    <td style="width:34%; text-align:center; vertical-align:middle; font-size:45px; font-weight:bold;">
+      Fire Perimeter
+    </td>
+    <td style="width:33%; text-align:right; vertical-align:middle;">
+      <img src="https://i.imgur.com/q4tJFUp.png" alt="Fire Logo" style="height:100px;"> <!-- logo app -->
+    </td>
+  </tr>
+</table>
+  <br/>
   <div>
-    <b><span style="font-size:15px;">${properties.municipi.toUpperCase()}</span></b>
+    <b><span style="font-size:40px;">${properties.municipi.toUpperCase()}</span></b>
     <br/><br/>
     <b>Wildfire date:</b> ${properties.dataIncen}<br/>
     <b>Wildfire code:</b> ${properties.codiFinal}<br/>
@@ -92,7 +110,9 @@ class FirePerimeter {
     <b>Centered longitude:</b> ${geometry.centeredLongitude.toString().substring(0, 10)}<br/>
     <b>Area:</b> ${geometry.area.toString().substring(0, 8)} ha<br/>
     </div>
-  ''';
+</div>
+''';
+
 }
 
 class Properties {

@@ -146,27 +146,43 @@ class SatelliteData {
   }
 
   String getBallonContent() => '''
-  <div>
-    <b><span style="font-size:15px;">${countryId}</span></b>
-    <br/><br/>
-    <b>Latitude:</b> ${latitude.toStringAsFixed(10)}<br/>
-    <b>Longitude:</b> ${longitude.toStringAsFixed(10)}<br/>
-    <b>Brightness temperature infrared 4:</b> ${brightTi4.toString()}<br/>
-    <b>Scan:</b> ${scan.toString()}<br/>
-    <b>Track:</b> ${track.toString()}<br/>
-    <b>Acquisition date:</b> ${getDateTime()}<br/>
-    <b>Acquisition time:</b> ${acqTime.toString()}<br/>
-    <b>Satellite:</b> ${satellite}<br/>
-    <b>Instrument:</b> ${instrument}<br/>
-    <b>Confidence:</b> ${confidence}<br/>
-    <b>Version:</b> ${version}<br/>
-    <b>Brightness temperature infrared 5:</b> ${brightTi5.toString()}<br/>
-    <b>Fire radiative power:</b> ${frp.toString()}<br/>
-    <b>Day or night:</b> ${dayNight}<br/>
-    <b>Address:</b> ${geocodeAddress.streetAddress != null ? '${geocodeAddress.streetAddress}, ':  ''} 
-    ${geocodeAddress.city != null ? '${geocodeAddress.city}, ':  ''} ${geocodeAddress.countryName ?? ''}<br/>
-    </div>
-  ''';
+<div style="font-size:30px;position:relative; padding:10px; border:1px solid #ccc; border-radius:5px; font-family:Arial, sans-serif;">
+<table style="width:100%; border-collapse:collapse;">
+  <tr>
+    <td style="width:33%; text-align:left; vertical-align:middle;">
+      <img src="https://i.imgur.com/M9DHvEi.png" alt="Fire Logo" style="height:100px;"> <!-- logo foc -->
+    </td>
+    <td style="width:34%; text-align:center; vertical-align:middle; font-size:45px; font-weight:bold;">
+      Live Fire
+    </td>
+    <td style="width:33%; text-align:right; vertical-align:middle;">
+      <img src="https://i.imgur.com/q4tJFUp.png" alt="Fire Logo" style="height:100px;"> <!-- logo app -->
+    </td>
+  </tr>
+</table>
+
+  <br/>
+  <b><span style="font-size:40px;">${countryId}</span></b>
+  <br/><br/>
+  <b>Latitude:</b> ${latitude.toStringAsFixed(10)}<br/>
+  <b>Longitude:</b> ${longitude.toStringAsFixed(10)}<br/>
+  <b>Brightness temperature infrared 4:</b> ${brightTi4.toString()}<br/>
+  <b>Scan:</b> ${scan.toString()}<br/>
+  <b>Track:</b> ${track.toString()}<br/>
+  <b>Acquisition date:</b> ${getDateTime()}<br/>
+  <b>Acquisition time:</b> ${acqTime.toString()}<br/>
+  <b>Satellite:</b> ${satellite}<br/>
+  <b>Instrument:</b> ${instrument}<br/>
+  <b>Confidence:</b> ${confidence}<br/>
+  <b>Version:</b> ${version}<br/>
+  <b>Brightness temperature infrared 5:</b> ${brightTi5.toString()}<br/>
+  <b>Fire radiative power:</b> ${frp.toString()}<br/>
+  <b>Day or night:</b> ${dayNight}<br/>
+  <b>Address:</b> ${geocodeAddress.streetAddress != null ? '${geocodeAddress.streetAddress}, ': ''} 
+  ${geocodeAddress.city != null ? '${geocodeAddress.city}, ': ''} ${geocodeAddress.countryName ?? ''}<br/>
+</div>
+''';
+
 
 
   /* static  void setPlacemarkFromCoordinates(List<SatelliteData> satelliteData)  async{

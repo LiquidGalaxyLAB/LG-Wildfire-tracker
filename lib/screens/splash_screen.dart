@@ -63,8 +63,21 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                 alignment: Alignment.center,
                 //transformAlignment: Alignment.center,
                 //padding: const EdgeInsets.all(30),
-                margin: const EdgeInsets.only(top: 16, bottom: 0),
+                margin: const EdgeInsets.only(top: 16, bottom: 16),
                 child: Center(child: Image.asset('assets/images/logo_gsoc24_round.png')),
+              ),
+              // text "Wildfire Tracker for Liquid Galaxy"
+              FadeIn(
+                duration: Duration(milliseconds: 300),
+                delay: Duration(milliseconds: 500),
+                child: Text(
+                  'Wildfire Tracker for Liquid Galaxy',
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
               ),
               Expanded(
                 child: Padding(

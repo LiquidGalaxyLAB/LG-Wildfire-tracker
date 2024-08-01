@@ -140,7 +140,7 @@ class FireRisk {
       point: PointEntity(
           lat: centeredLatitude,
           lng: centeredLongitude,
-          altitude: 25),
+          altitude: 125),
       line: LineEntity(
           id: noharmId,
           coordinates: getFormatedCoordinates(),
@@ -157,12 +157,14 @@ class FireRisk {
   }
 
   LookAtEntity toLookAtEntity() { // todo: ajust zoom on LG
+    var range = (20 * log(area + 1) * 8);
+    if (range < 570) range = 570;
     return LookAtEntity(
       lat: centeredLatitude,
       lng: centeredLongitude,
-      altitude: 20 * log(area + 1), //2,3998
-      range: (20 * log(area + 1) * 35.99).toString(),
-      tilt: '60',
+      altitude: 0, //2,3998
+      range:  range.toString(),
+      tilt: '65',
       heading: '5',
     );
   }
@@ -181,8 +183,32 @@ class FireRisk {
   }
 
   String getBallonContent() => '''
+<div style="font-size:30px;position:relative; padding:10px; border:1px solid #ccc; border-radius:5px; font-family:Arial, sans-serif;">
+<table style="width: 100%; margin-top: 20px;">
+    <tr>
+        <td style="text-align: center; vertical-align: middle;font-size:15px;">Low Risk</td>
+        <td style="width: 100%; height: 30px; background: linear-gradient(90deg, rgba(0,255,0,1) 0%, rgba(255,0,0,1) 100%);"></td>
+        <td style="text-align: center; vertical-align: middle;font-size:15px;">Very High Risk</td>
+    </tr>
+</table>
+<br/>
+<table style="width:100%; border-collapse:collapse;">
+  <tr>
+    <td style="width:33%; text-align:left; vertical-align:middle;">
+      <img src="https://i.imgur.com/4CLoHq1.png" alt="Fire Logo" style="height:100px;"> <!-- logo atencio  -->
+    </td>
+    <td style="width:34%; text-align:center; vertical-align:middle; font-size:45px; font-weight:bold;">
+      Wildfire Risk
+    </td>
+    <td style="width:33%; text-align:right; vertical-align:middle;">
+      <img src="https://i.imgur.com/q4tJFUp.png" alt="Fire Logo" style="height:100px;"> <!-- logo app -->
+    </td>
+  </tr>
+</table>
+
+  <br/>
   <div>
-    <b><span style="font-size:15px;">${state.toUpperCase()} - ${noharmId.toUpperCase()}</span></b>
+    <b><span style="font-size:40px;">${state.toUpperCase()} - ${noharmId.toUpperCase()}</span></b>
     <br/><br/>
     <b>Model:</b> $noharmModel<br/>
     <b>Risk:</b> $riskDesc<br/>
@@ -197,7 +223,8 @@ class FireRisk {
     <b>Street name:</b> ${matchedAddress['streetName']}<br/>
     <b>Complete street:</b> ${matchedAddress['formattedAddress']}<br/>
     </div>
-  ''';
+</div>
+''';
 
   // todo: test on LG the color
   String getColorByRisk() {
@@ -213,8 +240,9 @@ class FireRisk {
       red = 255;
       green = ((50 - risk50) / 25 * 255).round();
     }
-
-    return '${red.toRadixString(16).padLeft(2, '0')}${green.toRadixString(16).padLeft(2, '0')}00c2';
+    // trans/blau/verd/vermell
+    var color =  'c200${green.toRadixString(16).padLeft(2, '0')}${red.toRadixString(16).padLeft(2, '0')}';
+    return color;
   }
 
 
@@ -224,10 +252,9 @@ class FireRisk {
       formatedCoordinates.add({
         'lat': geometry['coordinates'][0][i][1],
         'lng': geometry['coordinates'][0][i][0],
-        'altitude': 20.0,
+        'altitude': 99.0,
       });
     }
-    print(formatedCoordinates);
     return formatedCoordinates;
   }
 
