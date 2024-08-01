@@ -6,9 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
 import '../entities/ssh_entity.dart';
-import '../utils/storage_keys.dart';
 import 'lg_settings_service.dart';
-import 'local_storage_service.dart';
 
 /// Service that deals with the SSH management.
 class SSHService {
@@ -28,15 +26,16 @@ class SSHService {
   /// Sets a client with the given [ssh] info.
   Future<bool?> setClient(SSHEntity ssh) async {
     try {
-      final socket = await SSHSocket.connect(ssh.host, ssh.port, timeout: const Duration(seconds: 4));
+      final socket = await SSHSocket.connect(ssh.host, ssh.port,
+          timeout: const Duration(seconds: 4));
       String? password;
       _client = SSHClient(socket,
-        username: ssh.username,
-        onPasswordRequest: () => password = ssh.passwordOrKey
+          username: ssh.username,
+          onPasswordRequest: () => password = ssh.passwordOrKey
 
-        //keepAliveInterval: const Duration(seconds: 5),
-        //onAuthenticated: () async {}
-      );
+          //keepAliveInterval: const Duration(seconds: 5),
+          //onAuthenticated: () async {}
+          );
       if (kDebugMode) {
         print(
             'IP: ${ssh.host}, port: ${ssh.port}, username: ${ssh.username}, password: ${ssh.passwordOrKey}');
@@ -83,7 +82,6 @@ class SSHService {
       }
     }
 
-
     return execResult;
   }
 
@@ -113,16 +111,16 @@ class SSHService {
       final sftp = await _client?.sftp();
       final file = await sftp?.open('/var/www/html/$filename',
           mode: SftpFileOpenMode.truncate |
-          SftpFileOpenMode.create |
-          SftpFileOpenMode.write);
+              SftpFileOpenMode.create |
+              SftpFileOpenMode.write);
       var fileSize = await inputFile.length();
       file?.write(inputFile.openRead().cast(), onProgress: (progress) {
-        if(fileSize == progress){
+        if (fileSize == progress) {
           uploading = false;
         }
       });
       // print(file);
-      if(file==null){
+      if (file == null) {
         print('null');
         return;
       }
@@ -145,6 +143,7 @@ class SSHService {
         Timer(pollInterval, check);
       }
     }
+
     check();
     return completer.future;
   }

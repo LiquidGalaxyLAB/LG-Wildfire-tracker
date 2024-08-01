@@ -25,7 +25,8 @@ class FirePerimeter {
 
   KMLEntity toKMLEntity() {
     return KMLEntity(
-        name: properties.municipi.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''), content: toPlacemarkEntity().tag);
+        name: properties.municipi.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
+        content: toPlacemarkEntity().tag);
   }
 
   PlacemarkEntity toPlacemarkEntity() {
@@ -57,8 +58,9 @@ class FirePerimeter {
     return LookAtEntity(
       lat: geometry.centeredLatitude,
       lng: geometry.centeredLongitude,
-      altitude: 0, //2,3998
-      range:  range.toString(),
+      altitude: 0,
+      //2,3998
+      range: range.toString(),
       tilt: '65',
       heading: '0',
     );
@@ -112,7 +114,6 @@ class FirePerimeter {
     </div>
 </div>
 ''';
-
 }
 
 class Properties {
@@ -174,19 +175,21 @@ class Geometry {
       totalLatitude += coordinates[0][0][i][1];
       totalLongitude += coordinates[0][0][i][0];
 
-      double lon = coordinates[0][0][i][0] * 111000 * cos(coordinates[0][0][i][1] * pi / 180);
+      double lon = coordinates[0][0][i][0] *
+          111000 *
+          cos(coordinates[0][0][i][1] * pi / 180);
       double lat = coordinates[0][0][i][1] * 111000;
-      double nextLon = coordinates[0][0][(i + 1) % length][0] * 111000 * cos(coordinates[0][0][(i + 1) % length][1] * pi / 180);
+      double nextLon = coordinates[0][0][(i + 1) % length][0] *
+          111000 *
+          cos(coordinates[0][0][(i + 1) % length][1] * pi / 180);
       double nextLat = coordinates[0][0][(i + 1) % length][1] * 111000;
 
       tmpArea += (lon * nextLat - nextLon * lat);
-
-
     }
     centeredLatitude = totalLatitude / coordinates[0][0].length;
     centeredLongitude = totalLongitude / coordinates[0][0].length;
 
-    area = (tmpArea / 2).abs()/10000;
+    area = (tmpArea / 2).abs() / 10000;
   }
 
   factory Geometry.fromJson(Map<String, dynamic> json) {

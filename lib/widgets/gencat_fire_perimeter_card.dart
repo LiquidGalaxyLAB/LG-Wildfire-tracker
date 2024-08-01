@@ -38,9 +38,9 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
   Widget build(BuildContext context) {
     initializeDateFormatting();
 
-    final screenWidth = MediaQuery.of(context).size.width;
+    //final screenWidth = MediaQuery.of(context).size.width;
 
-    return  Container(
+    return Container(
       //width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
       decoration: BoxDecoration(
           color: ThemeColors.card.withOpacity(0.7),
@@ -63,7 +63,9 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                     ),
                     SizedBox(width: 10),
                     Text(
-                      widget.firePerimeter.properties.municipi != "" ? widget.firePerimeter.properties.municipi : widget.firePerimeter.properties.codiFinal,
+                      widget.firePerimeter.properties.municipi != ""
+                          ? widget.firePerimeter.properties.municipi
+                          : widget.firePerimeter.properties.codiFinal,
                       style: TextStyle(
                         color: ThemeColors.textPrimary,
                         fontWeight: FontWeight.w600,
@@ -91,7 +93,7 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                           Text(
                               'Latitude: ${widget.firePerimeter.geometry.centeredLatitude.toString().substring(0, 10)}',
                               style:
-                              TextStyle(color: ThemeColors.primaryColor)),
+                                  TextStyle(color: ThemeColors.primaryColor)),
                         ],
                       ),
                       Row(
@@ -99,7 +101,7 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                           Text(
                               'Longitude: ${widget.firePerimeter.geometry.centeredLongitude.toString().substring(0, 10)}',
                               style:
-                              TextStyle(color: ThemeColors.primaryColor)),
+                                  TextStyle(color: ThemeColors.primaryColor)),
                         ],
                       ),
                       Row(
@@ -107,7 +109,7 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                           Text(
                               'Area: ${widget.firePerimeter.geometry.area.toStringAsFixed(4)} ha',
                               style:
-                              TextStyle(color: ThemeColors.primaryColor)),
+                                  TextStyle(color: ThemeColors.primaryColor)),
                         ],
                       )
                     ],
@@ -166,8 +168,8 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
                   icon: Icon(
                     widget.selected
                         ? (!_orbiting
-                        ? Icons.flip_camera_android_rounded
-                        : Icons.stop_rounded)
+                            ? Icons.flip_camera_android_rounded
+                            : Icons.stop_rounded)
                         : Icons.travel_explore_rounded,
                     color: widget.disabled
                         ? Colors.grey
@@ -212,39 +214,40 @@ class _GencatFirePerimeterCardState extends State<GencatFirePerimeterCard> {
             ),
             widget.selected
                 ? Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Switch(
-                  value: _balloonVisible,
-                  activeColor: ThemeColors.primaryColor,
-                  activeTrackColor:
-                  ThemeColors.primaryColor.withOpacity(0.6),
-                  inactiveThumbColor: Colors.grey,
-                  inactiveTrackColor: Colors.grey.withOpacity(0.6),
-                  onChanged: widget.disabled
-                      ? null
-                      : (value) {
-                    setState(() {
-                      _balloonVisible = !_balloonVisible;
-                      _orbiting = false;
-                    });
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Switch(
+                        value: _balloonVisible,
+                        activeColor: ThemeColors.primaryColor,
+                        activeTrackColor:
+                            ThemeColors.primaryColor.withOpacity(0.6),
+                        inactiveThumbColor: Colors.grey,
+                        inactiveTrackColor: Colors.grey.withOpacity(0.6),
+                        onChanged: widget.disabled
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  _balloonVisible = !_balloonVisible;
+                                  _orbiting = false;
+                                });
 
-                    widget.onBalloonToggle(widget.firePerimeter, _balloonVisible);
-                  },
-                ),
-                Text(
-                  'BALLON',
-                  style: TextStyle(
-                    color: widget.disabled
-                        ? Colors.grey
-                        : ThemeColors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                  selectionColor: ThemeColors.backgroundCardColor,
-                ),
-              ],
-            )
+                                widget.onBalloonToggle(
+                                    widget.firePerimeter, _balloonVisible);
+                              },
+                      ),
+                      Text(
+                        'BALLON',
+                        style: TextStyle(
+                          color: widget.disabled
+                              ? Colors.grey
+                              : ThemeColors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        selectionColor: ThemeColors.backgroundCardColor,
+                      ),
+                    ],
+                  )
                 : Container(),
           ],
         ),

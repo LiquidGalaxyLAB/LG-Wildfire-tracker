@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:wildfiretracker/utils/storage_keys.dart';
 import 'package:wildfiretracker/utils/theme.dart';
 
@@ -26,7 +25,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
     super.initState();
     // check on local store if LG is connected
     setState(() {
-      _isOnline = _localStorageService.getItem(StorageKeys.lgCurrentConnection) ?? false;
+      _isOnline =
+          _localStorageService.getItem(StorageKeys.lgCurrentConnection) ??
+              false;
     });
   }
 
@@ -37,17 +38,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
       title: Row(
         children: [
           const Expanded(
-            child: Text('Wildfire Tracker for LG',
-                style: TextStyle(
-                  fontSize: 24)
-          ),
+            child:
+                Text('Wildfire Tracker for LG', style: TextStyle(fontSize: 24)),
           ),
           _buildStatusIndicator(),
         ],
       ),
     );
   }
-
 
   Widget _buildStatusIndicator() {
     return Row(

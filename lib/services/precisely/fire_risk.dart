@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import '../../entities/kml/kml_entity.dart';
@@ -50,7 +49,7 @@ class FireRisk {
     this.mitigationGroupElements = const {},
     this.geometry = const {},
     this.matchedAddress = const {},
-  }){
+  }) {
     if (geometry['coordinates'] == null) return;
 
     centeredLatitude = geometry['coordinates'][0][0][1];
@@ -64,19 +63,21 @@ class FireRisk {
       totalLatitude += geometry['coordinates'][0][i][1];
       totalLongitude += geometry['coordinates'][0][i][0];
 
-      double lon = geometry['coordinates'][0][i][0] * 111000 * cos(geometry['coordinates'][0][i][1] * pi / 180);
+      double lon = geometry['coordinates'][0][i][0] *
+          111000 *
+          cos(geometry['coordinates'][0][i][1] * pi / 180);
       double lat = geometry['coordinates'][0][i][1] * 111000;
-      double nextLon = geometry['coordinates'][0][(i + 1) % length][0] * 111000 * cos(geometry['coordinates'][0][(i + 1) % length][1] * pi / 180);
+      double nextLon = geometry['coordinates'][0][(i + 1) % length][0] *
+          111000 *
+          cos(geometry['coordinates'][0][(i + 1) % length][1] * pi / 180);
       double nextLat = geometry['coordinates'][0][(i + 1) % length][1] * 111000;
 
       tmpArea += (lon * nextLat - nextLon * lat);
-
-
     }
     centeredLatitude = totalLatitude / geometry['coordinates'][0].length;
     centeredLongitude = totalLongitude / geometry['coordinates'][0].length;
 
-    area = (tmpArea / 2).abs()/10000;
+    area = (tmpArea / 2).abs() / 10000;
   }
 
   factory FireRisk.fromJson(Map<String, dynamic> json) {
@@ -127,10 +128,10 @@ class FireRisk {
 
   // todo: implement methods to convert to kml for LG sending (test with LG)
 
-
   KMLEntity toKMLEntity() {
     return KMLEntity(
-        name: noharmId.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''), content: toPlacemarkEntity().tag);
+        name: noharmId.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
+        content: toPlacemarkEntity().tag);
   }
 
   PlacemarkEntity toPlacemarkEntity() {
@@ -138,14 +139,13 @@ class FireRisk {
       id: noharmId.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
       name: noharmId,
       point: PointEntity(
-          lat: centeredLatitude,
-          lng: centeredLongitude,
-          altitude: 125),
+          lat: centeredLatitude, lng: centeredLongitude, altitude: 125),
       line: LineEntity(
-          id: noharmId,
-          coordinates: getFormatedCoordinates(),
+        id: noharmId,
+        coordinates: getFormatedCoordinates(),
       ),
-      layerColor: getColorByRisk(), // color verd
+      layerColor: getColorByRisk(),
+      // color verd
       lookAt: toLookAtEntity(),
       // viewOrbit: true,
       //visibility: true,
@@ -156,14 +156,16 @@ class FireRisk {
     );
   }
 
-  LookAtEntity toLookAtEntity() { // todo: ajust zoom on LG
+  LookAtEntity toLookAtEntity() {
+    // todo: ajust zoom on LG
     var range = (20 * log(area + 1) * 8);
     if (range < 570) range = 570;
     return LookAtEntity(
       lat: centeredLatitude,
       lng: centeredLongitude,
-      altitude: 0, //2,3998
-      range:  range.toString(),
+      altitude: 0,
+      //2,3998
+      range: range.toString(),
       tilt: '65',
       heading: '5',
     );
@@ -241,10 +243,10 @@ class FireRisk {
       green = ((50 - risk50) / 25 * 255).round();
     }
     // trans/blau/verd/vermell
-    var color =  'c200${green.toRadixString(16).padLeft(2, '0')}${red.toRadixString(16).padLeft(2, '0')}';
+    var color =
+        'c200${green.toRadixString(16).padLeft(2, '0')}${red.toRadixString(16).padLeft(2, '0')}';
     return color;
   }
-
 
   getFormatedCoordinates() {
     List<Map<String, double>> formatedCoordinates = [];
@@ -257,5 +259,4 @@ class FireRisk {
     }
     return formatedCoordinates;
   }
-
 }

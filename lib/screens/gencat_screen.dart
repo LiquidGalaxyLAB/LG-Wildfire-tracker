@@ -4,8 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:responsive_framework/responsive_framework.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wildfiretracker/services/gencat/fire_perimeter.dart';
 import 'package:wildfiretracker/services/gencat/gencat_service.dart';
 import 'package:wildfiretracker/services/gencat/historic_year.dart';
@@ -42,61 +40,61 @@ class _GencatState extends State<GencatPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    print(screenWidth);
 
     return Scaffold(
         backgroundColor: ThemeColors.paltetteColor1,
         appBar: CustomAppBar(),
-    body: CustomBody(
-      content: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 20.0, right: 10.0, bottom: 10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Select the year of the historical Catalan forest fires:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        body: CustomBody(
+          content:
+              Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const Padding(
+              padding: EdgeInsets.only(left: 20.0, right: 10.0, bottom: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Select the year of the historical Catalan forest fires:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        Padding(
-            padding: EdgeInsets.only(left: 20.0, right: 20.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: DropdownSearch<HistoricYear>(
-                    /*clearButtonProps: ClearButtonProps(
+            ),
+            Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: DropdownSearch<HistoricYear>(
+                        /*clearButtonProps: ClearButtonProps(
                               isVisible: true,
                             ),*/
-                    onChanged: (HistoricYear? hy) {
-                      _selectedHisotricYear = hy!;
-                    },
-                    enabled: true,
-                    dropdownDecoratorProps: const DropDownDecoratorProps(
-                      dropdownSearchDecoration: InputDecoration(
-                        label: Text('Select historic year'),
-                        prefixIcon: Icon(Icons.flag),
-                        contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                        hintText: 'Select year',
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.black,
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            bottomLeft: Radius.circular(10),
+                        onChanged: (HistoricYear? hy) {
+                          _selectedHisotricYear = hy!;
+                        },
+                        enabled: true,
+                        dropdownDecoratorProps: const DropDownDecoratorProps(
+                          dropdownSearchDecoration: InputDecoration(
+                            label: Text('Select historic year'),
+                            prefixIcon: Icon(Icons.flag),
+                            contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            hintText: 'Select year',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    dropdownButtonProps: const DropdownButtonProps(
-                      icon: Icon(Icons.arrow_drop_down),
-                      selectedIcon: Icon(Icons.arrow_drop_up),
-                    ),
-                    /*dropdownBuilder: (context, selectedItem) =>
+                        dropdownButtonProps: const DropdownButtonProps(
+                          icon: Icon(Icons.arrow_drop_down),
+                          selectedIcon: Icon(Icons.arrow_drop_up),
+                        ),
+                        /*dropdownBuilder: (context, selectedItem) =>
                             Padding(
                               padding: EdgeInsets.only(left: 0),
                               child: Row(children: [
@@ -107,142 +105,160 @@ class _GencatState extends State<GencatPage> {
                                 )
                               ]),
                             ),*/
-                    popupProps: const PopupProps.menu(
-                      showSearchBox: true,
-                      searchFieldProps: TextFieldProps(
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.search),
-                          hintText: 'Search year',
+                        popupProps: const PopupProps.menu(
+                          showSearchBox: true,
+                          searchFieldProps: TextFieldProps(
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.search),
+                              hintText: 'Search year',
+                            ),
+                          ),
                         ),
+                        filterFn: (item, filter) =>
+                            item.year.toString().contains(filter.toLowerCase()),
+                        itemAsString: (item) => item.year.toString(),
+                        items: HistoricYear.getLocalHistoricYears(),
                       ),
                     ),
-                    filterFn: (item, filter) =>
-                        item.year.toString().contains(filter.toLowerCase()),
-                    itemAsString: (item) => item.year.toString(),
-                    items: HistoricYear.getLocalHistoricYears(),
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(10),
-                      bottomRight: Radius.circular(10),
-                    ),
-                    color: ThemeColors.primaryColor,
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.search),
-                    color: Colors.white,
-                    onPressed: () {
-                      getHistoricFirePerimeter();
-                    },
-                  ),
-                )
-              ],
-            )),
-        _loadingFirePerimeterData
-            ? _buildSpinner()
-            : Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Padding(padding: const EdgeInsets.only(top: 15.0, left: 20.0, right: 20.0, bottom: 10.0),
-                    child: ListView.builder(
-                      itemCount: _firePerimeterData.length,
-                      itemBuilder: (context, index) {
-                        return FadeIn(
-                            duration: Duration(milliseconds: 600),
-                            delay: Duration(
-                                milliseconds: (250 * 1).round()),
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: GencatFirePerimeterCard(
-                                firePerimeter: _firePerimeterData[index],
-                                selected: _selectedFirePerimeterData
-                                is FirePerimeter &&
-                                    _firePerimeterData[index]
-                                        .properties
-                                        .codiFinal ==
-                                        _selectedFirePerimeterData
-                                            .properties.codiFinal,
-                                disabled: false,
-                                onBalloonToggle: (firePerimeter, showBallon) {
-                                  viewFirePerimeter(
-                                      firePerimeter: firePerimeter,
-                                      showBallon: showBallon);
-                                },
-                                onOrbit: (value) async {
-                                  if (value) {
-                                    await _lgService.startTour('Orbit');
-                                  } else {
-                                    await _lgService.stopTour();
-                                  }
-                                },
-                                onView: (firePerimeter) {
-                                  setState(() {
-                                    _selectedFirePerimeterData =
-                                        firePerimeter;
-                                  });
-                                  viewFirePerimeter(
-                                      firePerimeter: firePerimeter,
-                                      showBallon: true);
-                                },
-                                onMaps: (firePerimeter) async {
-                                  /*String googleMapsUrl =
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
+                        ),
+                        color: ThemeColors.primaryColor,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.search),
+                        color: Colors.white,
+                        onPressed: () {
+                          getHistoricFirePerimeter();
+                        },
+                      ),
+                    )
+                  ],
+                )),
+            _loadingFirePerimeterData
+                ? _buildSpinner()
+                : Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 15.0,
+                                  left: 20.0,
+                                  right: 20.0,
+                                  bottom: 10.0),
+                              child: ListView.builder(
+                                itemCount: _firePerimeterData.length,
+                                itemBuilder: (context, index) {
+                                  return FadeIn(
+                                      duration:
+                                          const Duration(milliseconds: 600),
+                                      delay: Duration(
+                                          milliseconds: (250 * 1).round()),
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 16),
+                                        child: GencatFirePerimeterCard(
+                                          firePerimeter:
+                                              _firePerimeterData[index],
+                                          selected: _selectedFirePerimeterData
+                                                  is FirePerimeter &&
+                                              _firePerimeterData[index]
+                                                      .properties
+                                                      .codiFinal ==
+                                                  _selectedFirePerimeterData
+                                                      .properties.codiFinal,
+                                          disabled: false,
+                                          onBalloonToggle:
+                                              (firePerimeter, showBallon) {
+                                            viewFirePerimeter(
+                                                firePerimeter: firePerimeter,
+                                                showBallon: showBallon);
+                                          },
+                                          onOrbit: (value) async {
+                                            if (value) {
+                                              await _lgService
+                                                  .startTour('Orbit');
+                                            } else {
+                                              await _lgService.stopTour();
+                                            }
+                                          },
+                                          onView: (firePerimeter) {
+                                            setState(() {
+                                              _selectedFirePerimeterData =
+                                                  firePerimeter;
+                                            });
+                                            viewFirePerimeter(
+                                                firePerimeter: firePerimeter,
+                                                showBallon: true);
+                                          },
+                                          onMaps: (firePerimeter) async {
+                                            /*String googleMapsUrl =
                                       "https://www.google.com/maps/search/?api=1&query=${firePerimeter.geometry.centeredLatitude},${firePerimeter.geometry.centeredLongitude}";
                                   if (!await launchUrlString(
                                       googleMapsUrl)) {
                                     showSnackbar(
                                         context, "Could not open the map.");
                                   }*/
-                                  _pinToLatLang(firePerimeter.geometry.centeredLatitude, firePerimeter.geometry.centeredLongitude, MarkerId(firePerimeter.properties.name));
-
+                                            _pinToLatLang(
+                                                firePerimeter
+                                                    .geometry.centeredLatitude,
+                                                firePerimeter
+                                                    .geometry.centeredLongitude,
+                                                MarkerId(firePerimeter
+                                                    .properties.name));
+                                          },
+                                        ),
+                                      ));
                                 },
-                              ),
-                            ));
-                      },
-                    )
-                ),
-              ),
-              Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12), // Adjust the radius as needed
-                    ),
-                    padding: const EdgeInsets.only(top: 15.0, right: 20.0, bottom: 5.0), // Adjust the padding as needed
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12), // Same as the outer container
-                      child: GoogleMap(
-                        initialCameraPosition: const CameraPosition(
-                          target: LatLng(41.5912, 1.5209),
-                          zoom: 7.0,
+                              )),
                         ),
-                        markers: _firePerimeterData
-                            .map((e) => Marker(
-                          markerId: MarkerId(e.properties.name),
-                          position: LatLng(e.geometry.centeredLatitude, e.geometry.centeredLongitude),
-                          infoWindow: InfoWindow(
-                            title: e.properties.name,
-                            snippet: e.properties.dataIncen,
+                        Expanded(
+                            child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                                12), // Adjust the radius as needed
                           ),
-                        ))
-                            .toSet(),
-                        onMapCreated: (GoogleMapController controller) {
-                          setState(() {
-                            _mapsController = controller;
-                          });
-                        },
-                      ),
+                          padding: const EdgeInsets.only(
+                              top: 15.0, right: 20.0, bottom: 5.0),
+                          // Adjust the padding as needed
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            // Same as the outer container
+                            child: GoogleMap(
+                              initialCameraPosition: const CameraPosition(
+                                target: LatLng(41.5912, 1.5209),
+                                zoom: 7.0,
+                              ),
+                              markers: _firePerimeterData
+                                  .map((e) => Marker(
+                                        markerId: MarkerId(e.properties.name),
+                                        position: LatLng(
+                                            e.geometry.centeredLatitude,
+                                            e.geometry.centeredLongitude),
+                                        infoWindow: InfoWindow(
+                                          title: e.properties.name,
+                                          snippet: e.properties.dataIncen,
+                                        ),
+                                      ))
+                                  .toSet(),
+                              onMapCreated: (GoogleMapController controller) {
+                                setState(() {
+                                  _mapsController = controller;
+                                });
+                              },
+                            ),
+                          ),
+                        )),
+                      ],
                     ),
-                  )
-
-              ),
-            ],
-          ),
-        ),
-      ]),
-    ));
+                  ),
+          ]),
+        ));
   }
 
   @override
@@ -332,8 +348,8 @@ class _GencatState extends State<GencatPage> {
           .getFirePerimeters(_selectedHisotricYear.filename);
     } catch (e) {
       if (kDebugMode) {
-        rethrow;
         print(e);
+        rethrow;
       }
       showSnackbar(context, 'Error getting fire perimeter data.');
     }
@@ -345,17 +361,19 @@ class _GencatState extends State<GencatPage> {
 
   Future<void> viewFirePerimeter(
       {required FirePerimeter firePerimeter, required bool showBallon}) async {
-    print(showBallon);
-    print('show ballon');
+    if (kDebugMode) {
+      print(showBallon);
+    }
+    if (kDebugMode) {
+      print('show ballon');
+    }
 
     await _lgService.sendKml(firePerimeter.toKMLEntity(),
         images: FirePerimeter.getFireImg());
     if (showBallon) {
       final kmlBalloon = KMLEntity(
         name: '',
-        content: firePerimeter
-            .toPlacemarkEntity()
-            .balloonOnlyTag,
+        content: firePerimeter.toPlacemarkEntity().balloonOnlyTag,
       );
       await _lgService.sendKMLToSlave(
         _lgService.balloonScreen,
@@ -364,7 +382,5 @@ class _GencatState extends State<GencatPage> {
     }
     await _lgService.flyTo(firePerimeter.toLookAtEntity());
     await _lgService.sendTour(firePerimeter.buildOrbit(), 'Orbit');
-
-
   }
 }
