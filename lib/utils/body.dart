@@ -1,10 +1,6 @@
-
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:wildfiretracker/utils/storage_keys.dart';
 import 'package:wildfiretracker/utils/theme.dart';
 
-import '../services/local_storage_service.dart';
 
 class CustomBody extends StatefulWidget {
   var content;
@@ -23,9 +19,13 @@ class CustomBodyState extends State<CustomBody> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final routeName = ModalRoute.of(context)?.settings.name;
+      final routeName = ModalRoute
+          .of(context)
+          ?.settings
+          .name;
       setState(() {
-        _selectedMenu = routeName ?? '/nasa'; // default to '/nasa' if routeName is null
+        _selectedMenu =
+            routeName ?? '/nasa'; // default to '/nasa' if routeName is null
       });
     });
     // check on local store if LG is connected
@@ -49,7 +49,7 @@ class CustomBodyState extends State<CustomBody> {
         Expanded(
           child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child:  Container(
+              child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10.0),
@@ -60,7 +60,7 @@ class CustomBodyState extends State<CustomBody> {
                     ),
                   ],
                 ),
-                child:  widget.content,
+                child: widget.content,
               )),
         ),
       ],
@@ -73,7 +73,8 @@ class NavigationDrawer extends StatelessWidget {
   final Function(String) onMenuSelected;
   final Function(String) isMenuSelected;
 
-  NavigationDrawer({required this.onMenuSelected, required this.isMenuSelected});
+  NavigationDrawer(
+      {required this.onMenuSelected, required this.isMenuSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -84,17 +85,40 @@ class NavigationDrawer extends StatelessWidget {
         child: Column(
           children: <Widget>[
             DrawerHeader(
-              child: Center(child: Image.asset('assets/images/logo_gsoc24_black_round.png')),
+              child: Center(child: Image.asset(
+                  'assets/images/logo_gsoc24_black_round.png')),
             ),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: <Widget>[
-                  _createDrawerItem(name:'/nasa', icon: Icons.local_fire_department, text: 'Live Fire', onTap: () =>  onMenuSelected('/nasa'), isSelected: () => isMenuSelected('/nasa')),
-                  _createDrawerItem(name:'/gencat', icon: Icons.forest, text: 'Historic Wildfire', onTap: () => onMenuSelected('/gencat'), isSelected: () => isMenuSelected('/gencat')),
-                  _createDrawerItem(name:'/precisely-usa-forest-fire-risk', icon: Icons.forest_outlined, text: 'Forest Fire Risk', onTap: () => onMenuSelected('/precisely-usa-forest-fire-risk'), isSelected: () => isMenuSelected('/precisely-usa-forest-fire-risk')),
-                  _createDrawerItem(name:'/settings', icon: Icons.settings, text: 'Settings', onTap: () => onMenuSelected('/settings'), isSelected: () => isMenuSelected('/settings')),
-                  _createDrawerItem(name:'/about', icon: Icons.info, text: 'About', onTap: () => onMenuSelected('/info'), isSelected: () => isMenuSelected('/info')),
+                  _createDrawerItem(name: '/nasa',
+                      icon: Icons.local_fire_department,
+                      text: 'Live Fire',
+                      onTap: () => onMenuSelected('/nasa'),
+                      isSelected: () => isMenuSelected('/nasa')),
+                  _createDrawerItem(name: '/gencat',
+                      icon: Icons.forest,
+                      text: 'Historic Wildfire',
+                      onTap: () => onMenuSelected('/gencat'),
+                      isSelected: () => isMenuSelected('/gencat')),
+                  _createDrawerItem(name: '/precisely-usa-forest-fire-risk',
+                      icon: Icons.forest_outlined,
+                      text: 'Forest Fire Risk',
+                      onTap: () =>
+                          onMenuSelected('/precisely-usa-forest-fire-risk'),
+                      isSelected: () =>
+                          isMenuSelected('/precisely-usa-forest-fire-risk')),
+                  _createDrawerItem(name: '/settings',
+                      icon: Icons.settings,
+                      text: 'Settings',
+                      onTap: () => onMenuSelected('/settings'),
+                      isSelected: () => isMenuSelected('/settings')),
+                  _createDrawerItem(name: '/about',
+                      icon: Icons.info,
+                      text: 'About',
+                      onTap: () => onMenuSelected('/info'),
+                      isSelected: () => isMenuSelected('/info')),
                 ],
               ),
             ),
@@ -105,7 +129,8 @@ class NavigationDrawer extends StatelessWidget {
   }
 
 
-  Widget _createDrawerItem({required IconData icon, required String text, required GestureTapCallback onTap, required String name, required Function() isSelected}) {
+  Widget _createDrawerItem(
+      {required IconData icon, required String text, required GestureTapCallback onTap, required String name, required Function() isSelected}) {
     return ListTile(
       focusColor: ThemeColors.warning,
       hoverColor: ThemeColors.warning,
@@ -118,26 +143,28 @@ class NavigationDrawer extends StatelessWidget {
 
         children: <Widget>[
           // get selectedMenu from CustomBodyState
-        isSelected() ?
+          isSelected() ?
           Container(
             width: 5,
             height: 70,
             color: ThemeColors.primaryColor,
-          ) :   SizedBox(height: 70, width: 5,),
+          ) : SizedBox(height: 70, width: 5,),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Icon(icon, color: Colors.black,size: 40),
+              Icon(icon, color: Colors.black, size: 40),
               Container(
                   width: 100,
                   child: Text(
-                text, textAlign: TextAlign.center, softWrap: true, overflow: TextOverflow.clip,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w500,
-                ),)),
+                    text, textAlign: TextAlign.center,
+                    softWrap: true,
+                    overflow: TextOverflow.clip,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w500,
+                    ),)),
 
 
             ],

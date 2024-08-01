@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:dartssh2/dartssh2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -14,7 +13,6 @@ import 'package:wildfiretracker/utils/theme.dart';
 import 'package:wildfiretracker/widgets/button.dart';
 import 'package:wildfiretracker/widgets/input.dart';
 
-import '../entities/ssh_entity.dart';
 import '../services/lg_service.dart';
 import '../services/lg_settings_service.dart';
 import '../services/nasa/nasa_service_settings.dart';
@@ -31,13 +29,18 @@ class SettingsPage extends StatefulWidget {
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMixin {
-
+class _SettingsPageState extends State<SettingsPage>
+    with TickerProviderStateMixin {
   LGSettingsService get _settingsService => GetIt.I<LGSettingsService>();
+
   SSHService get _sshService => GetIt.I<SSHService>();
+
   LGService get _lgService => GetIt.I<LGService>();
+
   NASAService get _nasaService => GetIt.I<NASAService>();
+
   PreciselyService get _preciselyService => GetIt.I<PreciselyService>();
+
   LocalStorageService get _localStorageService =>
       GetIt.I<LocalStorageService>();
 
@@ -50,6 +53,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
   late final _nasaApiController = TextEditingController();
   late final _preciselyApiKeyController = TextEditingController();
   late final _preciselyApiSecretController = TextEditingController();
+
   // todo: fer la api de precaisly
 
   late TabController _tabController;
@@ -94,40 +98,41 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
         backgroundColor: ThemeColors.paltetteColor1,
         appBar: CustomAppBar(),
         body: CustomBody(
-            content: Expanded(
+            content: Column(children: [Expanded(
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Container(child: TabBar(
-                        controller: _tabController,
-                        indicatorColor: ThemeColors.primaryColor,
-                        labelColor: ThemeColors.primaryColor,
-                        unselectedLabelColor: Colors.black,
-                        tabs: const [
-                          Tab(
-                            icon: Icon(Icons.connected_tv_rounded),
-                            text: 'Connection',
-                          ),
-                          Tab(
-                            icon: Icon(Icons.public),
-                            text: 'Liquid Galaxy',
-                          ),
-                          Tab(
-                            icon: Icon(Icons.settings),
-                            text: 'Settings',
-                          ),
-                        ],
-                      ),),
-              Expanded(child: TabBarView(
+              TabBar(
                 controller: _tabController,
-                children: [
-                  _buildConnectionSettings(),
-                  _buildLGSettings(),
-                  _buildSettings(),
+                indicatorColor: ThemeColors.primaryColor,
+                labelColor: ThemeColors.primaryColor,
+                unselectedLabelColor: Colors.black,
+                tabs: const [
+                  Tab(
+                    icon: Icon(Icons.connected_tv_rounded),
+                    text: 'Connection',
+                  ),
+                  Tab(
+                    icon: Icon(Icons.public),
+                    text: 'Liquid Galaxy',
+                  ),
+                  Tab(
+                    icon: Icon(Icons.settings),
+                    text: 'Settings',
+                  ),
                 ],
-              ),),
-
-            ]))));
+              ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildConnectionSettings(),
+                    _buildLGSettings(),
+                    _buildSettings(),
+                  ],
+                ),
+              ),
+            ]))])));
   }
 
   /// Builds the connection settings/form.
@@ -337,10 +342,14 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                   _nasaService.nasaApiCountryLiveFire.apiKey =
                       _nasaApiController.text.toString();
 
-                  _localStorageService.setItem(StorageKeys.preciselyApiKey, _preciselyApiKeyController.text.toString());
-                  _localStorageService.setItem(StorageKeys.preciselyApiSecret, _preciselyApiSecretController.text.toString());
-                  _preciselyService.preciselyApiServiceSettings.apiKey = _preciselyApiKeyController.text.toString();
-                  _preciselyService.preciselyApiServiceSettings.apiSecret = _preciselyApiSecretController.text.toString();
+                  _localStorageService.setItem(StorageKeys.preciselyApiKey,
+                      _preciselyApiKeyController.text.toString());
+                  _localStorageService.setItem(StorageKeys.preciselyApiSecret,
+                      _preciselyApiSecretController.text.toString());
+                  _preciselyService.preciselyApiServiceSettings.apiKey =
+                      _preciselyApiKeyController.text.toString();
+                  _preciselyService.preciselyApiServiceSettings.apiSecret =
+                      _preciselyApiSecretController.text.toString();
 
                   showSnackbar(context, 'Saved');
                 },
@@ -358,8 +367,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                 ),
                 onPressed: () {
                   FocusManager.instance.primaryFocus?.unfocus();
-                  _localStorageService.setItem(StorageKeys.nasaApiKey,
-                      NASAServiceSettings.nasaApiKey);
+                  _localStorageService.setItem(
+                      StorageKeys.nasaApiKey, NASAServiceSettings.nasaApiKey);
                   _localStorageService.setItem(StorageKeys.preciselyApiKey,
                       PreciselyServiceSettings.defaultApiKey);
                   _localStorageService.setItem(StorageKeys.preciselyApiSecret,
@@ -703,7 +712,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
 
   /// Checks and sets the connection status according to the form info.
   Future<void> _checkConnection() async {
-
     /*await _settingsService.setSettings(
       LGSettingsEntity(
           ip: _ipController.text,
@@ -715,7 +723,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
     // _sshService.init();
 
     try {
-
       if (_ipController.text.isEmpty ||
           _usernameController.text.isEmpty ||
           _pwController.text.isEmpty ||
@@ -726,7 +733,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
         });
       }
 
-      if ( await _sshService.init() == true){
+      if (await _sshService.init() == true) {
         setState(() {
           isAuthenticated = true;
         });
@@ -738,7 +745,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
           isAuthenticated = false;
         });
       }
-
     } on Exception catch (e) {
       // ignore: avoid_print
       print('$e');
@@ -746,7 +752,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
         isAuthenticated = false;
       });
     } catch (e) {
-      print('$e');
+      if (kDebugMode) {
+        print('$e');
+      }
     } finally {
       setState(() {
         _loading = false;
@@ -762,8 +770,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
     });
 
     //_localStorageService.setItem(StorageKeys.lgConnection, "not");
-    _localStorageService.setItem(StorageKeys.lgScreens,
-        _screensController.text.toString());
+    _localStorageService.setItem(
+        StorageKeys.lgScreens, _screensController.text.toString());
     await _settingsService.setSettings(
       LGSettingsEntity(
           ip: _ipController.text,

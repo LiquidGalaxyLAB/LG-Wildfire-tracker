@@ -124,13 +124,12 @@ class LineEntity {
     );
   }
 
-
-
-  static List<Map<String, double>> createCircle(double lat, double lng, double diameter) {
-    final int numPoints = 100;
+  static List<Map<String, double>> createCircle(
+      double lat, double lng, double diameter) {
+    const int numPoints = 100;
     final double radius = diameter / 2;
-    final double angularDistance = radius / 6371000;
-    final double earthRadius = 6371e3; // Earth's radius in meters
+    //final double angularDistance = radius / 6371000;
+    const double earthRadius = 6371e3; // Earth's radius in meters
     List<Map<String, double>> coordinates = [];
 
     for (int i = 0; i < numPoints; i++) {
@@ -148,7 +147,4 @@ class LineEntity {
 
     return coordinates;
   }
-
-
-
 }

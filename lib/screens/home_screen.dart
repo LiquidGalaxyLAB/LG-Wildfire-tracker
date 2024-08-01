@@ -63,8 +63,8 @@ class _HomeState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenAspectRatio = MediaQuery.of(context).size.aspectRatio;
+    //final screenHeight = MediaQuery.of(context).size.height;
+    //final screenAspectRatio = MediaQuery.of(context).size.aspectRatio;
 
     return Scaffold(
       appBar: AppBar(
@@ -77,8 +77,10 @@ class _HomeState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsPage()));
             },
             icon: Icon(
               Icons.settings,
@@ -92,50 +94,49 @@ class _HomeState extends State<HomePage> {
         direction: Axis.vertical,
         children: [
           Expanded(
-            child: Column(children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 20.0, right: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Categories',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
+              child: Column(children: [
+            const Padding(
+              padding: EdgeInsets.only(left: 20.0, right: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Categories',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-              Expanded(
+            ),
+            Expanded(
                 //padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 //height: screenHeight,
-                  child: Container(
-                      padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
-                      child: GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: (screenWidth ~/ 300),
-                            //childAspectRatio: screenAspectRatio*1.5,
-                            crossAxisSpacing: 20.0,
-                            mainAxisSpacing: 20.0,
-                          ),
-                          // physics: NeverScrollableScrollPhysics(),
-                          itemCount: services.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return FadeIn(
-                                duration: const Duration(milliseconds: 1000),
-                                delay: Duration(seconds: (1.0 + index).round()),
-                                child: serviceContainer(
-                                    services[index]['asset']!,
-                                    services[index]['name']!,
-                                    services[index]['route']!,
-                                    services[index]['icon']!,
-                                    services[index]['keys']!,
-                                    index));
-                          })
-                  )
-              )
-            ])),],
+                child: Container(
+                    padding:
+                        const EdgeInsets.only(top: 20, left: 10, right: 10),
+                    child: GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: (screenWidth ~/ 300),
+                          //childAspectRatio: screenAspectRatio*1.5,
+                          crossAxisSpacing: 20.0,
+                          mainAxisSpacing: 20.0,
+                        ),
+                        // physics: NeverScrollableScrollPhysics(),
+                        itemCount: services.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return FadeIn(
+                              duration: const Duration(milliseconds: 1000),
+                              delay: Duration(seconds: (1.0 + index).round()),
+                              child: serviceContainer(
+                                  services[index]['asset']!,
+                                  services[index]['name']!,
+                                  services[index]['route']!,
+                                  services[index]['icon']!,
+                                  services[index]['keys']!,
+                                  index));
+                        })))
+          ])),
+        ],
       ),
-
     );
   }
 
@@ -143,8 +144,8 @@ class _HomeState extends State<HomePage> {
       List<dynamic> keys, int index) {
     return GestureDetector(
       child: Container(
-        margin: EdgeInsets.all(5.0),
-        padding: EdgeInsets.all(20.0),
+        margin: const EdgeInsets.all(5.0),
+        padding: const EdgeInsets.all(20.0),
         decoration: ShapeDecoration(
           color: Colors.grey.shade100,
           shadows: const [

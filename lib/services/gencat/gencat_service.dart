@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'fire_perimeter.dart';
 
 class GencatService {
-
   Future<List<FirePerimeter>> getFirePerimeters(String? filename) async {
     final String json = await rootBundle.loadString('assets/gencat/$filename');
     final Map<String, dynamic> jsonDecoded = jsonDecode(json);
@@ -16,6 +15,4 @@ class GencatService {
     });
     return firePerimeters;
   }
-
-
 }

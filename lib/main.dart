@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -7,7 +8,6 @@ import 'package:wildfiretracker/screens/gencat_screen.dart';
 import 'package:wildfiretracker/screens/info_screen.dart';
 import 'package:wildfiretracker/screens/lg_settings_sreen.dart';
 import 'package:wildfiretracker/screens/nasa_screen.dart';
-import 'package:wildfiretracker/screens/nasa_screen_old.dart';
 import 'package:wildfiretracker/screens/preciesly_usa_forest_fire_risk.dart';
 import 'package:wildfiretracker/screens/splash_screen.dart';
 import 'package:wildfiretracker/services/file_service.dart';
@@ -19,8 +19,6 @@ import 'package:wildfiretracker/services/nasa/nasa_service.dart';
 import 'package:wildfiretracker/services/precisely/precisely_service.dart';
 import 'package:wildfiretracker/services/ssh_service.dart';
 import 'package:wildfiretracker/utils/theme.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 
 /// Registers all services into the application.
 void setupServices() {
@@ -54,7 +52,9 @@ class MyApp extends StatelessWidget {
     try {
       await GetIt.I<LGService>().setLogos();
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       if (kDebugMode) {
         print(e);
       }
@@ -85,7 +85,8 @@ class MyApp extends StatelessWidget {
           ThemeColors.backgroundColorMaterial,
         ),
         scaffoldBackgroundColor: ThemeColors.backgroundColor,
-        colorScheme: ColorScheme.fromSeed(seedColor: ThemeColors.defaultPaltetteColor),
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: ThemeColors.defaultPaltetteColor),
         useMaterial3: true,
       ),
       home: const SplashScreenPage(),
@@ -96,8 +97,9 @@ class MyApp extends StatelessWidget {
         '/nasa': (context) => NasaApiPage(),
         '/settings': (context) => const SettingsPage(),
         '/gencat': (context) => const GencatPage(),
-        '/precisely-usa-forest-fire-risk': (context) => const PreciselyUsaForestFireRisk(),
-        '/info': (context) => InfoScreen(),
+        '/precisely-usa-forest-fire-risk': (context) =>
+            const PreciselyUsaForestFireRisk(),
+        '/info': (context) => const InfoScreen(),
       },
       debugShowCheckedModeBanner: false,
     );

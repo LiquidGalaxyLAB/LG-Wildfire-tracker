@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import '../../entities/kml/kml_entity.dart';
@@ -50,7 +49,7 @@ class FireRisk {
     this.mitigationGroupElements = const {},
     this.geometry = const {},
     this.matchedAddress = const {},
-  }){
+  }) {
     if (geometry['coordinates'] == null) return;
 
     centeredLatitude = geometry['coordinates'][0][0][1];
@@ -64,19 +63,21 @@ class FireRisk {
       totalLatitude += geometry['coordinates'][0][i][1];
       totalLongitude += geometry['coordinates'][0][i][0];
 
-      double lon = geometry['coordinates'][0][i][0] * 111000 * cos(geometry['coordinates'][0][i][1] * pi / 180);
+      double lon = geometry['coordinates'][0][i][0] *
+          111000 *
+          cos(geometry['coordinates'][0][i][1] * pi / 180);
       double lat = geometry['coordinates'][0][i][1] * 111000;
-      double nextLon = geometry['coordinates'][0][(i + 1) % length][0] * 111000 * cos(geometry['coordinates'][0][(i + 1) % length][1] * pi / 180);
+      double nextLon = geometry['coordinates'][0][(i + 1) % length][0] *
+          111000 *
+          cos(geometry['coordinates'][0][(i + 1) % length][1] * pi / 180);
       double nextLat = geometry['coordinates'][0][(i + 1) % length][1] * 111000;
 
       tmpArea += (lon * nextLat - nextLon * lat);
-
-
     }
     centeredLatitude = totalLatitude / geometry['coordinates'][0].length;
     centeredLongitude = totalLongitude / geometry['coordinates'][0].length;
 
-    area = (tmpArea / 2).abs()/10000;
+    area = (tmpArea / 2).abs() / 10000;
   }
 
   factory FireRisk.fromJson(Map<String, dynamic> json) {
@@ -127,10 +128,10 @@ class FireRisk {
 
   // todo: implement methods to convert to kml for LG sending (test with LG)
 
-
   KMLEntity toKMLEntity() {
     return KMLEntity(
-        name: noharmId.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''), content: toPlacemarkEntity().tag);
+        name: noharmId.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
+        content: toPlacemarkEntity().tag);
   }
 
   PlacemarkEntity toPlacemarkEntity() {
@@ -138,14 +139,13 @@ class FireRisk {
       id: noharmId.replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''),
       name: noharmId,
       point: PointEntity(
-          lat: centeredLatitude,
-          lng: centeredLongitude,
-          altitude: 25),
+          lat: centeredLatitude, lng: centeredLongitude, altitude: 125),
       line: LineEntity(
-          id: noharmId,
-          coordinates: getFormatedCoordinates(),
+        id: noharmId,
+        coordinates: getFormatedCoordinates(),
       ),
-      layerColor: getColorByRisk(), // color verd
+      layerColor: getColorByRisk(),
+      // color verd
       lookAt: toLookAtEntity(),
       // viewOrbit: true,
       //visibility: true,
@@ -156,13 +156,17 @@ class FireRisk {
     );
   }
 
-  LookAtEntity toLookAtEntity() { // todo: ajust zoom on LG
+  LookAtEntity toLookAtEntity() {
+    // todo: ajust zoom on LG
+    var range = (20 * log(area + 1) * 8);
+    if (range < 570) range = 570;
     return LookAtEntity(
       lat: centeredLatitude,
       lng: centeredLongitude,
-      altitude: 20 * log(area + 1), //2,3998
-      range: (20 * log(area + 1) * 35.99).toString(),
-      tilt: '60',
+      altitude: 0,
+      //2,3998
+      range: range.toString(),
+      tilt: '65',
       heading: '5',
     );
   }
@@ -181,8 +185,32 @@ class FireRisk {
   }
 
   String getBallonContent() => '''
+<div style="font-size:30px;position:relative; padding:10px; border:1px solid #ccc; border-radius:5px; font-family:Arial, sans-serif;">
+<table style="width: 100%; margin-top: 20px;">
+    <tr>
+        <td style="text-align: center; vertical-align: middle;font-size:15px;">Low Risk</td>
+        <td style="width: 100%; height: 30px; background: linear-gradient(90deg, rgba(0,255,0,1) 0%, rgba(255,0,0,1) 100%);"></td>
+        <td style="text-align: center; vertical-align: middle;font-size:15px;">Very High Risk</td>
+    </tr>
+</table>
+<br/>
+<table style="width:100%; border-collapse:collapse;">
+  <tr>
+    <td style="width:33%; text-align:left; vertical-align:middle;">
+      <img src="https://i.imgur.com/4CLoHq1.png" alt="Fire Logo" style="height:100px;"> <!-- logo atencio  -->
+    </td>
+    <td style="width:34%; text-align:center; vertical-align:middle; font-size:45px; font-weight:bold;">
+      Wildfire Risk
+    </td>
+    <td style="width:33%; text-align:right; vertical-align:middle;">
+      <img src="https://i.imgur.com/q4tJFUp.png" alt="Fire Logo" style="height:100px;"> <!-- logo app -->
+    </td>
+  </tr>
+</table>
+
+  <br/>
   <div>
-    <b><span style="font-size:15px;">${state.toUpperCase()} - ${noharmId.toUpperCase()}</span></b>
+    <b><span style="font-size:40px;">${state.toUpperCase()} - ${noharmId.toUpperCase()}</span></b>
     <br/><br/>
     <b>Model:</b> $noharmModel<br/>
     <b>Risk:</b> $riskDesc<br/>
@@ -197,7 +225,8 @@ class FireRisk {
     <b>Street name:</b> ${matchedAddress['streetName']}<br/>
     <b>Complete street:</b> ${matchedAddress['formattedAddress']}<br/>
     </div>
-  ''';
+</div>
+''';
 
   // todo: test on LG the color
   String getColorByRisk() {
@@ -213,10 +242,11 @@ class FireRisk {
       red = 255;
       green = ((50 - risk50) / 25 * 255).round();
     }
-
-    return '${red.toRadixString(16).padLeft(2, '0')}${green.toRadixString(16).padLeft(2, '0')}00c2';
+    // trans/blau/verd/vermell
+    var color =
+        'c200${green.toRadixString(16).padLeft(2, '0')}${red.toRadixString(16).padLeft(2, '0')}';
+    return color;
   }
-
 
   getFormatedCoordinates() {
     List<Map<String, double>> formatedCoordinates = [];
@@ -224,11 +254,9 @@ class FireRisk {
       formatedCoordinates.add({
         'lat': geometry['coordinates'][0][i][1],
         'lng': geometry['coordinates'][0][i][0],
-        'altitude': 20.0,
+        'altitude': 99.0,
       });
     }
-    print(formatedCoordinates);
     return formatedCoordinates;
   }
-
 }

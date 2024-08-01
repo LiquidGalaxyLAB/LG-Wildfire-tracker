@@ -83,7 +83,7 @@ class ScreenOverlayEntity {
   factory ScreenOverlayEntity.logos() {
     return ScreenOverlayEntity(
       name: 'WildfireTracker for LG',
-      icon: 'https://i.imgur.com/QUBReFh.jpeg', // https://i.imgur.com/p3uiWAy.png
+      icon: 'https://i.imgur.com/63IBsNG.png',
       overlayX: 0,
       overlayY: 1,
       screenX: 0.02,

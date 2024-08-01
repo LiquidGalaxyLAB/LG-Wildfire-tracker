@@ -9,8 +9,6 @@ import 'country.dart';
 import 'nasa_service_settings.dart';
 import 'satellite_data.dart';
 
-
-
 class NASAService {
   LocalStorageService get _localStorageService =>
       GetIt.I<LocalStorageService>();
@@ -61,15 +59,11 @@ class NASAService {
       nasaApiCountryLiveFire.country = countryAbbreviation;
     }
 
-
-
     do {
-
-      if (kDebugMode){
-       print(Uri.parse(nasaApiCountryLiveFire.generateUrl(
+      if (kDebugMode) {
+        print(Uri.parse(nasaApiCountryLiveFire.generateUrl(
             satelliteIndex: satelliteIndex)));
       }
-
 
       var request = http.Request(
           'GET',
@@ -93,8 +87,6 @@ class NASAService {
 
       satelliteIndex++;
     } while (satelliteIndex < NASAServiceSettings.satellites.length);
-
-
 
     return satelliteData;
   }

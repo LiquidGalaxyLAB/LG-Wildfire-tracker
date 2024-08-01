@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:wildfiretracker/services/precisely/fire_risk.dart';
 import 'package:wildfiretracker/services/precisely/precisely_service_settings.dart';
-import 'package:http/http.dart' as http;
 
 import '../../utils/storage_keys.dart';
 import '../local_storage_service.dart';
@@ -42,11 +42,11 @@ class PreciselyService {
       'Accept': 'application/json',
       'Authorization': 'Bearer ${await getSessionOAuthToken() ?? ''}'
     };
-    
+
     print(headers);
 
     var url = Uri.parse(
-    '${PreciselyServiceSettings.fireRiskUrl}?includeGeometry=Y&address=$address');
+        '${PreciselyServiceSettings.fireRiskUrl}?includeGeometry=Y&address=$address');
     if (latLng != null) {
       url = Uri.parse(
           '${PreciselyServiceSettings.fireRiskLocationUrl}?includeGeometry=Y&longitude=${latLng.longitude}&latitude=${latLng.latitude}');
@@ -59,7 +59,8 @@ class PreciselyService {
 
     StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
-      return FireRisk.fromJson(jsonDecode(await response.stream.bytesToString()));
+      return FireRisk.fromJson(
+          jsonDecode(await response.stream.bytesToString()));
     } else {
       if (kDebugMode) {
         print(response.reasonPhrase);
@@ -99,11 +100,11 @@ class PreciselyService {
 
   Future<String?> getSessionOAuthToken() async {
     return await getBearer(); // todo: expiresIn element
-    var oauthToken = _localStorageService.getItem(StorageKeys.preciselyOAuthToken);
+    /*var oauthToken = _localStorageService.getItem(StorageKeys.preciselyOAuthToken);
     if (oauthToken == null || oauthToken.isEmpty) {
       oauthToken = await getBearer();
       await setSessionOAuthToken(oauthToken);
     }
-    return oauthToken;
+    return oauthToken;*/
   }
 }

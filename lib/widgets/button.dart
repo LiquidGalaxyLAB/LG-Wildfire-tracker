@@ -30,7 +30,6 @@ class Button extends StatefulWidget {
   final double? height;
   final Icon? icon;
 
-
   @override
   State<Button> createState() => _ButtonState();
 }
@@ -84,7 +83,8 @@ class _ButtonState extends State<Button> {
                 : SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 3, color: ThemeColors.backgroundColor),
+                    child: CircularProgressIndicator(
+                        strokeWidth: 3, color: ThemeColors.backgroundColor),
                   )
           ],
         ),

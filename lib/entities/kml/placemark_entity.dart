@@ -138,9 +138,11 @@ class PlacemarkEntity {
   String get balloonOnlyTag => '''
     <Style id="balloon-$id">
       <BalloonStyle>
-        <bgColor>ffffffff</bgColor>
+        <bgColor>ffffffff</bgColor> <!-- Change background color to dark grey -->
         <text><![CDATA[
-          $balloonContent
+          <div style="font-size: 24px;">
+            $balloonContent
+          </div>
         ]]></text>
       </BalloonStyle>
       <LabelStyle>
@@ -155,6 +157,7 @@ class PlacemarkEntity {
       <styleUrl>#balloon-$id</styleUrl>
       ${point.tag}
       <gx:balloonVisibility>${balloonContent.isEmpty ? 0 : 1}</gx:balloonVisibility>
+      
     </Placemark>
   ''';
 

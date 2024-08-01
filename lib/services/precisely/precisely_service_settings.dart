@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,8 +9,10 @@ class PreciselyServiceSettings {
   String apiKey;
   String apiSecret;
 
-  static String fireRiskUrl = "https://api.precisely.com/risks/v2/fire/byaddress";
-  static String fireRiskLocationUrl = "https://api.precisely.com/risks/v2/fire/bylocation";
+  static String fireRiskUrl =
+      "https://api.precisely.com/risks/v2/fire/byaddress";
+  static String fireRiskLocationUrl =
+      "https://api.precisely.com/risks/v2/fire/bylocation";
   static String oAuthTokenUrl = "https://api.precisely.com/oauth/token";
 
   PreciselyServiceSettings({
@@ -22,6 +23,4 @@ class PreciselyServiceSettings {
   String preciselyApiKey() {
     return base64.encode(utf8.encode('$apiKey:$apiSecret'));
   }
-
-
 }

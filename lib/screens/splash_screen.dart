@@ -2,10 +2,7 @@ import 'dart:async';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:wildfiretracker/screens/nasa_screen.dart';
-
-import 'home_screen.dart';
 
 class SplashScreenPage extends StatefulWidget {
   const SplashScreenPage({Key? key}) : super(key: key);
@@ -43,11 +40,6 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     double screenHeight = MediaQuery.of(context).size.height;
     double padding = 16.0;
     double spacing = 8.0;
-    double rowSpacing = 8.0;
-
-    /*Timer(const Duration(seconds: 3), (){
-
-    });*/
 
     return SafeArea(
       child: Scaffold(
@@ -63,8 +55,22 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                 alignment: Alignment.center,
                 //transformAlignment: Alignment.center,
                 //padding: const EdgeInsets.all(30),
-                margin: const EdgeInsets.only(top: 16, bottom: 0),
-                child: Center(child: Image.asset('assets/images/logo_gsoc24_round.png')),
+                margin: const EdgeInsets.only(top: 16, bottom: 16),
+                child: Center(
+                    child: Image.asset('assets/images/logo_gsoc24_round.png')),
+              ),
+              // text "Wildfire Tracker for Liquid Galaxy"
+              FadeIn(
+                duration: Duration(milliseconds: 300),
+                delay: Duration(milliseconds: 500),
+                child: Text(
+                  'Wildfire Tracker for Liquid Galaxy',
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
               ),
               Expanded(
                 child: Padding(
@@ -73,31 +79,38 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: _imageRows.asMap().entries.map((imageRow) {
                       int rowCount = imageRow.value.length;
-                      double effectiveHeight = screenHeight*0.6 - (padding * 2) - (spacing * (rowCount - 1));
-                      double effectiveWidth = screenWidth*0.90 - (padding * 2) - (spacing * (rowCount - 1));
+                      double effectiveHeight = screenHeight * 0.6 -
+                          (padding * 2) -
+                          (spacing * (rowCount - 1));
+                      double effectiveWidth = screenWidth * 0.90 -
+                          (padding * 2) -
+                          (spacing * (rowCount - 1));
                       double imageHeightSize = effectiveHeight / rowCount;
                       double imageWidthSize = effectiveWidth / rowCount;
 
                       return FadeIn(
                           duration: Duration(milliseconds: 300),
-                          delay: Duration(milliseconds: (1500 * imageRow.key).round()),
-                          child:
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: screenWidth * 0.05),
-                        child: Wrap(
-                          alignment: WrapAlignment.start,
-                          spacing: spacing, // Space between images
-                          runSpacing: spacing, // Space between rows
-                          children: imageRow.value.map((imagePath) {
-                            return Image.asset(
-                              imagePath,
-                              fit: BoxFit.contain,
-                              width: imageWidthSize, // Dynamic width for each image
-                              height: imageHeightSize, // Dynamic height for each image
-                            );
-                          }).toList(),
-                        ),
-                      ));
+                          delay: Duration(
+                              milliseconds: (1500 * imageRow.key).round()),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 4.0, horizontal: screenWidth * 0.05),
+                            child: Wrap(
+                              alignment: WrapAlignment.start,
+                              spacing: spacing, // Space between images
+                              runSpacing: spacing, // Space between rows
+                              children: imageRow.value.map((imagePath) {
+                                return Image.asset(
+                                  imagePath,
+                                  fit: BoxFit.contain,
+                                  width: imageWidthSize,
+                                  // Dynamic width for each image
+                                  height:
+                                      imageHeightSize, // Dynamic height for each image
+                                );
+                              }).toList(),
+                            ),
+                          ));
                     }).toList(),
                   ),
                 ),
