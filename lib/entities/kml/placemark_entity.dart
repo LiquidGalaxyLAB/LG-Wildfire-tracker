@@ -138,9 +138,11 @@ class PlacemarkEntity {
   String get balloonOnlyTag => '''
     <Style id="balloon-$id">
       <BalloonStyle>
-        <bgColor>ffffffff</bgColor>
+        <bgColor>ff333333</bgColor> <!-- Change background color to dark grey -->
         <text><![CDATA[
-          $balloonContent
+          <div style="font-size: large;">
+            $balloonContent
+          </div>
         ]]></text>
       </BalloonStyle>
       <LabelStyle>
@@ -150,12 +152,12 @@ class PlacemarkEntity {
         <scale>0</scale>
       </IconStyle>
     </Style>
-    <Placemark>
+    <!--<Placemark>
       <name>$name-Balloon</name>
       <styleUrl>#balloon-$id</styleUrl>
       ${point.tag}
       <gx:balloonVisibility>${balloonContent.isEmpty ? 0 : 1}</gx:balloonVisibility>
-    </Placemark>
+    </Placemark>-->
   ''';
 
   /// Returns a [Map] from the current [PlacemarkEntity].
