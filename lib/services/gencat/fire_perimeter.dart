@@ -42,7 +42,8 @@ class FirePerimeter {
           coordinates: geometry.getFormatedCoordinates()),
       lookAt: toLookAtEntity(),
       // viewOrbit: true,
-
+      // color vermell translucid
+      layerColor: 'c20000ff', // vermell translucid
       //visibility: true,
       balloonContent: getBallonContent(),
       //'Wildfire',

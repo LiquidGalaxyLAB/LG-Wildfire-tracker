@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wildfiretracker/entities/lg_settings_model.dart';
 import 'package:wildfiretracker/services/local_storage_service.dart';
 import 'package:wildfiretracker/services/nasa/nasa_service.dart';
@@ -118,7 +120,7 @@ class _SettingsPageState extends State<SettingsPage>
                   ),
                   Tab(
                     icon: Icon(Icons.settings),
-                    text: 'Settings',
+                    text: 'API Keys',
                   ),
                 ],
               ),
@@ -278,12 +280,27 @@ class _SettingsPageState extends State<SettingsPage>
                 fontSize: 16,
               ),
             ),
+            // new link to nasa api key generator
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child:
+              InkWell(
+                  child: const Text(
+                    'Get NASA API Key',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                  onTap: () => launchUrlString('https://firms.modaps.eosdis.nasa.gov/api/area/')
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Input(
                 controller: _nasaApiController,
                 label: 'NASA API Key',
-                hint: NASAServiceSettings.nasaApiKey,
+                //hint: NASAServiceSettings.nasaApiKey,
                 type: TextInputType.text,
                 prefixIcon: const Padding(
                   padding: EdgeInsets.only(left: 4),
@@ -300,11 +317,25 @@ class _SettingsPageState extends State<SettingsPage>
               ),
             ),
             Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child:
+              InkWell(
+                  child: const Text(
+                    'Get Precisely API Keys',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                  onTap: () => launchUrlString('https://developer.precisely.com/gettingstarted')
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Input(
                 controller: _preciselyApiKeyController,
                 label: 'Precisely API Key',
-                hint: PreciselyServiceSettings.defaultApiKey,
+                //hint: PreciselyServiceSettings.defaultApiKey,
                 type: TextInputType.text,
                 prefixIcon: const Padding(
                   padding: EdgeInsets.only(left: 4),
@@ -317,7 +348,7 @@ class _SettingsPageState extends State<SettingsPage>
               child: Input(
                 controller: _preciselyApiSecretController,
                 label: 'Precisely API Secret',
-                hint: PreciselyServiceSettings.defaultApiSecret,
+                //hint: PreciselyServiceSettings.defaultApiSecret,
                 type: TextInputType.text,
                 prefixIcon: const Padding(
                   padding: EdgeInsets.only(left: 4),
@@ -412,7 +443,7 @@ class _SettingsPageState extends State<SettingsPage>
                 ),
               ),
             ),
-            _buildLGTaskButton(
+            /*_buildLGTaskButton(
               'SET SLAVES REFRESH',
               Icons.av_timer_rounded,
               () async {
@@ -485,7 +516,7 @@ class _SettingsPageState extends State<SettingsPage>
                 );
               },
               loading: _resetingRefresh,
-            ),
+            ),*/
             _buildLGTaskButton(
               'Clear KML + logos',
               Icons.cleaning_services_rounded,
@@ -690,10 +721,9 @@ class _SettingsPageState extends State<SettingsPage>
         isAuthenticated =
             _localStorageService.getItem(StorageKeys.lgCurrentConnection);
       }
-      _nasaApiController.text = _nasaService.nasaApiCountryLiveFire.apiKey;
-      _preciselyApiKeyController.text = PreciselyServiceSettings.defaultApiKey;
-      _preciselyApiSecretController.text =
-          PreciselyServiceSettings.defaultApiSecret;
+      //_nasaApiController.text = _nasaService.nasaApiCountryLiveFire.apiKey;
+      //_preciselyApiKeyController.text = PreciselyServiceSettings.defaultApiKey;
+      //_preciselyApiSecretController.text = PreciselyServiceSettings.defaultApiSecret;
     });
 
     /*_onConnect();

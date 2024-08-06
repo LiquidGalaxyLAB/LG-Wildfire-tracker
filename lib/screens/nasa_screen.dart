@@ -163,7 +163,10 @@ class _NasaApiPageState extends State<NasaApiPage> {
                                 left: 20.0,
                                 right: 20.0,
                                 bottom: 10.0),
-                            child: ListView.builder(
+                            child:
+                            _satelliteData.length == 0 ?
+                            _buildInfoMessage()
+                                : ListView.builder(
                               itemCount: _satelliteData.length,
                               itemBuilder: (context, index) {
                                 return FadeIn(
@@ -365,6 +368,24 @@ class _NasaApiPageState extends State<NasaApiPage> {
   void dispose() {
     super.dispose();
     _loadingSatelliteData.dispose();
+  }
+
+  Widget _buildInfoMessage() {
+    return const Padding(
+      padding: EdgeInsets.only(top: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(child: Text(
+            'This screen gives us real-time fires around the world with a 4-hour delay. Through the country we want the NASA EFFIS API allows us to get this data on demand and then we can send it to the LG',
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.w500),
+            softWrap: true,
+          ),)
+        ],
+      ),
+    );
   }
 
   /// Builds the list empty warn message.

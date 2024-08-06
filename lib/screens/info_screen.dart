@@ -24,15 +24,14 @@ class _InfoScreenState extends State<InfoScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                height: 20.0,
-              ),
               Center(
                 child: Image.asset(
-                  'assets/images/logo_gsoc24_round.png',
-                  // Ensure this image is added to your assets folder
-                  height: 200,
+                  'assets/images/collaborators.png', // Ensure this image is added to your assets folder
+                  //height: 200,
                 ),
+              ),
+              const SizedBox(
+                height: 20.0,
               ),
               const SizedBox(height: 20),
               const Text(
@@ -82,14 +81,30 @@ class _InfoScreenState extends State<InfoScreen> {
                 'The Liquid Galaxy is a cluster of screens with Google Earth that synchronize with each other to create the sensation of a single screen, depending on the configuration it can be panoramic, vertical, curved, etc. Through this tool, we will be able to represent fires and see the impacts in an interactive and easy-to-see detail. Additionally, we will have many important data about the fire, such as the extent, emitted gases, possible victims, key points, extinguishing techniques, possible improvements, front speed, fire score, type of smoke column, smoke data, etc. All those data that we can extract from our API.',
                 style: TextStyle(fontSize: 16),
               ),
+              const SizedBox(height: 20),
+              const Text(
+                'Generate API Keys',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Text(
+                'To generate the API keys, if you go to the configuration screen, you can generate them using the links in each section of the API Keys',
+                style: TextStyle(fontSize: 16),
+              ),
               const SizedBox(
                 height: 20.0,
               ),
               Center(
                 child: Image.asset(
-                  'assets/images/collaborators.png', // Ensure this image is added to your assets folder
-                  //height: 200,
+                  'assets/images/logo_gsoc24_round.png',
+                  // Ensure this image is added to your assets folder
+                  height: 200,
                 ),
+              ),
+              const SizedBox(
+                height: 20.0,
               ),
             ],
           ),

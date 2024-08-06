@@ -239,8 +239,7 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
                                     child: SizedBox(
                                       //width: screenWidth >= 768 ? screenWidth / 2 - 24 : 360,
                                       child: _fireRisk.noharmId.isEmpty
-                                          ? _buildEmptyMessage(
-                                          'No fire risk data.')
+                                          ? _buildInfoMessage()
                                           : ListView(
                                         padding: const EdgeInsets.all(16.0),
                                         children: [
@@ -299,78 +298,79 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
                                                   .toString()),
                                           _buildCard('Area',
                                               _fireRisk.area.toString()),
+                                          const SizedBox(height: 16.0),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              TextButton.icon(
+                                                style: TextButton.styleFrom(
+                                                  padding: const EdgeInsets.all(10),
+                                                  tapTargetSize: MaterialTapTargetSize
+                                                      .padded,
+                                                  alignment: Alignment.centerRight,
+                                                  backgroundColor:
+                                                  _searched
+                                                      ? ThemeColors.primaryColor
+                                                      : Colors.grey,
+                                                ),
+                                                icon: Icon(
+                                                  Icons.travel_explore_rounded,
+                                                  color: ThemeColors.backgroundColor,
+                                                ),
+                                                label: Text(
+                                                  'VIEW IN LG',
+                                                  style: TextStyle(
+                                                    color: ThemeColors.backgroundColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                                onPressed: () {
+                                                  viewFirePerimeter(showBallon: true);
+                                                },
+                                              ),
+                                              const SizedBox(width: 16.0),
+                                              TextButton.icon(
+                                                style: TextButton.styleFrom(
+                                                  padding: const EdgeInsets.all(10),
+                                                  tapTargetSize: MaterialTapTargetSize
+                                                      .padded,
+                                                  alignment: Alignment.centerRight,
+                                                  backgroundColor:
+                                                  _searched
+                                                      ? ThemeColors.primaryColor
+                                                      : Colors.grey,
+                                                ),
+                                                icon: Icon(
+                                                  !_orbiting
+                                                      ? Icons.flip_camera_android_rounded
+                                                      : Icons.stop_rounded,
+                                                  color: _searched
+                                                      ? ThemeColors.backgroundColor
+                                                      : ThemeColors.backgroundColor,
+                                                ),
+                                                label: Text(
+                                                  'ORBIT',
+                                                  style: TextStyle(
+                                                    color: _searched
+                                                        ? ThemeColors.backgroundColor
+                                                        : ThemeColors.backgroundColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                                onPressed: () {
+                                                  //print(_fireRisk.getColorByRiskTest(34));
+                                                },
+                                              ),
+                                            ],
+                                          ),
                                         ],
                                       ),
                                     ),
                                   )),
-                              const SizedBox(height: 16.0),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextButton.icon(
-                                      style: TextButton.styleFrom(
-                                        padding: const EdgeInsets.all(10),
-                                        tapTargetSize: MaterialTapTargetSize
-                                            .padded,
-                                        alignment: Alignment.centerRight,
-                                        backgroundColor:
-                                        _searched
-                                            ? ThemeColors.primaryColor
-                                            : Colors.grey,
-                                      ),
-                                      icon: Icon(
-                                        Icons.travel_explore_rounded,
-                                        color: ThemeColors.backgroundColor,
-                                      ),
-                                      label: Text(
-                                        'VIEW IN LG',
-                                        style: TextStyle(
-                                          color: ThemeColors.backgroundColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        viewFirePerimeter(showBallon: true);
-                                      },
-                                    ),
-                                  const SizedBox(width: 16.0),
-                                   TextButton.icon(
-                                      style: TextButton.styleFrom(
-                                        padding: const EdgeInsets.all(10),
-                                        tapTargetSize: MaterialTapTargetSize
-                                            .padded,
-                                        alignment: Alignment.centerRight,
-                                        backgroundColor:
-                                        _searched
-                                            ? ThemeColors.primaryColor
-                                            : Colors.grey,
-                                      ),
-                                      icon: Icon(
-                                        !_orbiting
-                                            ? Icons.flip_camera_android_rounded
-                                            : Icons.stop_rounded,
-                                        color: _searched
-                                            ? ThemeColors.backgroundColor
-                                            : ThemeColors.backgroundColor,
-                                      ),
-                                      label: Text(
-                                        'ORBIT',
-                                        style: TextStyle(
-                                          color: _searched
-                                              ? ThemeColors.backgroundColor
-                                              : ThemeColors.backgroundColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        //print(_fireRisk.getColorByRiskTest(34));
-                                      },
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(height: 16.0),
+
+                              //const SizedBox(height: 16.0),
                             ],
                           )
                       ),
@@ -590,6 +590,24 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
     );
   }
 
+  Widget _buildInfoMessage() {
+    return const Padding(
+      padding: EdgeInsets.only(top: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(child: Text(
+            'This screen gives us information about wildfire risks in the United States. Through the address or by selecting the area we want on the map, the Precisely API allows us to obtain this data on demand and then we can send it to the LG',
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.w500),
+            softWrap: true,
+          ),)
+        ],
+      ),
+    );
+  }
+
   Widget _buildEmptyMessage(String message) {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
@@ -601,7 +619,7 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
             message,
             style: const TextStyle(
                 color: Colors.red, fontSize: 18, fontWeight: FontWeight.w500),
-          ),
+          )
         ],
       ),
     );

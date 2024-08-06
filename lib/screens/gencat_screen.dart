@@ -151,7 +151,9 @@ class _GencatState extends State<GencatPage> {
                                   left: 20.0,
                                   right: 20.0,
                                   bottom: 10.0),
-                              child: ListView.builder(
+                              child: _firePerimeterData.length == 0 ?
+                                  _buildInfoMessage()
+                                  : ListView.builder(
                                 itemCount: _firePerimeterData.length,
                                 itemBuilder: (context, index) {
                                   return FadeIn(
@@ -294,6 +296,24 @@ class _GencatState extends State<GencatPage> {
       _mapsController?.animateCamera(CameraUpdate.newCameraPosition(position));
       _mapsController?.showMarkerInfoWindow(markerId);
     });
+  }
+
+  Widget _buildInfoMessage() {
+    return const Padding(
+      padding: EdgeInsets.only(top: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(child: Text(
+            'This screen gives us the history of forest fires throughout Catalonia (Spain). Through the year we want, it allows us to obtain the perimeters and then we can send them to the LG',
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.w500),
+            softWrap: true,
+          ),)
+        ],
+      ),
+    );
   }
 
   /// Builds the list empty warn message.
