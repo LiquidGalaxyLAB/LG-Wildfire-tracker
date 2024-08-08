@@ -243,62 +243,6 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
                                           : ListView(
                                         padding: const EdgeInsets.all(16.0),
                                         children: [
-                                          _buildCard('State', _fireRisk.state),
-                                          _buildCard(
-                                              'No Harm ID', _fireRisk.noharmId),
-                                          _buildCard('No Harm Class',
-                                              _fireRisk.noharmCls),
-                                          _buildCard(
-                                              'No Harm Model',
-                                              _fireRisk.noharmModel),
-                                          _buildCard(
-                                              'Risk Description',
-                                              _fireRisk.riskDesc),
-                                          _buildCard(
-                                              'Risk 50',
-                                              _fireRisk.risk50.toString()),
-                                          _buildCard(
-                                              'Severity',
-                                              _fireRisk.severity.toString()),
-                                          _buildCard(
-                                              'Frequency',
-                                              _fireRisk.frequency.toString()),
-                                          _buildCard(
-                                              'Community',
-                                              _fireRisk.community.toString()),
-                                          _buildCard('Damage',
-                                              _fireRisk.damage.toString()),
-                                          _buildCard('Mitigation',
-                                              _fireRisk.mitigation.toString()),
-                                          _buildMapCard(
-                                              'Severity Group Elements',
-                                              _fireRisk.severityGroupElements),
-                                          _buildMapCard(
-                                              'Frequency Group Elements',
-                                              _fireRisk.frequencyGroupElements),
-                                          _buildMapCard(
-                                              'Community Group Elements',
-                                              _fireRisk.communityGroupElements),
-                                          _buildMapCard('Damage Group Elements',
-                                              _fireRisk.damageGroupElements),
-                                          _buildMapCard(
-                                              'Mitigation Group Elements',
-                                              _fireRisk
-                                                  .mitigationGroupElements),
-                                          _buildMapCard(
-                                              'Geometry', _fireRisk.geometry),
-                                          _buildMapCard(
-                                              'Matched Address',
-                                              _fireRisk.matchedAddress),
-                                          _buildCard('Centered Latitude',
-                                              _fireRisk.centeredLatitude
-                                                  .toString()),
-                                          _buildCard('Centered Longitude',
-                                              _fireRisk.centeredLongitude
-                                                  .toString()),
-                                          _buildCard('Area',
-                                              _fireRisk.area.toString()),
-                                          const SizedBox(height: 16.0),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
@@ -361,10 +305,67 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
                                                 ),
                                                 onPressed: () {
                                                   //print(_fireRisk.getColorByRiskTest(34));
+                                                  orbitFirePerimeter();
                                                 },
                                               ),
                                             ],
                                           ),
+                                          const SizedBox(height: 16.0),
+                                          _buildCard('State', _fireRisk.state),
+                                          _buildCard(
+                                              'No Harm ID', _fireRisk.noharmId),
+                                          _buildCard('No Harm Class',
+                                              _fireRisk.noharmCls),
+                                          _buildCard(
+                                              'No Harm Model',
+                                              _fireRisk.noharmModel),
+                                          _buildCard(
+                                              'Risk Description',
+                                              _fireRisk.riskDesc),
+                                          _buildCard(
+                                              'Risk 50',
+                                              _fireRisk.risk50.toString()),
+                                          _buildCard(
+                                              'Severity',
+                                              _fireRisk.severity.toString()),
+                                          _buildCard(
+                                              'Frequency',
+                                              _fireRisk.frequency.toString()),
+                                          _buildCard(
+                                              'Community',
+                                              _fireRisk.community.toString()),
+                                          _buildCard('Damage',
+                                              _fireRisk.damage.toString()),
+                                          _buildCard('Mitigation',
+                                              _fireRisk.mitigation.toString()),
+                                          _buildMapCard(
+                                              'Severity Group Elements',
+                                              _fireRisk.severityGroupElements),
+                                          _buildMapCard(
+                                              'Frequency Group Elements',
+                                              _fireRisk.frequencyGroupElements),
+                                          _buildMapCard(
+                                              'Community Group Elements',
+                                              _fireRisk.communityGroupElements),
+                                          _buildMapCard('Damage Group Elements',
+                                              _fireRisk.damageGroupElements),
+                                          _buildMapCard(
+                                              'Mitigation Group Elements',
+                                              _fireRisk
+                                                  .mitigationGroupElements),
+                                          _buildMapCard(
+                                              'Geometry', _fireRisk.geometry),
+                                          _buildMapCard(
+                                              'Matched Address',
+                                              _fireRisk.matchedAddress),
+                                          _buildCard('Centered Latitude',
+                                              _fireRisk.centeredLatitude
+                                                  .toString()),
+                                          _buildCard('Centered Longitude',
+                                              _fireRisk.centeredLongitude
+                                                  .toString()),
+                                          _buildCard('Area',
+                                              _fireRisk.area.toString()),
                                         ],
                                       ),
                                     ),
@@ -642,6 +643,17 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
     }
     await _lgService.flyTo(_fireRisk.toLookAtEntity());
     await _lgService.sendTour(_fireRisk.buildOrbit(), 'Orbit');
+  }
+
+  Future<void> orbitFirePerimeter() async {
+    if (_orbiting) {
+      await _lgService.stopTour();
+      _orbiting = false;
+    } else {
+      await _lgService
+          .startTour('Orbit');
+      _orbiting = true;
+    }
   }
 
 /*Future<void> displayPrediction(Prediction p, BuildContext context) async {

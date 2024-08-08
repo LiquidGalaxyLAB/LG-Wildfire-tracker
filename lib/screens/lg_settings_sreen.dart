@@ -767,7 +767,7 @@ class _SettingsPageState extends State<SettingsPage>
         setState(() {
           isAuthenticated = true;
         });
-        //await _lgService.setLogos();
+        await _lgService.setLogos();
         _localStorageService.setItem(StorageKeys.lgCurrentConnection, true);
       } else {
         showSnackbar(context, 'Connection failed');
