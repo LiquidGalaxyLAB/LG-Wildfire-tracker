@@ -37,10 +37,14 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
   bool _orbiting = false;
   bool _searched = false;
 
+  bool isDropdownVisible=false;
+
   LGService get _lgService => GetIt.I<LGService>();
 
   PreciselyService get _preciselyService => GetIt.I<PreciselyService>();
   final _addressController = TextEditingController();
+  FocusNode _focusNodeAddress = FocusNode(); // Adding a FocusNode to manage focus
+
   var uuid = const Uuid();
 
   final String googleApiKey = dotenv.get('GOOGLE_MAPS_APY_KEY');
@@ -48,12 +52,19 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
   GoogleMapController? mapController;
   LatLng? pickedLocation = const LatLng(37.7749, -122.4194);
 
-  TextEditingController controller = TextEditingController();
+  //TextEditingController controller = TextEditingController();
 
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _addressController.dispose();
+    _focusNodeAddress.dispose(); // Dispose of the FocusNode when the widget is destroyed
+    super.dispose();
   }
 
 
@@ -85,7 +96,9 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
                     children: [
                       Expanded(
                         // todo: fer que al seleccionar del mapa es fiqui l'adreça.
-                        child: GooglePlaceAutoCompleteTextField(
+                        child: Visibility(
+                  visible: !isDropdownVisible,
+                    child: GooglePlaceAutoCompleteTextField(
                           textEditingController: _addressController,
                           googleAPIKey: googleApiKey,
                           inputDecoration: const InputDecoration(
@@ -142,7 +155,8 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
                             );
                           },
                           isCrossBtnShown: true,
-                        ),
+                          focusNode: _focusNodeAddress,
+                        ),),
                         /*TextFormField(
                       controller: _addressController,
                       decoration: const InputDecoration(
@@ -451,6 +465,16 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
     loc.Location location = loc.Location();
     bool _serviceEnabled;
 
+    //FocusScope.of(context).requestFocus(new FocusNode());
+    // google predictor text input close dropdown
+
+    setState(() {
+      //_addressController.clear(); // Clear the text field
+      //_focusNodeAddress.unfocus(); // Unfocus to hide the dropdown
+      isDropdownVisible = true;
+    });
+
+
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
@@ -491,6 +515,7 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
                 },
                 onTap: (LatLng location) {
                   setState(() {
+                    isDropdownVisible = false;
                     pickedLocation = location;
                     _addressController.text =
                     '${location.latitude}, ${location.latitude}';
@@ -501,7 +526,12 @@ class _PreciselyUsaForestFireRisk extends State<PreciselyUsaForestFireRisk> {
               ),
             ),
           ),
-    );
+    ).then((_) {
+      // This block of code runs after the dialog is dismissed
+      setState(() {
+        isDropdownVisible = false;
+      });
+    });
   }
 
   Widget _buildGoogleMap() {
