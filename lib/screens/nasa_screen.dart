@@ -344,6 +344,8 @@ class _NasaApiPageState extends State<NasaApiPage> {
       //_goToCountry(_selectedCountry.name);
       if (_satelliteData.isNotEmpty) {
         _goToLatLang(_satelliteData[0].latitude, _satelliteData[0].longitude);
+      } else {
+        showSnackbar(context, 'No live fires found for this country');
       }
     }).onError((error, stackTrace) {
       _satelliteData = [];
